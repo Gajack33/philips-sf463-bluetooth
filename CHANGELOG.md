@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.099 (06.09 rc4) — offline diagnostic candidate
+
+- Copy native queue slots before publishing their consumed index.
+- Preserve held-button and source-release order during ownership handoff.
+- Preserve pending-report deduplication after initial neutrals and expiry.
+- Add versioned refusal 12 for unresolved rear source state.
+- Hardware acceptance is pending. Optional recovery 6.100 restores 06.07 code; if installed, it consumes the numeric 06.10 revision.
+
 ## 06.10 — development, not hardware qualified
 
 - Keep the reliability changes from the 06.09 candidate.

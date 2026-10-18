@@ -1,9 +1,18 @@
 {
   "schema": 1,
-  "integration_qualified": false,
-  "integration_evidence": [],
+  "integration_qualified": true,
+  "integration_evidence": [
+    {
+      "path": "evidence/reliability-rc4-offline.json",
+      "sha256": "e586be371346937a44a2eefaac892eb31167085f158a80fa257be65777a02570"
+    },
+    {
+      "path": "evidence/reliability-rc4-offline-llvm18.json",
+      "sha256": "5537e528febb290702557458daa08bd136a31387544ded0e8a07073ad4d3262a"
+    }
+  ],
   "baseline": "GVK1EH_B002FFv.06.05, SHA256 6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
-  "qualification_note": "Unqualified offline native-stack handoff experiment; diagnostic6.099 and usage06.10 are check-only. No firmware export or hardware approval.",
+  "qualification_note": "Offline software qualification only:178 checks pass with LLVM18 and19. Diagnostic6.099 adds a private native-drain snapshot, source-release handoff and pending-report deduplication. Hardware heap/stack, reconnect and long idle remain unqualified. No automatic flash;06.10 withheld.",
   "protected_ranges": [
     {
       "start": "0x0",
@@ -359,5 +368,14 @@
       "link": true,
       "category": "front"
     }
-  ]
+  ],
+  "integration_sources": {
+    "firmware/adapter.S": "b032de57f135a0f569d213272685cba59b728c2ab1a2771b1239804c7ad3329f",
+    "firmware/adapter.c": "1d18d966ffb9d15b2bdc6481912447751c20450a11c9c072f85e307f1d16dbd7",
+    "firmware/build.py": "79204ce384938b8c3b47a46557d484732e2ae1b29d50c1815054560bfa142a5c",
+    "firmware/core/sf_core.c": "53c65aa9e09c7f43ae24a2390fc486db0d3e27ce74be995addc7add4414d0963",
+    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
+    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
+  },
+  "integration_hook_sha256": "35af6ecf9d1a35fa96b8152986487f596a83c0b2889209210a98b9ec450c986b"
 }

@@ -52,7 +52,7 @@ python reproduction/verify_diagnostic_candidate.py
 
 ### In development
 
-The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add safer input handling and local button profiles. **06.07 remains the published reference.** The [6.097 trial](evidence/hardware-6097.json) is on hold; its core stayed inactive. The [6.098 recovery](evidence/hardware-recovery-6098.json) restored 06.07 code and both faces respond again. **06.10 is withheld.** No automatic flash.
+The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add safer input handling and local button profiles. **06.07 remains the published reference.** The [6.099 candidate](firmware/candidates/06.09-rc4/) passes 178 offline checks with LLVM 18 and 19; hardware acceptance is pending. The working [6.098 recovery](evidence/hardware-recovery-6098.json) remains installed. **No automatic flash or usage release.**
 
 ---
 

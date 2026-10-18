@@ -1,0 +1,46 @@
+{
+  "all_other_bytes_identical_to_published_0607": true,
+  "assets": [
+    {
+      "name": "GVK1EH_B002FFv.6.100.bin",
+      "sha256": "75324b1ad3d75db80af13291c4bc741ef529dd50c4925ef164d40067ee5c59ba",
+      "size": 118784
+    },
+    {
+      "name": "SF463-6.100-recovery-USB.zip",
+      "sha256": "e33f487ddf0846b267410c70e182b38a24a3d07d1a8b0b0d1904c27fa1cc72d4",
+      "size": 118940
+    }
+  ],
+  "blocks_of_32_bytes": 3712,
+  "changed_byte_offsets": [
+    "0x0",
+    "0x1",
+    "0x16ef",
+    "0x16f0",
+    "0x16f1",
+    "0x16f3"
+  ],
+  "consumes_usage_0610_numeric_version_if_installed": true,
+  "crc16_ccitt_initial_zero_over_offset_4": "a33e",
+  "deployed": false,
+  "flashed": false,
+  "hardware_validated": false,
+  "header_and_vectors_bytes_2_to_255_unchanged": true,
+  "installation_authorized": false,
+  "native_numeric_order": "6.099 < 6.100 == 06.10 < 06.11",
+  "oad_metadata_bytes_2_to_15_unchanged": true,
+  "only_permitted_changes": [
+    "CRC bytes 0..1",
+    "20-byte Software Revision at 0x16E0"
+  ],
+  "purpose": "private rollback contingency, not an installation approval",
+  "reliability_134_test_proof_applies": false,
+  "schema": 1,
+  "size": 118784,
+  "source_behavior": "published 06.07, including its original diagnostics and limitations",
+  "source_revision": "GVK1EH_B002FFv.06.07",
+  "source_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+  "status": "offline-prepared-not-deployed-not-flashed",
+  "target_revision": "GVK1EH_B002FFv.6.100"
+}

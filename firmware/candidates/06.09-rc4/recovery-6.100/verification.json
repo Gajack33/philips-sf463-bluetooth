@@ -1,0 +1,63 @@
+{
+  "all_recorded_inputs_unchanged": true,
+  "artifact_sha256": {
+    "GVK1EH_B002FFv.6.100.bin": "75324b1ad3d75db80af13291c4bc741ef529dd50c4925ef164d40067ee5c59ba",
+    "README.md": "7faae09886a8f1c1ef950215a42e982302bbf2e4a56549ab7fa75496ec45ceaa",
+    "SF463-6.100-recovery-USB.zip": "e33f487ddf0846b267410c70e182b38a24a3d07d1a8b0b0d1904c27fa1cc72d4",
+    "SHA256SUMS": "18453257531a3bccb45969acb4dc2a7ff4231792176deed7cb54ef77c3f4c7dd",
+    "manifest.json": "cce30637791ed2cdd915f493d144d141dd18da9904ab12b63a4e6c1bd2fe5bf5"
+  },
+  "baseline_immutable_after_validation": true,
+  "baseline_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+  "baseline_verifier": {
+    "count": 6,
+    "scope": "Existing published 06.07 Device Information verification; not the 134 reliability suite",
+    "tests": [
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_binary_integrity_hook_target_and_original_control_code",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_hardware_read_exposes_actual_state_and_fresh_key_values",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_missing_invalid_or_other_connection_cccd_is_bounded",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_only_existing_hardware_buffer_output_and_stack_are_written",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_other_device_information_strings_are_unchanged",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_partial_reads_and_invalid_offset_obey_original_callback"
+    ]
+  },
+  "consumes_usage_0610_numeric_version_if_installed": true,
+  "deployed": false,
+  "exact_native_java_comparators_passed": true,
+  "flashed": false,
+  "hardware_validated": false,
+  "input_provenance_sha256": "d1ca2131a78ceb9523ec4ea7e4dde147adec57eb95bb9b51f8454c9a298084b7",
+  "installation_authorized": false,
+  "limitations": [
+    "No hardware/ROM/BLE/UART/OTA timing or recovery guarantee.",
+    "Native filename/version comparison and metadata are checked offline, not an actual updater session.",
+    "Current remote revision/connectivity must be measured before considering installation.",
+    "This preserves published 06.07 behavior, including its limitations; it is not a new reliability build."
+  ],
+  "native_image_handler_source_sha256": "5ca98ab0350b9a3c7525be93780addef2fb06253c6d034fe2eda36b13f14c03f",
+  "native_numeric_order": "6.099 < 6.100 == 06.10 < 06.11",
+  "passed": true,
+  "recovery_verifier": {
+    "count": 9,
+    "tests": [
+      "__main__.RecoveryVerification.test_corrupt_baseline_or_wrong_input_is_rejected",
+      "__main__.RecoveryVerification.test_exact_native_java_float_selection_compatibility",
+      "__main__.RecoveryVerification.test_front_key_press_release_reports_match_published_0607",
+      "__main__.RecoveryVerification.test_native_initialization_and_version_setter_only_change_software_revision_in_ram",
+      "__main__.RecoveryVerification.test_not_ready_unbonded_and_voice_paths_match_published_0607",
+      "__main__.RecoveryVerification.test_other_device_information_callbacks_match_published_0607",
+      "__main__.RecoveryVerification.test_revision_crc_only_size_metadata_vectors_and_all_code_preserved",
+      "__main__.RecoveryVerification.test_software_revision_and_partial_reads_use_full_native_callback",
+      "__main__.RecoveryVerification.test_two_independent_package_builds_and_single_file_usb_zip"
+    ]
+  },
+  "reliability_134_test_proof_applies": false,
+  "scope": "private offline byte/format/native-callback comparison only",
+  "source_hashes": {
+    "build_recovery.py": "f77b8231e89e5a80d6f29872e969f35a85488ea2919989a5c32cd0b0e37df096",
+    "verify_diagnostic_candidate.py": "8354d1845635d8d228cec5aae576001357635917574a7b9c94fb5e37ddfd7021",
+    "verify_front_hid_candidate.py": "cf69e180436f675e5fdb203552ad1402a232346355f90d46af552b4b2aa76d06",
+    "verify_recovery.py": "62a8bccad9c70f31011bafa6cccfc7bdd06e400339eabe4b9ea5723871aab543"
+  },
+  "two_builds_identical": true
+}

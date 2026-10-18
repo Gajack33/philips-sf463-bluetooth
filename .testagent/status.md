@@ -1,5 +1,30 @@
 # Reliability and companion verification
 
+## Current delivery — 6.099, offline only
+
+**178/178 checks pass independently with LLVM 18 and 19**, with unchanged inputs
+across all nine stages: 129 firmware tests, 16 C tests under ASan/UBSan,
+22 Java tests and 11 baseline tests. Source commit `e375ddabab81a50985ccf4854fcdd20bff55065b`
+is bound by `evidence/reliability-rc4-offline.json` and its LLVM 18 counterpart.
+The deterministic BIN/USB package is in `firmware/candidates/06.09-rc4/`.
+The normal-use image remains check-only. No 6.099 installation is authorized.
+The working restored 6.098 remains on the remote.
+
+| Requirement | Evidence |
+| --- | --- |
+| Safe native reader/APP ownership handoff | `test_complete_next_slot_is_private_before_publishing_index_including_wrap`, `test_magic_claim_during_native_rpc_preserves_shadow_and_skips_legacy_postlude`, `test_stack_handoff_preserves_real_last_report_during_admission_before_and_after_precheck` |
+| No inherited Power replay or lost fresh action | `test_power_handoff_repeat_is_red_without_source_fence_and_green_with_it`, native release-only 41 and pending voice221 comparisons, rear-source release/refusal tests |
+| Reliable pending cache after neutrals/expiry | `test_thumb_initial_neutrals_preserve_latest_fresh_fifo_state_for_both_reports`, `test_thumb_expiring_old_press_preserves_newer_valid_pending_press_dedupe`, two new ASan/UBSan host cases |
+| Source overflow and actual key-up order | Refused/fragmented release and suspended-dispatch tests in `test_native_handoff.py` |
+| Versioned reason12 without queries on read | `test_rear_source_refusal_*`, historical reason11 version rejection, actual compiled GATT refusal tests |
+| Stack and register preservation | Native handoff/ABI tests and `evidence/stack-review-6099.json`; prefixes only, full ROM/RTOS headroom unqualified |
+
+The separately prepared 6.100 recovery has 15 narrow checks and baseline code
+only. If installed it consumes numeric 06.10; a later usage version must be newer.
+No automatic flash, radio/power change or battery-life claim.
+
+## Historical device trials and proofs
+
 Scope: software implementation and offline integration; **not hardware qualification**.
 The published 06.07 remains unchanged. The first 06.09 was installed with the
 owner's explicit approval, but reports inactive fallback on the test remote.
@@ -24,7 +49,7 @@ see `evidence/hardware-recovery-6096.json`.
 06.08 is not a build input. Exact test IDs and hashes are in
 `evidence/reliability-rc2-offline.json`; the complete command is `python firmware/verify.py`.
 
-Current delivery: **155/155 checks pass with LLVM 18 and 19**, across nine
+Historical 6.097 delivery: **155/155 checks pass with LLVM 18 and 19**, across nine
 stages. The exact two source/hook/image proofs are
 `evidence/reliability-rc3-offline.json` and its `-llvm18` counterpart. The new
 6.097 BIN/USB files reproduce byte-for-byte under `firmware/candidates/06.09-rc3/`.
@@ -37,7 +62,7 @@ quiescent at role 6 before bond/heap queries. No guard was forced. See
 `evidence/hardware-6097.json` and the additional active-path prefix measurements
 in `evidence/stack-review-6097-active.json`; no full ROM/RTOS stack claim is made.
 
-Historical 6.095 assets and their 134-check proof are immutable. Current source
+Historical 6.095 assets and their 134-check proof are immutable. The 6.097 source
 adds event-driven guarded admission and the hardware-confirmed one-byte Blue
 correction. Diagnostic 6.097 records the latest refusal and its boot/deferred
 scope in the existing buffer. Its 6.098 contingency package retains only 06.07
@@ -52,11 +77,10 @@ Public hashed inputs and logs use LF.
 
 The hardware follow-up and `evidence/admission-review-6097.json` identify an
 unqualified liveness boundary: native readiness persists after drain and may be
-set before APP sees a connection event. The current guard can therefore preserve
+set before APP sees a connection event. The 6.097 guard can therefore preserve
 fallback indefinitely. The 155 offline checks do not establish activation under
 this real ordering. A future handoff needs explicit exclusion of both native HID
-reader and an APP producer already inside 0x4FAA. No one-line guard relaxation
-or new candidate is implemented. The cause of reported response delay is unknown.
+reader and an APP producer already inside 0x4FAA. The 6.099 offline handoff addresses this boundary; no new candidate is installed. The cause of reported response delay is unknown.
 
 ## Implemented
 
@@ -73,19 +97,17 @@ erase remains synchronous because its caller can immediately reset. Original
 non-HID notifications, voice, audio, OTA and power parameters remain native.
 
 The native HID task has 400 bytes of stack, APP has 750. Full bond/NV queries
-run only in APP. Tests observe a 240-byte HID prefix and a 320-byte visible
-RPC chain before ROM/context; the remaining 80 bytes are **not a proof of the
-hardware worst case**. Initialization, adapter and core tests check preserved
+run only in APP. The current independent review observes APP prefixes up to 232 bytes, worker/core prefixes up to 292 bytes and a separate expanded native HID path up to 312 bytes before helper 3438. These already include their stated native frames. The apparent 88-byte HID remainder is **not a proven ROM/RTOS/IRQ margin**. Initialization, adapter and core tests check preserved
 registers, SP and memory boundaries. Real stack headroom still needs observation.
 
 06.09 exposes three brief diagnostic pages, including the last valid front scan index
 for physical button mapping. The rc2 follow-up also records refusal codes 1–10,
 bond count and sampled free/largest-block memory in the existing 21-byte Hardware
-Revision buffer. That historical rc2 snapshot stays frozen; current rc3 records
+Revision buffer. That historical rc2 snapshot stays frozen; rc3 records
 the latest actual boot/deferred admission refusal, reason 11 included. Diagnostic
 reads themselves never query BLE/NVRAM/heap or retry admission. Unknown state after a lost claim reports unknown provenance.
 No extra state allocation or relaxed guard is introduced. Admission retries
-are limited to useful lifecycle transitions, outside diagnostic reads. 06.10 restores the original Device
+are limited to useful lifecycle transitions and, in 6.099, proven useful rear releases at188C; presses, timers and diagnostic reads do not retry. 06.10 restores the original Device
 Information callback and removes diagnostic heap sampling/activity accounting.
 The versioned decoder opens no connection. Shared functional safety counters stay
 internal. Neither build is represented as a normal-use release.
@@ -116,9 +138,9 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 | “une allocation native unique plafonnée à 640 octets” / “768 octets” | `test_initialization_claims_only_after_one_bounded_allocation_and_preserves_registers`, `test_heap_prechecks_postfree_reserve_and_allocation_failure_leave_native_queue_intact`, `test_missing_identity_handles_or_active_native_queue_never_claim_storage`. Tests cover null allocation, fragmentation, insufficient total and 767/768 boundary. |
 | “conserver les chemins 06.07” / “améliorations ne sont pas actives” | Native prologue/bridge/fallback tests, initialization failure tests and `test_native_fallback_is_explicit_and_does_not_present_fake_zero_metrics`. Inactive diagnostic page reports fallback; old queue remains untouched on failure. |
 | Diagnose the observed inactive first candidate | `test_inactive_diagnostic_records_each_refusal_and_round_trips_actual_gatt_pages` executes all ten refusal paths through compiled C, three actual callback reads and the decoder. `test_inactive_diagnostic_reads_freeze_boot_reason_without_queries_or_allocation_retry` checks frozen provenance; `test_lost_claim_cannot_reuse_a_boot_refusal_or_active_page_as_failure_provenance` checks unknown provenance. Usage initialization success/failure tests preserve the stock Hardware Revision buffer. |
-| “Si l’allocation échoue, conserver les chemins 06.07” / “une allocation native unique plafonnée à 640 octets” | `test_retry_refusals_record_latest_reason_and_phase_without_changing_legacy_or_querying_on_reads`, `test_ordinary_wakes_and_active_reentrant_events_never_allocate_again`, `test_final_quiescence_guard_preserves_a_real_last_report_suspended_before_copy`. Refused transitions keep the queue intact; an in-flight native last slot is resumed with its payload preserved. |
-| Observed boot count0: defer admission without repeated key/timer retries | `test_boot_without_bond_admits_after_connection_event_and_neutralizes_both_reports`, `test_only_changed_successful_lifecycle_events_post_the_coalesced_admission_bit`, `test_pairing_success_while_native_tx_ready_waits_for_next_connection_not_a_timer`. Native initialization still executes once. |
-| Versioned refusal provenance; no diagnostic allocation or persistent reader | `test_latest_admission_scope_flag_is_versioned_and_unknown_provenance_stays_unknown`, `test_each_new_useful_transition_updates_last_refusal_and_success_enables_active_pages`, `test_quiescence_reason_cannot_be_relabelled_as_an_older_diagnostic_version`.6.097 alone permits deferred flag 10 and reason 11. |
+| “Si l’allocation échoue, conserver les chemins 06.07” / “une allocation native unique plafonnée à 640 octets” | `test_retry_refusals_record_latest_reason_and_phase_without_changing_legacy_or_querying_on_reads`, `test_ordinary_wakes_and_active_reentrant_events_never_allocate_again`, `test_stack_handoff_preserves_real_last_report_during_admission_before_and_after_precheck`. Refused transitions keep the queue intact; an in-flight native last slot is resumed with its payload preserved. |
+| Observed boot count0: defer admission without repeated key/timer retries | `test_boot_without_bond_admits_after_connection_event_and_neutralizes_both_reports`, `test_only_changed_successful_lifecycle_events_post_the_coalesced_admission_bit`, `test_pairing_success_with_persistent_native_readiness_admits_without_timer_polling`. Native initialization still executes once. |
+| Versioned refusal provenance; no diagnostic allocation or persistent reader | `test_latest_admission_scope_flag_is_versioned_and_unknown_provenance_stays_unknown`, `test_each_new_useful_transition_updates_last_refusal_and_success_enables_active_pages`, `test_historical_quiescence_reason_cannot_be_relabelled_as_another_diagnostic_version`.6.097 reserves reason11; 6.099 reserves reason12. Both permit latest-deferred flag10. |
 | “audio, OTA et bootloader restent ceux d’origine” / “voix” / “appairage” | Builder validates every modified range against stock. `test_native_dispatch.py` compares native voice, holds, pairing and real rear letter/shift/release behavior with published 06.07. Physical voice and update-mode heap margins remain pending. |
 | “écran d’apprentissage” / “profils locaux” / “ouvrir une application” / “HDMI 1/2” | Native app source and 22 host tests; actual installation, focus/editor and JSON fallback observed on TV. See `app/.testagent/status.md` for device evidence and action-specific remaining checks. |
 | “Ce profil reste désactivé” | `testDisabledColorPresetAndReset`, `testProfileCloneIsDisabledAndBindingsIndependent`; disabled profile observed on the TV before and after JSON round-trip. |

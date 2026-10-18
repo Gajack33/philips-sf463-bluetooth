@@ -56,12 +56,12 @@ gcc -std=c11 -Wall -Wextra -Werror -O2 -fsanitize=address,undefined \
 /tmp/test_sf_core
 ```
 
-The 14 named tests cover tagged source order and overflow fencing, fragmented
+The 16 named tests cover tagged source order and overflow fencing, fragmented
 UART recovery, all front index boundaries, worker/token ownership, no accepted
 Power replay, admission-cache correctness, mixed keyboard/consumer saturation,
 release persistence beyond press expiry, retry timing and event recovery,
 per-report unavailability, connection/peer/CCCD/protocol transitions, all eight
-keyboard bytes, and overflow during an in-flight press.
+keyboard bytes, overflow during an in-flight press, and preserving the newest valid pending report after initial neutralization or older-press expiry.
 
 Thumb compile flags include `-target arm-freestanding-eabi -mcpu=cortex_m3 -mthumb
 -ffreestanding -fno-builtin -fno-stack-protector -fno-unwind-tables

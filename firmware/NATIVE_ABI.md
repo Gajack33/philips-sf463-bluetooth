@@ -6,6 +6,10 @@ The published 06.07 is a separate, immutable comparison input. `hooks.json`
 contains the complete expected-byte allowlist; `adapter.S` reconstructs replaced
 instructions and their PC-relative literals rather than relocating raw bytes.
 
+Current 6.099 ownership rules and new hooks at `0x4784` / `0x188C` are described in
+[native handoff](../docs/native-handoff.md) and its exact stack evidence.
+The readiness-exclusion measurements below are historical 6.097 evidence.
+
 ## Physical Blue Consumer usage
 
 The owner-confirmed color sequence on restored `6.096` identifies Red/Green/
@@ -38,6 +42,8 @@ software regression checks do not establish physical audio/radio qualification.
 | Entry | Original bytes | Required continuation / contract |
 |---|---|---|
 | `0x1796` APP turn tail | `01f0a6f9` | R5 contains the consumed Event mask. Forward it to C; still call native `0x2AE6` once before optional admission; return at `0x179A`. |
+| `0x188C` real rear source | `00f0a5fb` | Pass the consumed R5 mailbox mask to the rear wrapper; execute native `0x1FDA` before any release-only admission; return at `0x1890`. |
+| `0x4784` legacy next slot | `00f03ffc` | Replace the old BL with a branch: copy the complete next 12-byte slot under the gate before publishing its index; retain 16 stack bytes through native `0x4EF4`; after claim skip to `0x47AA`. |
 | `0x1878` APP drain | `feb5dff80c47` | Recreate its 32-byte saved frame and APP pointer; native non-source processing resumes at `0x189E`. |
 | `0x1A90` rear callback | `ff280246` | Recreate `CMP r0,#255` and `MOV r2,r0`, including flags; resume `0x1A94`. |
 | `0x1ABC` front callback | `38b5dff8f84a` | Recreate `push {r3,r4,r5,lr}`, load APP; resume `0x1AC2`. |
@@ -100,7 +106,7 @@ Deferred admission uses APP Event bit `0x400`; the sole Event mask literal at
 `0x22B4`, loaded at `0x179C`, changes from `0xC00003C0` to `0xC00007C0`.
 This is not the native sub-event bitmap at APP+`0x20`. HID only posts this bit
 after a changed role 6 or successful, changed pairing phase 1/2 message; APP
-alone retries admission. Repeated phases do not post. Events coalesce in the
+alone retries admission. In 6.099, a useful real rear release at `0x188C` can also retry after native decoding; presses, timers and GATT reads cannot. Repeated phases do not post. Events coalesce in the
 existing RTOS object; no latch, permanent polling or per-key allocation is added.
 The original `0x13E4` initialization is never rerun by deferred admission.
 At the APP continuation `0x179A..0x17A6`, R0/R2/R3/R1 are rewritten before
@@ -109,7 +115,7 @@ at `0x17AC`. The bridge adds no saved frame. The C turn wrapper retains 8 bytes
 (LLVM 19) or 16 bytes (LLVM 18) during native `0x2AE6`, then removes them before
 tail-calling admission.
 
-Empty queue indexes do not establish quiescence. Native `0x4788` advances the
+**Historical 6.097 guard (superseded in 6.099):** Empty queue indexes do not establish quiescence. Native `0x4788` advances the
 last index before `0x4796` forms its legacy payload pointer and `0x479A` sends;
 `0x4EF4` can block in RPC before copying it. Readiness HID+`0x0E` has three
 identified writers: set 1 at `0x4D12`, clear 0 at `0x4D48`, and a halfword clear
@@ -126,7 +132,7 @@ pre-query refusal 11 at role 6, not the full event order or a cause of delayed
 input. See [the admission review](../evidence/admission-review-6097.json).
 A future ownership handoff must also exclude an APP producer already inside
 native `0x4FAA`; moving the claim into HID or relaxing readiness alone is unsafe.
-No such redesign is implemented in these immutable candidate files.
+The immutable 6.097 files keep this guard. Current 6.099 uses the stack-copy redesign documented above; it does not force readiness or move admission into HID.
 
 For the new dispatcher wrapper, both LLVM 18/19 retain 16 extra bytes only across
 useful events. Other/failed events remove that frame before tail-calling native.
@@ -158,7 +164,7 @@ new RAM. Its ten raw bytes are page0, inactive0, reason, bond count, free16,
 largest16, flags and HID role. Reasons 1–10 identify missing HID semaphore,
 bond count, bond RPC, empty identity, total free, largest block, null allocation,
 post-allocation reserve, busy HID queue or pending APP source mailboxes.
-Reason 11 (6.097 only) is native transmission not quiescent: unknown count/heap
+Reason 12 (6.099 only) identifies unresolved rear source state; it may occur before queries or at the final gate with a post-allocation sample. Reason 11 (6.097 only) is native transmission not quiescent: unknown count/heap
 at the early check, or the post-allocation sample at the final check. Each actual
 refused admission replaces the record; flag 0x10 identifies a deferred check. The
 versioned decoder labels boot/deferred/unknown provenance. Older 6.095 pages
@@ -182,7 +188,9 @@ APP priority 1, stack `0x200022F8..0x200025E6`, **750 bytes**, then function
 stores are at `0x13C6..0x13D0` and `0x4688..0x4692`, through Task constructor
 thunk `0x1340`. The native APP/HID loops retain 24/32-byte frames respectively.
 
-Instruction-level stack observations include real decoding, C and native report
+For current 6.099, the independent [stack review](../evidence/stack-review-6099.json) observes APP up to 232 bytes, worker/core up to 292 bytes, and an independently expanded native HID path up to 312 bytes before helper 3438. These maxima are different paths and must not be added. The apparent 88-byte remainder does not establish real RTOS/IRQ margin.
+
+Historical 6.097 instruction-level stack observations include real decoding, C and native report
 serialization. The inline HID test includes its native 32-byte frame and the
 bridge's 32-byte save: its observed prefix uses 240 bytes with external API
 fixtures. The refactored worker performs no bond-count/NV-record query. At its

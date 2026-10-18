@@ -1,0 +1,1479 @@
+{
+  "builds": {
+    "llvm18_diagnostic": {
+      "canonical_hooks_sha256": "35af6ecf9d1a35fa96b8152986487f596a83c0b2889209210a98b9ec450c986b",
+      "code_size": 10084,
+      "elf_sha256": "83d8ec21851c37000e1a47ea6028736bb29380f30748e9e33bac8e22875ebc7e",
+      "image_sha256": "7f0e0d0e73894321237bbabc3e4e78deafea08b809905b099596e119c056fc24",
+      "maximum_observed_expanded_partial_native_prefix_bytes": 304,
+      "maximum_observed_full_return_prefix_bytes": {
+        "APP": 232,
+        "HID": 280
+      },
+      "maximum_observed_gate_linked_instructions": 2001,
+      "native_expanded_frame_chain": {
+        "added_after_gap_parameter_entry": [
+          {
+            "bytes": 40,
+            "native_function": "0x35D4"
+          },
+          {
+            "bytes": 32,
+            "native_function": "0x3F5E"
+          },
+          {
+            "bytes": 56,
+            "native_function": "0x34B8"
+          },
+          {
+            "bytes": 48,
+            "native_function": "0x3322"
+          }
+        ],
+        "already_included_in_expanded_observed_prefix": true,
+        "stop": "entry0x3438, before this helper allocates any frame",
+        "sum_bytes": 176
+      },
+      "paths": {
+        "app_real_rear_release_count0_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 318
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 192,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 192,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 224
+        },
+        "app_real_rear_release_count1ff_mailbox_race": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 262
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "free": 120,
+            "gate_enter": 120,
+            "gate_leave": 120,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 176
+        },
+        "app_real_rear_release_count1ff_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 318
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 192,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 192,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 224
+        },
+        "app_turn_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 318
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 88,
+            "gap_get_parameter": 160,
+            "gate_enter": 160,
+            "gate_leave": 160,
+            "get_cccd": 160,
+            "heap_stats": 88,
+            "malloc": 88,
+            "native_icall": 88,
+            "refresh": 88,
+            "report_lookup": 160,
+            "try_admit": 24
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 192
+        },
+        "app_uart_ready_rear_release": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 318
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 200,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 232,
+            "native_legacy_send": 168,
+            "native_notification_wrapper": 200,
+            "native_rear_decode": 72,
+            "notification_allocate": 232,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 200,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 232
+        },
+        "hid_active_expire_old_power_preserve_newer_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 9,
+            "max_linked_instructions": 935
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "heap_stats": 160,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 240,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 280
+        },
+        "hid_active_initial_neutrals_full_fifo": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 36,
+            "max_linked_instructions": 2001
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "heap_stats": 160,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 168,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 264
+        },
+        "hid_active_initial_neutrals_with_pending_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 11,
+            "max_linked_instructions": 392
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "heap_stats": 160,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 168,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 264
+        },
+        "hid_active_worker_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 4,
+            "max_linked_instructions": 392
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_connection_update": 168,
+            "gap_get_parameter": 200,
+            "gap_parameter": 128,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "heap_stats": 160,
+            "icall_request": 256,
+            "native_icall": 200,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 304,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        },
+        "hid_legacy_head0_len3": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_head2_len9": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 29
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_shadow_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_connection_update": 120,
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "icall_request": 208,
+            "native_icall": 152,
+            "native_legacy_send": 48,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 256,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        }
+      }
+    },
+    "llvm18_usage": {
+      "canonical_hooks_sha256": "35af6ecf9d1a35fa96b8152986487f596a83c0b2889209210a98b9ec450c986b",
+      "code_size": 8756,
+      "elf_sha256": "ff8166234824f130f8f510d350d3ede806901fb49d7a381db87ebd5ec7c7bf5e",
+      "image_sha256": "96544f6340923a5d8e8fcec3a64e4802f3c7012781c010be50725178d9601458",
+      "maximum_observed_expanded_partial_native_prefix_bytes": 304,
+      "maximum_observed_full_return_prefix_bytes": {
+        "APP": 232,
+        "HID": 280
+      },
+      "maximum_observed_gate_linked_instructions": 2001,
+      "native_expanded_frame_chain": {
+        "added_after_gap_parameter_entry": [
+          {
+            "bytes": 40,
+            "native_function": "0x35D4"
+          },
+          {
+            "bytes": 32,
+            "native_function": "0x3F5E"
+          },
+          {
+            "bytes": 56,
+            "native_function": "0x34B8"
+          },
+          {
+            "bytes": 48,
+            "native_function": "0x3322"
+          }
+        ],
+        "already_included_in_expanded_observed_prefix": true,
+        "stop": "entry0x3438, before this helper allocates any frame",
+        "sum_bytes": 176
+      },
+      "paths": {
+        "app_real_rear_release_count0_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 112,
+            "gap_get_parameter": 184,
+            "gate_enter": 184,
+            "gate_leave": 184,
+            "get_cccd": 184,
+            "heap_stats": 112,
+            "malloc": 112,
+            "native_app_drain": 24,
+            "native_icall": 112,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 112,
+            "report_lookup": 184,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 216
+        },
+        "app_real_rear_release_count1ff_mailbox_race": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 15
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 112,
+            "free": 112,
+            "gate_enter": 112,
+            "gate_leave": 112,
+            "heap_stats": 112,
+            "malloc": 112,
+            "native_app_drain": 24,
+            "native_icall": 112,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 136
+        },
+        "app_real_rear_release_count1ff_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 112,
+            "gap_get_parameter": 184,
+            "gate_enter": 184,
+            "gate_leave": 184,
+            "get_cccd": 184,
+            "heap_stats": 112,
+            "malloc": 112,
+            "native_app_drain": 24,
+            "native_icall": 112,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 112,
+            "report_lookup": 184,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 216
+        },
+        "app_turn_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 80,
+            "gap_get_parameter": 152,
+            "gate_enter": 152,
+            "gate_leave": 152,
+            "get_cccd": 152,
+            "heap_stats": 80,
+            "malloc": 80,
+            "native_icall": 80,
+            "refresh": 80,
+            "report_lookup": 152,
+            "try_admit": 24
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 184
+        },
+        "app_uart_ready_rear_release": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 112,
+            "gap_get_parameter": 184,
+            "gate_enter": 184,
+            "gate_leave": 184,
+            "get_cccd": 200,
+            "heap_stats": 112,
+            "malloc": 112,
+            "native_app_drain": 24,
+            "native_icall": 232,
+            "native_legacy_send": 168,
+            "native_notification_wrapper": 200,
+            "native_rear_decode": 72,
+            "notification_allocate": 232,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 112,
+            "report_lookup": 200,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 232
+        },
+        "hid_active_expire_old_power_preserve_newer_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 8,
+            "max_linked_instructions": 935
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 240,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 280
+        },
+        "hid_active_initial_neutrals_full_fifo": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 35,
+            "max_linked_instructions": 2001
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 168,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 264
+        },
+        "hid_active_initial_neutrals_with_pending_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 10,
+            "max_linked_instructions": 392
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 168,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 264
+        },
+        "hid_active_worker_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 392
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_connection_update": 168,
+            "gap_get_parameter": 200,
+            "gap_parameter": 128,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "icall_request": 256,
+            "native_icall": 200,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 304,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        },
+        "hid_legacy_head0_len3": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_head2_len9": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 29
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_shadow_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_connection_update": 120,
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "icall_request": 208,
+            "native_icall": 152,
+            "native_legacy_send": 48,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 256,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        }
+      }
+    },
+    "llvm19_diagnostic": {
+      "canonical_hooks_sha256": "35af6ecf9d1a35fa96b8152986487f596a83c0b2889209210a98b9ec450c986b",
+      "code_size": 12512,
+      "elf_sha256": "11e8a10a5be6d2b9763fc2bc1d25576bd9b2331a336c661e5504208adf4987eb",
+      "image_sha256": "c2877b1e50071b13008a2fe94fb47e5abfd2898673ebd210b125742c7bb9ed44",
+      "maximum_observed_expanded_partial_native_prefix_bytes": 312,
+      "maximum_observed_full_return_prefix_bytes": {
+        "APP": 232,
+        "HID": 292
+      },
+      "maximum_observed_gate_linked_instructions": 1935,
+      "native_expanded_frame_chain": {
+        "added_after_gap_parameter_entry": [
+          {
+            "bytes": 40,
+            "native_function": "0x35D4"
+          },
+          {
+            "bytes": 32,
+            "native_function": "0x3F5E"
+          },
+          {
+            "bytes": 56,
+            "native_function": "0x34B8"
+          },
+          {
+            "bytes": 48,
+            "native_function": "0x3322"
+          }
+        ],
+        "already_included_in_expanded_observed_prefix": true,
+        "stop": "entry0x3438, before this helper allocates any frame",
+        "sum_bytes": 176
+      },
+      "paths": {
+        "app_real_rear_release_count0_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 192,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 192,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 224
+        },
+        "app_real_rear_release_count1ff_mailbox_race": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 250
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "free": 120,
+            "gate_enter": 120,
+            "gate_leave": 120,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 160
+        },
+        "app_real_rear_release_count1ff_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 192,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 192,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 224
+        },
+        "app_turn_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 88,
+            "gap_get_parameter": 160,
+            "gate_enter": 160,
+            "gate_leave": 160,
+            "get_cccd": 160,
+            "heap_stats": 88,
+            "malloc": 88,
+            "native_icall": 88,
+            "refresh": 88,
+            "report_lookup": 160,
+            "try_admit": 24
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 192
+        },
+        "app_uart_ready_rear_release": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 286
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 200,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 232,
+            "native_legacy_send": 168,
+            "native_notification_wrapper": 200,
+            "native_rear_decode": 72,
+            "notification_allocate": 232,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 200,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 232
+        },
+        "hid_active_expire_old_power_preserve_newer_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 9,
+            "max_linked_instructions": 866
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 208,
+            "gap_get_parameter": 208,
+            "gate_enter": 208,
+            "gate_leave": 208,
+            "get_cccd": 208,
+            "heap_stats": 136,
+            "native_icall": 168,
+            "native_notification_wrapper": 136,
+            "notification_allocate": 168,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 136,
+            "report_lookup": 208,
+            "restore_pending_admission": 248,
+            "sf_tx_complete": 136,
+            "sf_tx_peek": 136
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 292
+        },
+        "hid_active_initial_neutrals_full_fifo": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 36,
+            "max_linked_instructions": 1935
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 208,
+            "gap_get_parameter": 208,
+            "gate_enter": 208,
+            "gate_leave": 208,
+            "get_cccd": 208,
+            "heap_stats": 136,
+            "native_icall": 168,
+            "native_notification_wrapper": 136,
+            "notification_allocate": 168,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 136,
+            "report_lookup": 208,
+            "restore_pending_admission": 160,
+            "sf_tx_complete": 136,
+            "sf_tx_peek": 136
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 268
+        },
+        "hid_active_initial_neutrals_with_pending_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 11,
+            "max_linked_instructions": 351
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 208,
+            "gap_get_parameter": 208,
+            "gate_enter": 208,
+            "gate_leave": 208,
+            "get_cccd": 208,
+            "heap_stats": 136,
+            "native_icall": 168,
+            "native_notification_wrapper": 136,
+            "notification_allocate": 168,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 136,
+            "report_lookup": 208,
+            "restore_pending_admission": 160,
+            "sf_tx_complete": 136,
+            "sf_tx_peek": 136
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 268
+        },
+        "hid_active_worker_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 4,
+            "max_linked_instructions": 351
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 208,
+            "gap_connection_update": 176,
+            "gap_get_parameter": 208,
+            "gap_parameter": 136,
+            "gate_enter": 208,
+            "gate_leave": 208,
+            "get_cccd": 208,
+            "heap_stats": 136,
+            "icall_request": 264,
+            "native_icall": 208,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 136,
+            "report_lookup": 208,
+            "sf_tx_peek": 136
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 312,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        },
+        "hid_legacy_head0_len3": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_head2_len9": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 29
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_shadow_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_connection_update": 120,
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "icall_request": 208,
+            "native_icall": 152,
+            "native_legacy_send": 48,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 256,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        }
+      }
+    },
+    "llvm19_usage": {
+      "canonical_hooks_sha256": "35af6ecf9d1a35fa96b8152986487f596a83c0b2889209210a98b9ec450c986b",
+      "code_size": 10996,
+      "elf_sha256": "c07a0b04d6b1dd416ca1985bca39acd29e36ea9c754e517f48be5492b596deca",
+      "image_sha256": "5594a6f5f3cc7ab652abc1425879edf25bf1bda1153a3de902f2a42cc432c774",
+      "maximum_observed_expanded_partial_native_prefix_bytes": 304,
+      "maximum_observed_full_return_prefix_bytes": {
+        "APP": 232,
+        "HID": 284
+      },
+      "maximum_observed_gate_linked_instructions": 1936,
+      "native_expanded_frame_chain": {
+        "added_after_gap_parameter_entry": [
+          {
+            "bytes": 40,
+            "native_function": "0x35D4"
+          },
+          {
+            "bytes": 32,
+            "native_function": "0x3F5E"
+          },
+          {
+            "bytes": 56,
+            "native_function": "0x34B8"
+          },
+          {
+            "bytes": 48,
+            "native_function": "0x3322"
+          }
+        ],
+        "already_included_in_expanded_observed_prefix": true,
+        "stop": "entry0x3438, before this helper allocates any frame",
+        "sum_bytes": 176
+      },
+      "paths": {
+        "app_real_rear_release_count0_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 256
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 192,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 192,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 224
+        },
+        "app_real_rear_release_count1ff_mailbox_race": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 12
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "free": 120,
+            "gate_enter": 120,
+            "gate_leave": 120,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 136
+        },
+        "app_real_rear_release_count1ff_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 256
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 192,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 120,
+            "native_rear_decode": 72,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 192,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 224
+        },
+        "app_turn_success": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 256
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 88,
+            "gap_get_parameter": 160,
+            "gate_enter": 160,
+            "gate_leave": 160,
+            "get_cccd": 160,
+            "heap_stats": 88,
+            "malloc": 88,
+            "native_icall": 88,
+            "refresh": 88,
+            "report_lookup": 160,
+            "try_admit": 24
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 192
+        },
+        "app_uart_ready_rear_release": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 256
+          },
+          "entry_prefix_bytes": {
+            "bond_count": 120,
+            "gap_get_parameter": 192,
+            "gate_enter": 192,
+            "gate_leave": 192,
+            "get_cccd": 200,
+            "heap_stats": 120,
+            "malloc": 120,
+            "native_app_drain": 24,
+            "native_icall": 232,
+            "native_legacy_send": 168,
+            "native_notification_wrapper": 200,
+            "native_rear_decode": 72,
+            "notification_allocate": 232,
+            "rc_rear_source_decode": 56,
+            "rear_source_call": 56,
+            "refresh": 120,
+            "report_lookup": 200,
+            "try_admit": 56
+          },
+          "native_parent_frame_bytes_added": 24,
+          "observed_prefix_bytes": 232
+        },
+        "hid_active_expire_old_power_preserve_newer_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 8,
+            "max_linked_instructions": 866
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 240,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 284
+        },
+        "hid_active_initial_neutrals_full_fifo": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 35,
+            "max_linked_instructions": 1936
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 152,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 260
+        },
+        "hid_active_initial_neutrals_with_pending_power": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 10,
+            "max_linked_instructions": 351
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_get_parameter": 200,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "native_icall": 160,
+            "native_notification_wrapper": 128,
+            "notification_allocate": 160,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "restore_pending_admission": 152,
+            "sf_tx_complete": 128,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 260
+        },
+        "hid_active_worker_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 3,
+            "max_linked_instructions": 351
+          },
+          "entry_prefix_bytes": {
+            "expire_pending": 200,
+            "gap_connection_update": 168,
+            "gap_get_parameter": 200,
+            "gap_parameter": 128,
+            "gate_enter": 200,
+            "gate_leave": 200,
+            "get_cccd": 200,
+            "icall_request": 256,
+            "native_icall": 200,
+            "rc_hid_drain": 32,
+            "rc_hid_worker": 64,
+            "refresh": 128,
+            "report_lookup": 200,
+            "sf_tx_peek": 128
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 304,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        },
+        "hid_legacy_head0_len3": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_head2_len9": {
+          "callee_saved_and_sp_restored": true,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 29
+          },
+          "entry_prefix_bytes": {
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "native_icall": 112,
+            "native_legacy_send": 48,
+            "native_notification_wrapper": 80,
+            "notification_allocate": 112,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 112
+        },
+        "hid_legacy_shadow_gap319_to_icall3438": {
+          "callee_saved_and_sp_restored": null,
+          "critical_sections": {
+            "blocking_fixture_calls_while_locked": [],
+            "count": 1,
+            "max_linked_instructions": 28
+          },
+          "entry_prefix_bytes": {
+            "gap_connection_update": 120,
+            "gap_parameter": 80,
+            "gate_enter": 48,
+            "gate_leave": 48,
+            "get_cccd": 80,
+            "icall_request": 208,
+            "native_icall": 152,
+            "native_legacy_send": 48,
+            "rc_hid_drain": 32,
+            "report_lookup": 80
+          },
+          "native_parent_frame_bytes_added": 0,
+          "observed_prefix_bytes": 256,
+          "partial_native_prefix_only": true,
+          "stopped_before_helper": "0x3438"
+        }
+      }
+    }
+  },
+  "commands": [
+    "python -B firmware/build.py --check --compiler <scoped-zig-0.14.1> --variant diagnostic --out <outside-repository>/llvm19/diagnostic",
+    "python -B firmware/build.py --check --compiler <scoped-clang18-wrapper> --variant diagnostic --out <outside-repository>/llvm18/diagnostic",
+    "Repeat the two check-only commands with --variant usage and separate output directories",
+    "python -B <private-observation-directory>/measure.py (imports existing HandoffMachine; consumes the four check-only ELF files; asserts source fingerprints unchanged)",
+    "python -B <private-observation-directory>/publish_report.py (writes this path-free evidence JSON only)"
+  ],
+  "compilers": {
+    "llvm18": {
+      "clang_version": "18.1.8",
+      "tool": "Scoped official LLVM release for Ubuntu Jammy"
+    },
+    "llvm19": {
+      "clang_version": "19.1.7",
+      "tool": "Zig0.14.1 cc"
+    }
+  },
+  "complete_task_stack_bound_established": false,
+  "findings": [
+    "The4784 shim rechecks the claim and indexes under the native gate, copies the complete NEXT12-byte slot before publishing the new read index, and handles wrap2-to0.",
+    "Only a16-byte assembly frame is retained across the entire native4EF4 send:12-byte slot plus separate4-byte gate token. The payload is bounded to9 bytes before send. No C frame is retained by this shim.",
+    "Both native payload copies use the private stack snapshot, including the cache copy after notification. A claim observed after send resumes at47AA and bypasses the old queue postlude479E.",
+    "R4-R11 and SP are restored on all complete observed paths. The shim continuations consume neither its old LR nor arithmetic flags. No blocking seam runs under its28-instruction copy gate.",
+    "The188C bridge passes the native consumed R5 mask as argument3. Only real rear releases with(mask&0x91)==0x10 and count0 or count1/FF can retry admission; the replay/synthetic call sites are unchanged.",
+    "The true rear-source path includes original1FDA before admission. Successful claim resets only the two source sentinels; refusals and a newly pending mailbox preserve fallback ownership.",
+    "The core expiration and neutral-completion paths execute restore_pending_admission against the current valid FIFO rather than erasing newer same-report dedupe. The measured worker includes this actual linked helper."
+  ],
+  "hardware_validated": false,
+  "limitations": [
+    "All numbers are observed prefixes for stated paths, not complete400-byte HID or750-byte APP stack bounds. ROM, allocator internals, deeper RTOS/ICall helpers, scheduler frames and IRQ preemption are not fully measured.",
+    "The core/worker maximum, BLE API seam depths and expanded native ICall prefixes describe different paths. Do not add the reported maxima together or add34B8/3322 frames again where already included.",
+    "The deepest expanded worker prefix is312 bytes for LLVM19 diagnostic or304 for the other builds before3438 executes. The apparent88/96-byte remainder cannot be treated as a proven interrupt/RTOS margin.",
+    "The expanded native paths stop inside a call before return, so their callee-saved/SP restoration field is null; complete-return ABI assertions are established separately.",
+    "The gate instruction counts cover the measured finite scenarios. They do not quantify hardware latency or prove a worst-case interrupt-off duration.",
+    "The UART/Clock callback atomicity review relies on the native task/Swi and nonblocking Event_post contracts. No real RTOS scheduler, radio, deep sleep or hardware reconnect behavior is emulated.",
+    "This report does not establish a cause for earlier hardware connection delays or authorize a device flash."
+  ],
+  "method": {
+    "additional_partial_native_prefix_paths_per_build": 2,
+    "all_full_return_paths_preserve_sp_and_r4_r11": true,
+    "all_observed_api_entries_eight_byte_aligned": true,
+    "app_measurement": "Execute patched1878 with its native32-byte drain frame, actual188C bridge and original1FDA; add only the fixed24-byte native APP main frame",
+    "blocking_fixture_calls_while_locked": 0,
+    "builds": 4,
+    "critical_section_measurement": "Executed linked instructions between the native gate-enter and gate-leave fixtures; not cycles, time, a WCET proof or a global maximum",
+    "extra_native_prefix_measurement": "Execute native35D4/3F5E/34B8/3322 until entry3438; explicit branch-selection API fixtures bypass only their stated internals",
+    "fixtures_sha256": {
+      "firmware/tests/test_adapter_initialization.py": "91cb49ab9ba4edb6e5a01cc1a5f6fb6be0cd6de7ce77af7f1fe4284f09e3d5b9",
+      "firmware/tests/test_adapter_runtime.py": "e672742c40e6648b1fa18120b3ffc65b2fa8bb3e00ac83b0b21348649e70e44d",
+      "firmware/tests/test_deferred_admission.py": "9543dc6e0f69865562780f3033fc488222c21b0b34184defef1e73a79cfa321d",
+      "firmware/tests/test_native_adapter.py": "b9a76919719280deed79abc7369b1a023ef2b3d09dea09d964c82051cbc7ffa9",
+      "firmware/tests/test_native_dispatch.py": "a0c0e40ea29f0288e2c8c68f5433c41a0bcc23392a8e7483ab9f4a115a773d5e",
+      "firmware/tests/test_native_handoff.py": "f04abfebef7961a63a6af9300e576caaf0db9b0695943c343ab0e3ddc4fa2667"
+    },
+    "full_return_scenarios_per_build": 36,
+    "full_return_scenarios_total": 144,
+    "hid_measurement": "Execute patched476C with actual native task32-byte frame, bridge, linked core,4EF4 and4F58 up to explicit API fixtures",
+    "native_extra_prefix_fixtures": {
+      "0x0116": "inactive Clock status0",
+      "0x3044": "request enqueue status0",
+      "0x3442": "entity route0",
+      "0x6488": "task context2"
+    },
+    "native_task_frames_included": {
+      "APP": 24,
+      "HID": 32
+    },
+    "private_measurement_harness_sha256": "f10d1686e1ffb52ebbb90e658030ad45a655a28d9fee1386ba09ba6a05c96b5e"
+  },
+  "review": "Independent read-only native handoff stack and ABI review",
+  "schema": 1,
+  "scope": "Offline Thumb execution and exact linked-image inspection; no image export, device calls or firmware installation",
+  "source_commit": "e375ddabab81a50985ccf4854fcdd20bff55065b",
+  "source_inputs_unchanged": true,
+  "sources": {
+    "firmware/adapter.S": "b032de57f135a0f569d213272685cba59b728c2ab1a2771b1239804c7ad3329f",
+    "firmware/adapter.c": "1d18d966ffb9d15b2bdc6481912447751c20450a11c9c072f85e307f1d16dbd7",
+    "firmware/build.py": "79204ce384938b8c3b47a46557d484732e2ae1b29d50c1815054560bfa142a5c",
+    "firmware/core/sf_core.c": "53c65aa9e09c7f43ae24a2390fc486db0d3e27ce74be995addc7add4414d0963",
+    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
+    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
+  },
+  "task_stack_bytes": {
+    "APP": 750,
+    "HID": 400
+  },
+  "version": "6.099"
+}

@@ -22,7 +22,7 @@ The original audio, OTA, bootloader, UART configuration, radio power and power
 timings remain in place. The native 50% update-battery requirement is unchanged.
 The [bounded color capture](../evidence/hardware-colors-6096.json) confirms Red/
 Green/Yellow/Blue scan indexes `19/12/1A/1B` (hex). Both Yellow and Blue emit `0x006C`.
-The 6.097 source corrects only Blue's primary FLASH byte at `0x13BF0`, to `0x006B`; the
+The candidate source corrects only Blue's primary FLASH byte at `0x13BF0`, to `0x006B`; the
 other 44 rows and secondary behaviors remain unchanged. The owner-authorized
 6.097 transfer and running revision are confirmed; corrected color behavior
 remains unqualified.
@@ -34,6 +34,7 @@ match. Multiple bonds and rotating/private peer addresses are not qualified.
 | 06.09 first candidate | Temporary diagnostic pages through Hardware Revision (`0x2A27`) | Installed; adapter inactive, reason unknown |
 | 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | Confirmed after host re-pair; inactive, initial bond count0 before allocation; on hold |
 | 6.097 (06.09 rc3) | Guarded deferred admission, latest-refusal scope and confirmed Blue mapping | Confirmed; inactive deferred refusal 11; delayed input reported; on hold |
+| 6.099 (06.09 rc4) | Private native-drain snapshot, source-release handoff and pending-report deduplication | 178 checks pass per compiler; not installed or hardware qualified |
 | 06.10 | Same reliability changes; original Hardware Revision callback restored | Withheld from usage qualification |
 
 Read [native ABI notes](../firmware/NATIVE_ABI.md) for instruction windows and
@@ -54,7 +55,7 @@ establish why inventory was zero or qualify the heap reserve. The rc2 follow-up
 preserves the exact boot refusal code, bond count, heap sample and native readiness
 flags in the existing 21-byte diagnostic buffer. Reads do not retry initialization
 or query BLE/NVRAM/heap. Unknown heap values are explicit; post-allocation samples
-are distinguished from pre-allocation samples. The device revision is 6.095,
+are distinguished from pre-allocation samples. The confirmed revision was 6.095,
 strictly between 06.09 and 06.10 under the updater's native float comparison.
 This preserves the original 20-byte revision field and the planned usage 06.10.
 
@@ -65,9 +66,32 @@ completed and an independent six-read ATT sequence confirmed version 6.096. Its
 both faces and first press after an unmeasured pause work with infrared covered;
 long idle remains unqualified. No new normal-use release is published.
 
-## Current source — 6.097
+## Current source — 6.099
 
-The initial6.095 check returned no saved bond before any allocation. Current
+[06.09 rc4](../firmware/candidates/06.09-rc4/) passes **178 checks with each of
+LLVM 18 and 19**: 129 firmware checks, 16 host-C checks under ASan/UBSan,
+22 Java checks and 11 baseline checks. Exact [LLVM 19](../evidence/reliability-rc4-offline.json)
+and [LLVM 18](../evidence/reliability-rc4-offline-llvm18.json) proofs bind source,
+hooks, test IDs and compiled image hashes. Two builds reproduce its BIN/USB files.
+No 6.099 hardware acceptance is claimed; working 6.098 remains installed.
+
+The [native handoff](native-handoff.md) snapshots a whole legacy slot before
+publishing its consumed index. Admission remains in APP, preserving its producer
+ownership. Held front attempts are fenced until physical release; unresolved
+rear state defers admission with versioned reason 12. A useful real rear release
+at 188C can retry after native decoding; presses, timers and reads cannot.
+Pending-report deduplication now survives initial neutrals and older-press expiry.
+See the [stack review](../evidence/stack-review-6099.json) for measured prefixes
+and explicit ROM/RTOS limitations.
+
+The separately checked [6.100 contingency](../firmware/candidates/06.09-rc4/recovery-6.100/)
+restores 06.07 code with revision/CRC changes only. It is not installed or authorized.
+Its numeric revision equals 06.10: if used, a later usage image must be newer
+(for example 06.11). No usage BIN/ZIP is delivered before hardware acceptance.
+
+## Historical trial — 6.097
+
+The initial6.095 check returned no saved bond before any allocation. The 6.097
 source keeps native initialization exactly once, then can retry admission on
 changed connection/pairing events through a dedicated APP event. Keys, ordinary
 timers and diagnostic reads do not retry it. One active 640-byte block and all
@@ -82,8 +106,8 @@ follow-up exposed a liveness gap: this readiness flag persists after transmissio
 and successful pairing sets it before APP admission. An ordinary reconnect does
 not guarantee activation. The [read-only review](../evidence/admission-review-6097.json)
 documents why simply relaxing the guard or moving the claim into HID is unsafe;
-a future handoff must exclude both native reader and producer. No redesign or
-additional candidate has been implemented or flashed.
+a safe handoff must exclude both native reader and producer. The 6.099 source
+implements the offline redesign above; no additional candidate is installed.
 
 Diagnostic 6.097 records the **latest admission refusal** in the same 21-byte native
 buffer. Flag10(hex) identifies a deferred check; the decoder labels boot,
@@ -91,7 +115,7 @@ deferred or unknown provenance explicitly. Reason 11 is non-quiescent native TX.
 These additions are rejected for older diagnostic versions. Reading the page
 causes no allocation, retry, NVRAM query or permanent Bluetooth connection.
 
-The historical 6.095 assets and their 134-check proof are immutable. Current source
+The historical 6.095 assets and their 134-check proof are immutable. The 6.097 source
 is bound to [155-check LLVM 19](../evidence/reliability-rc3-offline.json) and
 [LLVM 18](../evidence/reliability-rc3-offline-llvm18.json) proofs. Two builds produced
 identical [6.097 files](../firmware/candidates/06.09-rc3/). 06.10 remains withheld.
@@ -168,10 +192,10 @@ for exact checks, evidence and outstanding requirements.
 6. Qualify 06.10 for normal use only after those checks pass. Restore the original
    Hardware Revision value and repeat first-press/wake checks without diagnostics.
 
-The decoder accepts complete pages with the exact installed diagnostic version (06.09,6.095 or6.097):
+The decoder accepts complete pages with the exact installed diagnostic version (06.09,6.095,6.097 or6.099):
 
 ```sh
-python firmware/decode_diagnostic.py --firmware-version 6.097 PAGE0 PAGE1 PAGE2
+python firmware/decode_diagnostic.py --firmware-version 6.099 PAGE0 PAGE1 PAGE2
 ```
 
 Heap values are sampled minima; connection and logical UART active/inactive
