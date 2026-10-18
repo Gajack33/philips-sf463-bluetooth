@@ -1,5 +1,16 @@
 *.bin binary
+*.zip binary
+*.apk binary
+.gitattributes text eol=lf
 *.py text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.S text eol=lf
+*.ld text eol=lf
+*.java text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.log text eol=lf
 *.md text eol=lf
 *.json text eol=lf
 *.txt text eol=lf

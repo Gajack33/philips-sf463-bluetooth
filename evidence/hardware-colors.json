@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-18",
+  "sample_size": {
+    "remotes": 1,
+    "televisions": 1
+  },
+  "remote_model": "YKF463-001 / SF463",
+  "tv_model": "55OLED804/12",
+  "installed_firmware": "GVK1EH_B002FFv.06.07",
+  "evidence_type": "Sanitized passive Linux input captures plus direct owner confirmations; not independent replication.",
+  "capture_method": {
+    "bounded_passive_getevent": true,
+    "gatt_client_used": false,
+    "firmware_modified_during_session": false,
+    "ip_mac_and_account_identifiers_removed": true,
+    "time_origin": "First recorded color event in this capture; seconds are relative.",
+    "scope": "The four brief presses capture; the separate one-read probe is recorded below."
+  },
+  "host_state": {
+    "before_rear_space": {
+      "bluetooth_connection": "disconnected",
+      "remote_input_present": false
+    },
+    "after_rear_space": {
+      "bluetooth_connection": "connected",
+      "remote_input_present": true
+    }
+  },
+  "companion": {
+    "accessibility_enabled_by_owner": true,
+    "profile_enabled": false,
+    "profile_enablement_changed_by_agent": false
+  },
+  "four_brief_presses": {
+    "requested_order": [
+      "red",
+      "green",
+      "yellow",
+      "blue"
+    ],
+    "owner_confirmed_sequence": true,
+    "owner_reported_ir_blocked": true,
+    "complete_ir_suppression_established": false,
+    "bluetooth_input_id": 2,
+    "ir_associated_input_id": 1,
+    "bluetooth_down_sequence": [
+      "KEY_RED",
+      "KEY_GREEN",
+      "KEY_YELLOW",
+      "KEY_YELLOW"
+    ],
+    "events": [
+      {
+        "relative_seconds": 0.0,
+        "linux_input_id": 1,
+        "linux_key_name": "KEY_RED",
+        "linux_key_code": 398,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 0.023695,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_RED",
+        "linux_key_code": 398,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 0.349798,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_RED",
+        "linux_key_code": 398,
+        "state": "UP"
+      },
+      {
+        "relative_seconds": 0.433731,
+        "linux_input_id": 1,
+        "linux_key_name": "KEY_RED",
+        "linux_key_code": 398,
+        "state": "UP"
+      },
+      {
+        "relative_seconds": 0.752662,
+        "linux_input_id": 1,
+        "linux_key_name": "KEY_GREEN",
+        "linux_key_code": 399,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 0.777151,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_GREEN",
+        "linux_key_code": 399,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 1.092213,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_GREEN",
+        "linux_key_code": 399,
+        "state": "UP"
+      },
+      {
+        "relative_seconds": 1.183675,
+        "linux_input_id": 1,
+        "linux_key_name": "KEY_GREEN",
+        "linux_key_code": 399,
+        "state": "UP"
+      },
+      {
+        "relative_seconds": 1.351613,
+        "linux_input_id": 1,
+        "linux_key_name": "KEY_YELLOW",
+        "linux_key_code": 400,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 1.373439,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_YELLOW",
+        "linux_key_code": 400,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 1.699867,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_YELLOW",
+        "linux_key_code": 400,
+        "state": "UP"
+      },
+      {
+        "relative_seconds": 1.783722,
+        "linux_input_id": 1,
+        "linux_key_name": "KEY_YELLOW",
+        "linux_key_code": 400,
+        "state": "UP"
+      },
+      {
+        "relative_seconds": 1.958788,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_YELLOW",
+        "linux_key_code": 400,
+        "state": "DOWN"
+      },
+      {
+        "relative_seconds": 2.161031,
+        "linux_input_id": 2,
+        "linux_key_name": "KEY_YELLOW",
+        "linux_key_code": 400,
+        "state": "UP"
+      }
+    ],
+    "interpretation": "After rear-keyboard wake, the fourth physical blue press produced KEY_YELLOW on the Bluetooth-associated input. The first three colors also appeared on the IR-associated input, so full IR suppression is not established."
+  },
+  "limitations": [
+    "Physical front UART indices were not directly captured.",
+    "Linux key codes are observed; Android vendor key-layout files were not readable.",
+    "The app profile stayed disabled, so shortcut action execution was not tested.",
+    "The earlier one-minute idle success does not establish reliable longer-idle reconnection.",
+    "A separate temporary one-read GATT probe timed out without a connection; no raw front UART index was obtained."
+  ],
+  "blue_hold": {
+    "status": "not_performed",
+    "passive_capture_seconds": 90,
+    "color_events_observed": 0,
+    "owner_asked_to_hold_blue": false,
+    "reason": "Static review showed the secondary map value is not demonstrably emitted by a hold; no extra user action was requested."
+  },
+  "temporary_index_probe": {
+    "characteristic": "2A27 Hardware Revision diagnostic",
+    "maximum_seconds": 20,
+    "mode": "one read then immediate close; deadline also closes",
+    "write_or_subscription_operations": false,
+    "connection_established": false,
+    "characteristic_value_read": false,
+    "deadline_observed": true,
+    "gatt_closed": true,
+    "front_index_confirmed": false,
+    "color_table_patch_hardware_qualified": false
+  }
+}

@@ -50,6 +50,10 @@ python reproduction/verify_diagnostic_candidate.py
 
 **11 emulation checks passed.** The rebuilt 06.07 matches the shipped binary. See [hardware validation](evidence/hardware-validation.json) and [patch details](docs/technical-notes.md).
 
+### In development
+
+The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add bounded queues, release protection, reconnect handling and local button profiles. **06.07 remains the published reference.** The 06.09 diagnostic candidate and 06.10 usage build require further hardware validation; no automatic flash is performed.
+
 ---
 
 <sub>Not affiliated with Philips or TP Vision. Original firmware rights remain with their owners. <a href="THIRD_PARTY_NOTICES.md">Third-party notices</a>.</sub>

@@ -1,0 +1,295 @@
+{
+  "schema": 1,
+  "integration_qualified": true,
+  "integration_evidence": [
+    {
+      "path": "evidence/reliability-offline.json",
+      "sha256": "e51721b5a57fabb906092777261c33dbaf0bc1f45dd9d185255eac474c33d515"
+    }
+  ],
+  "baseline": "GVK1EH_B002FFv.06.05, SHA256 6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
+  "qualification_note": "Offline software integration only: 120 passing checks bound to exact source, hook and image hashes. Hardware, ROM/context stack headroom, real heap stress, colors and long-idle/wake remain unqualified. No automatic flash; 06.07 stays published.",
+  "protected_ranges": [
+    {
+      "start": "0x0",
+      "end": "0x100",
+      "reason": "Header and vector prefix"
+    },
+    {
+      "start": "0x5724",
+      "end": "0x5760",
+      "reason": "Existing UART pin, timing and control-frame constants"
+    }
+  ],
+  "allowed_ranges": [
+    {
+      "start": "0x1736",
+      "end": "0x173a",
+      "category": "front"
+    },
+    {
+      "start": "0x1878",
+      "end": "0x187e",
+      "category": "front"
+    },
+    {
+      "start": "0x1a90",
+      "end": "0x1a94",
+      "category": "front"
+    },
+    {
+      "start": "0x1abc",
+      "end": "0x1ac2",
+      "category": "front"
+    },
+    {
+      "start": "0x1d28",
+      "end": "0x1d2a",
+      "category": "front"
+    },
+    {
+      "start": "0x1d2a",
+      "end": "0x1d30",
+      "category": "front"
+    },
+    {
+      "start": "0x2170",
+      "end": "0x2174",
+      "category": "hid"
+    },
+    {
+      "start": "0x21dc",
+      "end": "0x21e0",
+      "category": "hid"
+    },
+    {
+      "start": "0x476c",
+      "end": "0x4770",
+      "category": "hid"
+    },
+    {
+      "start": "0x488e",
+      "end": "0x4892",
+      "category": "hid"
+    },
+    {
+      "start": "0x48f4",
+      "end": "0x48f8",
+      "category": "hid"
+    },
+    {
+      "start": "0x4ab0",
+      "end": "0x4ab4",
+      "category": "hid"
+    },
+    {
+      "start": "0x4d22",
+      "end": "0x4d26",
+      "category": "hid"
+    },
+    {
+      "start": "0x50b8",
+      "end": "0x50bc",
+      "category": "hid"
+    },
+    {
+      "start": "0x5250",
+      "end": "0x5254",
+      "category": "diagnostic"
+    },
+    {
+      "start": "0x53a2",
+      "end": "0x53a8",
+      "category": "uart"
+    },
+    {
+      "start": "0x551a",
+      "end": "0x551e",
+      "category": "uart"
+    },
+    {
+      "start": "0x5648",
+      "end": "0x564c",
+      "category": "uart"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "initialize-once-after-native-app-init",
+      "offset": "0x1736",
+      "expected_hex": "fff755fe",
+      "kind": "branch",
+      "symbol": "rc_app_init",
+      "link": true,
+      "category": "front"
+    },
+    {
+      "name": "drain-tagged-source-events",
+      "offset": "0x1878",
+      "expected_hex": "feb5dff80c47",
+      "kind": "branch",
+      "symbol": "rc_event_drain",
+      "link": false,
+      "pad_hex": "00bf",
+      "category": "front"
+    },
+    {
+      "name": "rear-source-callback",
+      "offset": "0x1a90",
+      "expected_hex": "ff280246",
+      "kind": "branch",
+      "symbol": "rc_rear_callback",
+      "link": false,
+      "category": "front"
+    },
+    {
+      "name": "front-and-orientation-source-callback",
+      "offset": "0x1abc",
+      "expected_hex": "38b5dff8f84a",
+      "kind": "branch",
+      "symbol": "rc_front_callback",
+      "link": false,
+      "pad_hex": "00bf",
+      "category": "front"
+    },
+    {
+      "name": "retain-verified-06.07-front-hid-gate",
+      "offset": "0x1d28",
+      "expected_hex": "05d1",
+      "kind": "bytes",
+      "replacement_hex": "00bf",
+      "category": "front"
+    },
+    {
+      "name": "queue-ordinary-front-before-ready-preserve-voice",
+      "offset": "0x1d2a",
+      "expected_hex": "a87c052813d1",
+      "kind": "branch",
+      "symbol": "rc_front_gate",
+      "link": false,
+      "pad_hex": "00bf",
+      "category": "front"
+    },
+    {
+      "name": "keyboard-full-report-admission",
+      "offset": "0x2170",
+      "expected_hex": "7cb50d46",
+      "kind": "branch",
+      "symbol": "rc_keyboard",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "consumer-commit-after-admission",
+      "offset": "0x21dc",
+      "expected_hex": "dff82c19",
+      "kind": "branch",
+      "symbol": "rc_consumer",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "single-native-context-hid-worker",
+      "offset": "0x476c",
+      "expected_hex": "69071cd5",
+      "kind": "branch",
+      "symbol": "rc_hid_drain",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "hid-report-admission-entry",
+      "offset": "0x488e",
+      "expected_hex": "f8b51446",
+      "kind": "branch",
+      "symbol": "rc_hid_submit",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "hid-control-parameter-clears-native-queue-only-when-inactive",
+      "offset": "0x48f4",
+      "expected_hex": "2de9f843",
+      "kind": "branch",
+      "symbol": "rc_control",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "cccd-and-protocol-write-notification",
+      "offset": "0x4ab0",
+      "expected_hex": "2de9fe43",
+      "kind": "branch",
+      "symbol": "rc_attr_write",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "link-epoch-notification",
+      "offset": "0x4d22",
+      "expected_hex": "2de9fc41",
+      "kind": "branch",
+      "symbol": "rc_link_event",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "existing-hid-clock-readiness-callback",
+      "offset": "0x50b8",
+      "expected_hex": "05480121",
+      "kind": "branch",
+      "symbol": "rc_timer_callback",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "diagnostic-device-info-six-argument-callback",
+      "offset": "0x5250",
+      "expected_hex": "2de9ff4d",
+      "kind": "branch",
+      "symbol": "rc_device_info_read",
+      "link": false,
+      "category": "diagnostic",
+      "variants": [
+        "diagnostic"
+      ]
+    },
+    {
+      "name": "reset-uart-fragments-on-explicit-close",
+      "offset": "0x53a2",
+      "expected_hex": "10b5dff87843",
+      "kind": "branch",
+      "symbol": "rc_uart_close",
+      "link": false,
+      "pad_hex": "00bf",
+      "category": "uart"
+    },
+    {
+      "name": "bounded-uart-fragment-accumulator",
+      "offset": "0x551a",
+      "expected_hex": "bcb5804c",
+      "kind": "branch",
+      "symbol": "rc_uart_receive",
+      "link": false,
+      "category": "uart"
+    },
+    {
+      "name": "reset-uart-fragments-on-worker-session-timeout",
+      "offset": "0x5648",
+      "expected_hex": "f8b5354c",
+      "kind": "branch",
+      "symbol": "rc_uart_worker",
+      "link": false,
+      "category": "uart"
+    }
+  ],
+  "integration_sources": {
+    "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
+    "firmware/adapter.c": "74fec52d698590a86cb815c27476cef7edb5ed69deacfd325a77abb8f15ee20c",
+    "firmware/build.py": "368e1eac538790871b3a51356f6d1f7a3b0067f88a4bc3a4dee698e19be0ce6f",
+    "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
+    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
+    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
+  },
+  "integration_hook_sha256": "9e9514db7a1f5567fc9767cca53fb2c2ad3439d8d054f476776c689d3b2c882a"
+}

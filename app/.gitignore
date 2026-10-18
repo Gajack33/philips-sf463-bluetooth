@@ -1,0 +1,7 @@
+/build/
+*.apk
+!/candidates/0.1.0/*.apk
+*.p12
+*.jks
+*.keystore
+__pycache__/
