@@ -4,11 +4,14 @@ Scope: software implementation and offline integration; **not hardware qualifica
 The published 06.07 remains unchanged. The first 06.09 was installed with the
 owner's explicit approval, but reports inactive fallback on the test remote.
 The 6.095 (06.09 rc2) refusal-diagnostic transfer completed with owner authorization.
-Its actual installed revision and adapter state remain unconfirmed because bounded
-reads cannot yet return an ATT value. See `evidence/hardware-6095.json`.
-**Hardware hold:** the owner now reports only IR working. The TV shows a retained
-PHLRC bond but no HID input; battery reset, pairing and Bluetooth restart have not
-restored it. Do not install the diagnostic candidate while this is investigated.
+After a separately authorized host forget/re-pair, the TV again has PHLRC input
+and six ATT reads completed with status0. Actual6.095 is confirmed; its frozen
+snapshot is `00000200FFFFFFFF0101`: reason2, bond count0 at initial admission,
+semaphore present, role1, no heap sample or allocation. This does not prove why
+inventory was zero. See `evidence/hardware-6095.json`.
+**Hardware hold:** initial keyboard loss was restored by the host re-pair, but the
+reliability core remains inactive. Do not install the diagnostic candidate while
+admission timing and hardware behavior are investigated.
 A private, separately verified 06.07 behavior recovery package is prepared and
 separately owner-authorized. Its native updater attempt lost the link before
 returning Software Revision, so no recovery firmware write started.
@@ -94,9 +97,10 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 - `evidence/hardware-0609-rc1.json` confirms the first 06.09 installation and
   three all-zero inactive snapshots. Both faces were reported responsive but
   irregular; those observations do not qualify the inactive reliability core.
-  The reason is unknown. The rc2 follow-up records refusal provenance without
-  forcing activation. The 6.095 USB transfer completed, but actual version and
-  diagnostic confirmation remain pending alongside the grouped session.
+  The rc1 reason remains unknown. The rc2 snapshot confirms an initial bond
+  count0 refusal before allocation. After host re-pair, actual6.095 and its
+  frozen inactive snapshot are verified; allocation/heap and grouped checks
+  remain unqualified. No activation guard was forced or relaxed.
   06.10 normal-use qualification waits for successful hardware acceptance.
 - Real heap reserve during keyboard/voice/update, full native stack headroom,
   all physical keys/colors, radio delivery and independent short/long/double

@@ -28,21 +28,33 @@
     "note": "The native no-remote screen remained visible after connection timeout while the transfer proceeded in its service. No retry or activity change interrupted the active transfer."
   },
   "after": {
-    "independent_software_revision": null,
-    "hardware_revision_pages": [],
-    "reliability_adapter_active": null,
-    "initialization_refusal_reason": null,
-    "read_attempts": "Bounded clients either timed out without connecting, received connection status133, or lost the shared connection with status8 before the first ATT value was returned.",
+    "independent_software_revision": "GVK1EH_B002FFv.6.095",
+    "hardware_revision_pages": [
+      "00000200FFFFFFFF0101",
+      "00000200FFFFFFFF0101",
+      "00000200FFFFFFFF0101"
+    ],
+    "reliability_adapter_active": false,
+    "initialization_refusal_reason": {
+      "code": 2,
+      "name": "bond_count_not_one",
+      "bond_count_at_initial_check": 0,
+      "hid_semaphore_present": true,
+      "hid_role_at_initial_check": 1,
+      "heap_sample": null,
+      "allocation_attempted": false
+    },
     "similar_connection_timeout_observed_before_6095": true,
     "service_discovery_alone_used_as_live_att_proof": false,
-    "owner_reports_rear_keyboard_unresponsive": true,
-    "owner_reports_ir_only": true,
-    "phlrc_hid_present_in_input_dump": false,
-    "phlrc_bond_retained_in_bluetooth_dump": true
+    "phlrc_bond_retained_in_bluetooth_dump": true,
+    "initial_read_failures": "Bounded clients either timed out without connecting, received connection status133, or lost the shared connection with status8 before the first ATT value was returned.",
+    "initial_owner_reports_rear_keyboard_unresponsive": true,
+    "initial_owner_reports_ir_only": true,
+    "phlrc_hid_present_before_repair": false
   },
   "qualification": {
     "usb_transfer_completed": true,
-    "installed_revision_confirmed": false,
+    "installed_revision_confirmed": true,
     "reliability_changes_hardware_qualified": false,
     "heap_reserve_measured": false,
     "color_scan_indexes_confirmed": false,
@@ -50,9 +62,9 @@
     "usage_0610_qualified": false,
     "battery_life_gain_claimed": false
   },
-  "next_step": "Investigate retained host pairing without claiming its keys are the cause. A targeted forget/re-pair would require separate approval because it removes the association. The recovery image remains authorized only with native version/battery checks; no recovery write has started.",
+  "next_step": "Resume the separately authorized06.07 behavior recovery6.096 with fresh native version/battery checks. Keep reliability hardware qualification on hold: initialization refused count0 before allocation; a valid deferred admission lifecycle is not implemented.",
   "privacy": "No network addresses, account identifiers or raw system logs included.",
-  "status": "on-hold: owner-reported loss of Bluetooth keyboard; recovery pending",
+  "status": "hardware hold: inactive core; host re-pair restored Bluetooth, recovery pending",
   "recovery_attempts": {
     "owner_battery_reset_and_normal_sources_pairing": "no success reported",
     "tv_native_pairing_scan_explicitly_started": true,
@@ -72,6 +84,21 @@
       "firmware_write_started": false,
       "disconnected_before_first_att_value": true,
       "idle_updater_closed": true
+    },
+    "targeted_host_bond_repair": {
+      "separately_owner_authorized": true,
+      "only_uniquely_identified_phlrc_targeted": true,
+      "remove_bond_calls": 1,
+      "remove_bond_request_accepted": true,
+      "bond_none_observed": true,
+      "owner_reports_pairing_success": true,
+      "native_pairing_status": 2,
+      "phlrc_hid_input_present_after_repair": true,
+      "read_only_att_values_after_repair": 6,
+      "all_read_statuses_zero": true,
+      "read_sequence_completed_ms": 389,
+      "all_our_gatt_clients_closed_after_read": true,
+      "cause_of_old_pairing_failure": "not established; do not claim a proven key mismatch"
     }
   }
 }

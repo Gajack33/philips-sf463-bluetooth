@@ -1,9 +1,10 @@
 # 6.095 · activation diagnostics (06.09 rc2)
 
-**On hold — do not install while the hardware failure is investigated.** After
-the transfer, the owner reports that the rear Bluetooth keyboard is unavailable;
-the TV has no PHLRC input device. Battery reset, normal pairing and a TV Bluetooth
-restart have not restored it. The actual installed revision remains unreadable.
+**On hold — do not install while hardware validation is incomplete.** The Bluetooth
+keyboard became unavailable after the transfer. A separately authorized host
+forget/re-pair restored the PHLRC input and ATT reads. Revision 6.095 is confirmed,
+but the reliability core is inactive: its initial bond-count check returned zero,
+before any allocation. The reason that inventory was zero is not established.
 
 [USB package](SF463-6.095-diagnostic-USB.zip) · [Binary](GVK1EH_B002FFv.6.095.bin) · [SHA-256](SHA256SUMS) · [Build manifest](manifest.json)
 
@@ -23,9 +24,9 @@ files; the [proof](../../../evidence/reliability-rc2-offline.json) binds exact s
 hook and image hashes. Each refusal is tested through compiled C, GATT reads and
 the decoder.
 
-The [authorized USB transfer completed](../../../evidence/hardware-6095.json), but
-Bluetooth read failures prevent confirmation of the installed revision and adapter
-state. Hardware validation is pending. Flashing is experimental and can brick the remote;
+The [hardware record](../../../evidence/hardware-6095.json) documents the transfer,
+initial connection failures, successful host re-pair and frozen refusal snapshot.
+Hardware validation is pending. Flashing is experimental and can brick the remote;
 recovery is not guaranteed. No automatic flash is included. 06.07 remains the
 published reference, and 06.10 remains withheld from usage qualification.
 

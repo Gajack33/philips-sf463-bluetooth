@@ -29,7 +29,7 @@ match. Multiple bonds and rotating/private peer addresses are not qualified.
 | Build | Purpose | Hardware status |
 | --- | --- | --- |
 | 06.09 first candidate | Temporary diagnostic pages through Hardware Revision (`0x2A27`) | Installed; adapter inactive, reason unknown |
-| 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | On hold: owner reports Bluetooth keyboard unavailable; actual revision unreadable |
+| 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | Confirmed after host re-pair; inactive, initial bond count0 before allocation; on hold |
 | 06.10 | Same reliability changes; original Hardware Revision callback restored | Withheld from usage qualification |
 
 Read [native ABI notes](../firmware/NATIVE_ABI.md) for instruction windows and
@@ -42,7 +42,11 @@ binds the tests to exact source, hook and image hashes. 06.10 is compiled and
 checked but no usage binary or archive is distributed before hardware acceptance.
 
 The [first-candidate hardware result](../evidence/hardware-0609-rc1.json) confirms
-06.09 was installed but its reliability adapter remains inactive. The [6.095 transfer completed](../evidence/hardware-6095.json), but Bluetooth read failures prevent independent confirmation of its installed revision or activation state. The rc2 follow-up
+06.09 was installed with inactive fallback. After initial Bluetooth failures, a
+separately authorized host forget/re-pair restored PHLRC input and six successful
+ATT reads. The [6.095 hardware result](../evidence/hardware-6095.json) confirms its
+revision and inactive core: initial bond count0, before allocation. This does not
+establish why inventory was zero or qualify the heap reserve. The rc2 follow-up
 preserves the exact boot refusal code, bond count, heap sample and native readiness
 flags in the existing 21-byte diagnostic buffer. Reads do not retry initialization
 or query BLE/NVRAM/heap. Unknown heap values are explicit; post-allocation samples
