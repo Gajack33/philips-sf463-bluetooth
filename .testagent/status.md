@@ -6,6 +6,12 @@ owner's explicit approval, but reports inactive fallback on the test remote.
 The 6.095 (06.09 rc2) refusal-diagnostic transfer completed with owner authorization.
 Its actual installed revision and adapter state remain unconfirmed because bounded
 reads cannot yet return an ATT value. See `evidence/hardware-6095.json`.
+**Hardware hold:** the owner now reports only IR working. The TV shows a retained
+PHLRC bond but no HID input; battery reset, pairing and Bluetooth restart have not
+restored it. Do not install the diagnostic candidate while this is investigated.
+A private, separately verified 06.07 behavior recovery package is prepared and
+separately owner-authorized. Its native updater attempt lost the link before
+returning Software Revision, so no recovery firmware write started.
 06.08 is not a build input. Exact test IDs and hashes are in
 `evidence/reliability-rc2-offline.json`; the complete command is `python firmware/verify.py`.
 

@@ -1,5 +1,10 @@
 # 6.095 · activation diagnostics (06.09 rc2)
 
+**On hold — do not install while the hardware failure is investigated.** After
+the transfer, the owner reports that the rear Bluetooth keyboard is unavailable;
+the TV has no PHLRC input device. Battery reset, normal pairing and a TV Bluetooth
+restart have not restored it. The actual installed revision remains unreadable.
+
 [USB package](SF463-6.095-diagnostic-USB.zip) · [Binary](GVK1EH_B002FFv.6.095.bin) · [SHA-256](SHA256SUMS) · [Build manifest](manifest.json)
 
 Diagnostic follow-up to the first 06.09, which installs but reports inactive

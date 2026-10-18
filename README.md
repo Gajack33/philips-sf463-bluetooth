@@ -52,7 +52,7 @@ python reproduction/verify_diagnostic_candidate.py
 
 ### In development
 
-The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add bounded queues, release protection, reconnect handling and local button profiles. **06.07 remains the published reference.** The first 06.09 installed with inactive fallback; diagnostic 6.095 records the refusal cause. Hardware qualification remains pending, 06.10 is withheld, and no automatic flash is performed.
+The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add bounded queues, release protection, reconnect handling and local button profiles. **06.07 remains the published reference.** Diagnostic 6.095 is on hold after the owner reported loss of the Bluetooth keyboard; its installed revision remains unreadable. Hardware qualification is incomplete, 06.10 is withheld, and no automatic flash is performed.
 
 ---
 

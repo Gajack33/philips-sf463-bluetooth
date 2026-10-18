@@ -29,7 +29,7 @@ match. Multiple bonds and rotating/private peer addresses are not qualified.
 | Build | Purpose | Hardware status |
 | --- | --- | --- |
 | 06.09 first candidate | Temporary diagnostic pages through Hardware Revision (`0x2A27`) | Installed; adapter inactive, reason unknown |
-| 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | USB transfer completed; actual revision and diagnostic read pending |
+| 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | On hold: owner reports Bluetooth keyboard unavailable; actual revision unreadable |
 | 06.10 | Same reliability changes; original Hardware Revision callback restored | Withheld from usage qualification |
 
 Read [native ABI notes](../firmware/NATIVE_ABI.md) for instruction windows and

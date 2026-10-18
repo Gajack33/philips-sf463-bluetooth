@@ -34,7 +34,11 @@
     "initialization_refusal_reason": null,
     "read_attempts": "Bounded clients either timed out without connecting, received connection status133, or lost the shared connection with status8 before the first ATT value was returned.",
     "similar_connection_timeout_observed_before_6095": true,
-    "service_discovery_alone_used_as_live_att_proof": false
+    "service_discovery_alone_used_as_live_att_proof": false,
+    "owner_reports_rear_keyboard_unresponsive": true,
+    "owner_reports_ir_only": true,
+    "phlrc_hid_present_in_input_dump": false,
+    "phlrc_bond_retained_in_bluetooth_dump": true
   },
   "qualification": {
     "usb_transfer_completed": true,
@@ -46,6 +50,28 @@
     "usage_0610_qualified": false,
     "battery_life_gain_claimed": false
   },
-  "next_step": "Wake the rear keyboard while a bounded read is pending; read the actual Software Revision and frozen initialization diagnostic before changing activation logic.",
-  "privacy": "No network addresses, account identifiers or raw system logs included."
+  "next_step": "Investigate retained host pairing without claiming its keys are the cause. A targeted forget/re-pair would require separate approval because it removes the association. The recovery image remains authorized only with native version/battery checks; no recovery write has started.",
+  "privacy": "No network addresses, account identifiers or raw system logs included.",
+  "status": "on-hold: owner-reported loss of Bluetooth keyboard; recovery pending",
+  "recovery_attempts": {
+    "owner_battery_reset_and_normal_sources_pairing": "no success reported",
+    "tv_native_pairing_scan_explicitly_started": true,
+    "normal_pairing_after_native_scan": "failure or no success reported",
+    "manual_bond_forget_performed": false,
+    "tv_bluetooth_off_then_on_observed": true,
+    "svc_command_output": "Both calls emitted a crash-report write permission error; independent state reads confirmed OFF then ON.",
+    "independent_read_after_restart": "connection status133; zero ATT values; client closed",
+    "all_our_gatt_clients_closed": true,
+    "separately_authorized_6096_native_attempt": {
+      "owner_authorized": true,
+      "image_sha256": "c85f84d886beaf4ba83e80d39bcd01673fbbb1f5391be0cfba7f7762723c046d",
+      "behavior": "published06.07 code; revision and CRC only changed",
+      "native_software_revision_requested": true,
+      "native_software_revision_value_returned": false,
+      "native_battery_value_returned": false,
+      "firmware_write_started": false,
+      "disconnected_before_first_att_value": true,
+      "idle_updater_closed": true
+    }
+  }
 }
