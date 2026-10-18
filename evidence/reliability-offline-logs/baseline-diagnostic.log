@@ -1,0 +1,11 @@
+test_binary_integrity_hook_target_and_original_control_code (__main__.DiagnosticVerification) ... ok
+test_hardware_read_exposes_actual_state_and_fresh_key_values (__main__.DiagnosticVerification) ... ok
+test_missing_invalid_or_other_connection_cccd_is_bounded (__main__.DiagnosticVerification) ... ok
+test_only_existing_hardware_buffer_output_and_stack_are_written (__main__.DiagnosticVerification) ... ok
+test_other_device_information_strings_are_unchanged (__main__.DiagnosticVerification) ... ok
+test_partial_reads_and_invalid_offset_obey_original_callback (__main__.DiagnosticVerification) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.356s
+
+OK

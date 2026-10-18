@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "draft": false,
+  "observed_on": "2026-10-18",
+  "scope": "Single-device native recovery and owner-reported masked-infrared front/rear operation; long-idle behavior is not qualified.",
+  "status": "06.07 code restored as 6.096; both faces and first press after an unmeasured pause respond",
+  "tv_model": "55OLED804/12",
+  "remote_model": "YKF463-001 / SF463",
+  "target_revision": "6.096",
+  "source_behavior_revision": "06.07",
+  "source_image_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+  "recovery_image": {
+    "name": "GVK1EH_B002FFv.6.096.bin",
+    "sha256": "c85f84d886beaf4ba83e80d39bcd01673fbbb1f5391be0cfba7f7762723c046d",
+    "size": 118784
+  },
+  "usb_archive": {
+    "name": "SF463-6.096-recovery-USB.zip",
+    "sha256": "9e38150640d9ec2ea9245d74c4fe4e708ced92fd8f0b57439451d43787b9326e",
+    "size": 118940
+  },
+  "offline_validation": {
+    "passed": true,
+    "baseline_checks": {
+      "count": 6,
+      "scope": "Existing published 06.07 Device Information verification; not the 134 reliability suite",
+      "tests": [
+        "recovery_published_diagnostic_verifier.DiagnosticVerification.test_binary_integrity_hook_target_and_original_control_code",
+        "recovery_published_diagnostic_verifier.DiagnosticVerification.test_hardware_read_exposes_actual_state_and_fresh_key_values",
+        "recovery_published_diagnostic_verifier.DiagnosticVerification.test_missing_invalid_or_other_connection_cccd_is_bounded",
+        "recovery_published_diagnostic_verifier.DiagnosticVerification.test_only_existing_hardware_buffer_output_and_stack_are_written",
+        "recovery_published_diagnostic_verifier.DiagnosticVerification.test_other_device_information_strings_are_unchanged",
+        "recovery_published_diagnostic_verifier.DiagnosticVerification.test_partial_reads_and_invalid_offset_obey_original_callback"
+      ]
+    },
+    "recovery_checks": {
+      "count": 9,
+      "tests": [
+        "__main__.RecoveryVerification.test_corrupt_baseline_or_wrong_input_is_rejected",
+        "__main__.RecoveryVerification.test_exact_native_java_float_selection_compatibility",
+        "__main__.RecoveryVerification.test_front_key_press_release_reports_match_published_0607",
+        "__main__.RecoveryVerification.test_native_initialization_and_version_setter_only_change_software_revision_in_ram",
+        "__main__.RecoveryVerification.test_not_ready_unbonded_and_voice_paths_match_published_0607",
+        "__main__.RecoveryVerification.test_other_device_information_callbacks_match_published_0607",
+        "__main__.RecoveryVerification.test_revision_crc_only_size_metadata_vectors_and_all_code_preserved",
+        "__main__.RecoveryVerification.test_software_revision_and_partial_reads_use_full_native_callback",
+        "__main__.RecoveryVerification.test_two_independent_package_builds_and_single_file_usb_zip"
+      ]
+    },
+    "total_checks": 15,
+    "two_independent_builds_identical": true,
+    "baseline_immutable": true,
+    "only_changes": [
+      "Original CRC at bytes 0..1",
+      "Software Revision field at 0x16E0"
+    ],
+    "changed_byte_offsets": [
+      "0x0",
+      "0x1",
+      "0x16ef",
+      "0x16f0",
+      "0x16f1",
+      "0x16f2",
+      "0x16f3"
+    ],
+    "all_code_and_other_bytes_identical_to_published_0607": true,
+    "native_java_version_comparison_checked": true,
+    "native_software_revision_callback_checked": true,
+    "manifest_sha256": "033f62ac851bd621c49cfdf9b9b97ea997f2c5275449c6cba383caa2c0699d0a",
+    "verification_sha256": "785de5a901cf83e7389574afa460588549011f599b272bace601d1fd96d3314c",
+    "reliability_134_test_proof_applies": false,
+    "scope": "Narrow offline image/format/native-callback comparison; not hardware qualification."
+  },
+  "experimental_installation_authorized_by_owner": true,
+  "before": {
+    "software_revision_number": "6.095",
+    "software_revision_characteristic": "0x2A28",
+    "software_revision_read_by_native_updater": true,
+    "reported_battery_percent": 97
+  },
+  "transfer": {
+    "usb_image_sha256_verified": true,
+    "verified_usb_image_sha256": "c85f84d886beaf4ba83e80d39bcd01673fbbb1f5391be0cfba7f7762723c046d",
+    "native_selected_file": "GVK1EH_B002FFv.6.096.bin",
+    "started": true,
+    "started_local": "2026-10-18 20:58:16",
+    "timezone": "Europe/Paris",
+    "image_bytes": 118784,
+    "block_bytes": 32,
+    "total_blocks": 3712,
+    "programming_finished_confirmed": true,
+    "native_success_screen_confirmed": false,
+    "finished_local": "2026-10-18 20:59:54.921",
+    "native_accepted_firmware": true,
+    "native_reconnected": true,
+    "native_post_reboot_revision": "GVK1EH_B002FFv.6.096",
+    "native_success_screen_used_as_proof": false
+  },
+  "transfer_complete": true,
+  "installed_revision_confirmed": true,
+  "after": {
+    "independent_revision_read_completed": true,
+    "software_revision": "GVK1EH_B002FFv.6.096",
+    "revision_read_status": 0,
+    "remote_reconnected": true,
+    "both_faces_respond": true,
+    "independent_att_reads": 6,
+    "all_read_statuses_zero": true,
+    "read_sequence_completed_ms": 412,
+    "all_our_gatt_clients_closed": true,
+    "native_updater_closed": true,
+    "phlrc_hid_input_present": true,
+    "owner_report": "Both faces respond correctly with infrared covered in normal orientation.",
+    "physical_event_capture_correlated": false,
+    "physical_event_note": "A bounded capture pinned to the post-flash PHLRC node returned no events; owner observation is the functional evidence. The node was absent in a later idle listing.",
+    "first_press_after_pause": {
+      "owner_reports_success": true,
+      "infrared_covered": true,
+      "normal_orientation": true,
+      "exact_idle_seconds_confirmed": false,
+      "owner_note": "First press responded; owner was unsure whether the pause lasted a full60seconds.",
+      "diagnostic_gatt_connected": false,
+      "independently_confirmed_as_bluetooth_only": false
+    },
+    "subsequent_input_window": {
+      "bounded_passive_capture": true,
+      "bluetooth_consumer_arrows_observed": true,
+      "phlrc_consumer_usage_scans_observed": [
+        "0x000C0044",
+        "0x000C0045"
+      ],
+      "infrared_arrows_also_observed": true,
+      "association_with_requested_single_first_press_established": false,
+      "interpretation": "The later input window confirms Bluetooth arrows but also includes infrared and multiple presses. It does not independently qualify the requested first press with infrared fully suppressed."
+    }
+  },
+  "qualification": {
+    "recovery_installation_confirmed": true,
+    "normal_use_qualified": false,
+    "long_idle_or_wake_qualified": false,
+    "hardware_recovery_guaranteed": false,
+    "reliability_0610_qualified": false,
+    "exact_60_second_idle_qualified": false
+  },
+  "next_step": "Continue offline deferred-admission and blue-mapping corrections; color scan indexes are recorded in hardware-colors-6096.json. Reliability and long-idle behavior remain unqualified; no new flash is authorized.",
+  "provenance_note": "Manifest and offline verification describe build-time preparation. This draft records the later owner-authorized native update attempt.",
+  "privacy": "Sanitized summary; no network addresses, account identifiers, local machine paths or raw system logs."
+}

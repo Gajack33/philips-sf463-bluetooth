@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "observed_on": "2026-10-18",
+  "scope": "One remote/TV pair; owner-confirmed ordered color sequence on restored 06.07 code. Decoded front scan index and HID usage read from native2A27 diagnostics while held.",
+  "remote_model": "YKF463-001 / SF463",
+  "tv_model": "55OLED804/12",
+  "installed_software_revision": "GVK1EH_B002FFv.6.096",
+  "software_revision_read_status": 0,
+  "owner_confirmed_order": true,
+  "owner_reports_ir_covered": true,
+  "page_encoding": "06.07: role, app-ready, UART-active, face, front-usage16le, consumer-usage16le, CCCD, index",
+  "pages": [
+    {
+      "elapsed_ms": 20617,
+      "hardware_revision_ascii": "06050100690069000119",
+      "front_index": 25,
+      "front_usage": 105,
+      "consumer_usage": 105,
+      "physical_button": "red"
+    },
+    {
+      "elapsed_ms": 22867,
+      "hardware_revision_ascii": "060501006A006A000112",
+      "front_index": 18,
+      "front_usage": 106,
+      "consumer_usage": 106,
+      "physical_button": "green"
+    },
+    {
+      "elapsed_ms": 25107,
+      "hardware_revision_ascii": "060501006C006C00011A",
+      "front_index": 26,
+      "front_usage": 108,
+      "consumer_usage": 108,
+      "physical_button": "yellow"
+    },
+    {
+      "elapsed_ms": 27862,
+      "hardware_revision_ascii": "060501006C006C00011B",
+      "front_index": 27,
+      "front_usage": 108,
+      "consumer_usage": 108,
+      "physical_button": "blue"
+    }
+  ],
+  "duplicate_confirmed": {
+    "yellow_index": "0x1A",
+    "blue_index": "0x1B",
+    "both_observed_consumer_usage": "0x006C"
+  },
+  "expected_blue_usage": "0x006B",
+  "usage_mapping_primary_source": "https://github.com/torvalds/linux/blob/master/drivers/hid/hid-input.c",
+  "probe": {
+    "single_connection": true,
+    "read_only": true,
+    "write_or_cccd_or_scan": false,
+    "software_revision_reads": 1,
+    "hardware_revision_reads": 240,
+    "elapsed_ms": 60351,
+    "closed": true,
+    "privacy": "No identifiers or raw system logs."
+  },
+  "qualification": {
+    "physical_color_indexes_confirmed": true,
+    "stock_duplicate_confirmed": true,
+    "corrected_mapping_installed": false,
+    "corrected_mapping_hardware_qualified": false,
+    "long_hold_behavior_qualified": false,
+    "battery_life_claimed": false
+  },
+  "note": "This confirms the input map only. A corrected map still requires offline tests and separately approved future firmware; no additional flash occurred.",
+  "capture_log_sha256": "51ccd41cf0583af94abf481f20ff90c86e8a87f3f246a6d6515340f22d0de991"
+}

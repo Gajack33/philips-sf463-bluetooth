@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "scope": "read-only static admission/liveness review; no new firmware design implemented",
+  "reviewed_on": "2026-10-18",
+  "firmware_version": "GVK1EH_B002FFv.6.097",
+  "installed_image_sha256": "789e9fd128e6194448b6096e6ab15f816848352032ff33a84ef1d136ed30b5f9",
+  "sources": {
+    "firmware/original/GVK1EH_B002FFv.06.05.bin": "6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
+    "firmware/adapter.c": "3779c0f47f2682cf211fdd91a664b3b9f2bcd20d64ba4b678193cd8539d1b1f4",
+    "firmware/adapter.S": "b2d0ba466c73f15e95bc87dd809fb667a22ceb17a9d4f3eeda511e712a51a4e0"
+  },
+  "observed_snapshot": {
+    "source": "evidence/hardware-6097.json:after_transfer",
+    "full_pages": [
+      "00000BFFFFFFFFFF1306",
+      "00000BFFFFFFFFFF1306",
+      "00000BFFFFFFFFFF1306"
+    ],
+    "core_active": false,
+    "scope": "latest_deferred_admission_refusal",
+    "reason": 11,
+    "reason_meaning": "native_transmission_not_quiescent",
+    "bond_count": null,
+    "heap_sample": null,
+    "hid_semaphore_present": true,
+    "legacy_queue_busy": true,
+    "role": 6,
+    "interpretation": "APP returned at the readiness precheck, before bond/heap queries. Queue occupancy and role are captured at refusal; no connection-event timeline was captured."
+  },
+  "static_facts": [
+    {
+      "source": "factory image,0x4D22 role handler",
+      "addresses": [
+        "0x4D46",
+        "0x4D48",
+        "0x4DF2",
+        "0x4DFA"
+      ],
+      "fact": "Entering role6 clears HID+0x0E, then reports the role to the application callback."
+    },
+    {
+      "source": "factory image,0x4C2A message-type8 handler",
+      "addresses": [
+        "0x4C94",
+        "0x4C96",
+        "0x4CAA",
+        "0x4CAC",
+        "0x4D10",
+        "0x4D12"
+      ],
+      "fact": "Successful phase1 and phase2 call0x4D10, which sets HID+0x0E=1 before callbacks and before the adapter posts its APP lifecycle event."
+    },
+    {
+      "source": "factory image,legacy HID drain",
+      "addresses": [
+        "0x4770",
+        "0x477A",
+        "0x4788",
+        "0x4796",
+        "0x479A",
+        "0x479E",
+        "0x47AA"
+      ],
+      "fact": "Readiness0E is a gate for draining, not an in-flight flag. The index is advanced before sending; returning from4EF4 and reaching the empty queue does not clear0E."
+    },
+    {
+      "source": "factory image,HID/APP task constructors and HID message loop",
+      "addresses": [
+        "0x13AE",
+        "0x4670",
+        "0x4800",
+        "0x480A",
+        "0x4814",
+        "0x481C"
+      ],
+      "fact": "HID has priority2 and APP priority1. HID processes queued messages until its message queue is empty. If role and authentication messages are queued without an intervening wait, APP runs after readiness has been set again."
+    },
+    {
+      "source": "firmware/adapter.c:try_admit,rc_hid_message,rc_app_turn; firmware/adapter.S:rc_app_turn_bridge",
+      "fact": "The adapter posts APP Event0x400 only after native dispatch returns. APP then rejects admission whenever readiness0E is nonzero. No drain-completed event retries admission, and ordinary keys/timers do not retry."
+    },
+    {
+      "source": "factory image,legacy producer4FAA; firmware/adapter.c:rc_hid_submit inactive fallback",
+      "addresses": [
+        "0x4FBC",
+        "0x4FBE",
+        "0x4FCE",
+        "0x4FE6",
+        "0x4FF2"
+      ],
+      "fact": "An APP producer already executing native fallback can be preempted by HID before publishing its next write index. Empty indexes and the consumed APP mailbox alone do not exclude this producer; after a HID-side claim,it could resume writing the old legacy queue."
+    }
+  ],
+  "native_readiness_writers": [
+    {
+      "offset": "0x4d12",
+      "bytes": "a173",
+      "operation": "set1"
+    },
+    {
+      "offset": "0x4d48",
+      "bytes": "b173",
+      "operation": "clear0 entering role6"
+    },
+    {
+      "offset": "0x4d70",
+      "bytes": "f081",
+      "operation": "clear0E/0F leaving role6"
+    }
+  ],
+  "conclusions": {
+    "confirmed_static": "HID+0x0E is persistent transmission readiness. While it remains1, every current APP admission attempt is rejected, even after all native TX has completed.",
+    "liveness_limit": "Role6 offers only a transient readiness0 window. Successful pairing triggers set readiness1 before posting the deferred event. A stable connection can therefore remain in native fallback indefinitely; successful admission is not guaranteed by ordinary connection events.",
+    "not_proven": "The exact role/authentication/task ordering of each observed reconnect was not captured. The snapshot is consistent with this static liveness defect but does not establish that every reconnect loses the window.",
+    "owner_reported_delay_cause_established": false
+  },
+  "safe_point_proposal_not_implemented": {
+    "point": "HID reader quiescence is observable after native4C2A returns at480A,or at47AA after4EF4 returned through479E. A complete admission commit additionally requires exclusion of an APP producer already executing inactive fallback.",
+    "reason": "At this HID owner boundary no old drain payload remains on a suspended HID call stack; readiness may legitimately remain1. This is a reader-safe point,not a sufficient two-owner commit protocol.",
+    "requirements": [
+      "Do not weaken the current APP guard without replacing its safety proof.",
+      "Do not force readiness0.",
+      "Keep identity,heap,source-mailbox and single-block guards.",
+      "No blocking query,allocation or wait inside the final critical section.",
+      "Do not add per-key admission or permanent timers.",
+      "Prove APP producer quiescence as well as HID reader quiescence; an entered fallback producer must not resume into reclaimed storage."
+    ],
+    "handoff_limit": "APP preparation plus a bounded ownership handoff/barrier must exclude both tasks referencing legacy storage during commit. No RAM location,producer lease or candidate handoff protocol is invented or implemented by this review.",
+    "smaller_code_option_limit": "Moving all admission work into HID does not by itself exclude a suspended APP fallback producer. It also moves RPC/allocation onto the400-byte HID stack; neither concurrency nor native/ROM stack is qualified by that change.",
+    "insufficient_alternative": "An ACK from HID followed by APP RPC/allocation is not sufficient because HID may resume sending; moving claim to HID with only empty-index/mailbox checks is also insufficient because an APP producer may resume writing."
+  },
+  "limitations": [
+    "Only audited visible application writers and callsites are covered; ROM/computed branches and scheduler behavior are not fully proved.",
+    "This evidence does not establish the cause or duration of owner-reported input delay.",
+    "The6.097 firmware and hashed artifacts were not modified; recovery and TV operations were outside this review."
+  ],
+  "production_files_changed": false,
+  "new_firmware_implemented": false,
+  "tv_calls_performed": false,
+  "privacy": "No device addresses,account identifiers or raw system logs."
+}

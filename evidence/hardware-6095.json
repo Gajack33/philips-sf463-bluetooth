@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "observed_on": "2026-10-18",
+  "scope": "Single-device 6.095 transfer, installed revision and inactive boot refusal verified; later restored 06.07 code as 6.096.",
+  "tv_model": "55OLED804/12",
+  "remote_model": "YKF463-001 / SF463",
+  "candidate": "6.095 (06.09 rc2)",
+  "source_commit": "5421f510a488e4835b52c12d91cd1c0183ff7c62",
+  "image_sha256": "f1423a9e12ff0142c7792218494ed22852981edc82fa845f01fbc3a5cd3146a6",
+  "experimental_installation_authorized_by_owner": true,
+  "before": {
+    "native_read_software_revision": "GVK1EH_B002FFv.06.09",
+    "native_read_battery_percent": 88
+  },
+  "transfer": {
+    "usb_sha256_verified": true,
+    "previous_usb_image_preserved": true,
+    "native_usb_mode_confirmed": true,
+    "native_selected_revision": "GVK1EH_B002FFv.6.095",
+    "native_strictly_newer_comparison_passed": true,
+    "image_bytes": 118784,
+    "blocks_of_32_bytes": 3712,
+    "programming_started_local": "19:53:28 Europe/Paris",
+    "programming_finished_local": "19:54:54 Europe/Paris",
+    "native_programming_finished": true,
+    "native_reported_reconnection_after_transfer": true,
+    "screen_status_used_as_proof": false,
+    "note": "The native no-remote screen remained visible after connection timeout while the transfer proceeded in its service. No retry or activity change interrupted the active transfer."
+  },
+  "after": {
+    "independent_software_revision": "GVK1EH_B002FFv.6.095",
+    "hardware_revision_pages": [
+      "00000200FFFFFFFF0101",
+      "00000200FFFFFFFF0101",
+      "00000200FFFFFFFF0101"
+    ],
+    "reliability_adapter_active": false,
+    "initialization_refusal_reason": {
+      "code": 2,
+      "name": "bond_count_not_one",
+      "bond_count_at_initial_check": 0,
+      "hid_semaphore_present": true,
+      "hid_role_at_initial_check": 1,
+      "heap_sample": null,
+      "allocation_attempted": false
+    },
+    "similar_connection_timeout_observed_before_6095": true,
+    "service_discovery_alone_used_as_live_att_proof": false,
+    "phlrc_bond_retained_in_bluetooth_dump": true,
+    "initial_read_failures": "Bounded clients either timed out without connecting, received connection status133, or lost the shared connection with status8 before the first ATT value was returned.",
+    "initial_owner_reports_rear_keyboard_unresponsive": true,
+    "initial_owner_reports_ir_only": true,
+    "phlrc_hid_present_before_repair": false
+  },
+  "qualification": {
+    "usb_transfer_completed": true,
+    "installed_revision_confirmed": true,
+    "reliability_changes_hardware_qualified": false,
+    "heap_reserve_measured": false,
+    "color_scan_indexes_confirmed": false,
+    "long_idle_or_wake_qualified": false,
+    "usage_0610_qualified": false,
+    "battery_life_gain_claimed": false
+  },
+  "next_step": "Validate restored 06.07 behavior, then investigate safe deferred admission without weakening memory or queue guards. 06.10 remains withheld.",
+  "privacy": "No network addresses, account identifiers or raw system logs included.",
+  "status": "hardware hold: inactive 6.095 core; 06.07 code restored as 6.096",
+  "recovery_attempts": {
+    "owner_battery_reset_and_normal_sources_pairing": "no success reported",
+    "tv_native_pairing_scan_explicitly_started": true,
+    "normal_pairing_after_native_scan": "failure or no success reported",
+    "manual_bond_forget_performed": true,
+    "tv_bluetooth_off_then_on_observed": true,
+    "svc_command_output": "Both calls emitted a crash-report write permission error; independent state reads confirmed OFF then ON.",
+    "independent_read_after_restart": "connection status133; zero ATT values; client closed",
+    "all_our_gatt_clients_closed": true,
+    "separately_authorized_6096_native_attempt": {
+      "owner_authorized": true,
+      "image_sha256": "c85f84d886beaf4ba83e80d39bcd01673fbbb1f5391be0cfba7f7762723c046d",
+      "behavior": "published06.07 code; revision and CRC only changed",
+      "native_software_revision_requested": true,
+      "native_software_revision_value_returned": false,
+      "native_battery_value_returned": false,
+      "firmware_write_started": false,
+      "disconnected_before_first_att_value": true,
+      "idle_updater_closed": true
+    },
+    "targeted_host_bond_repair": {
+      "separately_owner_authorized": true,
+      "only_uniquely_identified_phlrc_targeted": true,
+      "remove_bond_calls": 1,
+      "remove_bond_request_accepted": true,
+      "bond_none_observed": true,
+      "owner_reports_pairing_success": true,
+      "native_pairing_status": 2,
+      "phlrc_hid_input_present_after_repair": true,
+      "read_only_att_values_after_repair": 6,
+      "all_read_statuses_zero": true,
+      "read_sequence_completed_ms": 389,
+      "all_our_gatt_clients_closed_after_read": true,
+      "cause_of_old_pairing_failure": "not established; do not claim a proven key mismatch"
+    },
+    "subsequent_authorized_6096_recovery": {
+      "transfer_completed": true,
+      "independent_software_revision": "GVK1EH_B002FFv.6.096",
+      "independent_att_reads": 6,
+      "all_read_statuses_zero": true,
+      "reference": "hardware-recovery-6096.json"
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "version": "6.098",
+  "purpose": "Contingency return to published06.07 behavior after6.097; version andCRC only.",
+  "preparation_status": "Prepared offline; not deployed or owner-authorized at build time.",
+  "baseline_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+  "image_sha256": "f5519c9655536b1fe2d616a5aa03224ac3409d9c951a6e57b4fe846bddc76fa9",
+  "zip_sha256": "f96ca53e35696ab236d44f81c6bf84bd767043470452280739747ba8513b1bc1",
+  "image_bytes": 118784,
+  "changed_offsets": [
+    "0x0",
+    "0x1",
+    "0x16ef",
+    "0x16f0",
+    "0x16f1",
+    "0x16f2",
+    "0x16f3"
+  ],
+  "all_code_and_other_bytes_identical_to_0607": true,
+  "validation": {
+    "passed": true,
+    "narrow_checks": 15,
+    "baseline_checks": 6,
+    "recovery_checks": 9,
+    "two_builds_identical": true,
+    "native_java_order": "6.097<6.098<06.10",
+    "full_155_reliability_suite_applies": false,
+    "private_validation_sha256": "a7c62926ab629497e6ae031a0008b453a3ac8bd092d1d5b075dc93241e0efcf6"
+  },
+  "hardware_recovery_guaranteed": false,
+  "limitations": [
+    "Requires a working native Bluetooth update link; not a hardware-programmer recovery.",
+    "Keeps06.07 behavior, including the Blue/Yellow duplicate and unqualified long standby.",
+    "No new heap,voice,stack or battery-life qualification."
+  ],
+  "assets": [
+    {
+      "name": "GVK1EH_B002FFv.6.098.bin",
+      "sha256": "f5519c9655536b1fe2d616a5aa03224ac3409d9c951a6e57b4fe846bddc76fa9",
+      "size": 118784
+    },
+    {
+      "name": "SF463-6.098-recovery-USB.zip",
+      "sha256": "f96ca53e35696ab236d44f81c6bf84bd767043470452280739747ba8513b1bc1",
+      "size": 118940
+    }
+  ]
+}

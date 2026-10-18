@@ -1,0 +1,3 @@
+<resources>
+    <string name="service_description">Optional button shortcuts for your TV remote. Filters only configured non-essential keys. Does not read screen content, use the network, or connect to Bluetooth. Enable a profile in SF463 Companion to activate its shortcuts.</string>
+</resources>

@@ -1,0 +1,286 @@
+{
+  "added_code": {
+    "sha256": "a9c8fc9cf1fa16ee4d83d8e082fa88aaee87e096daaff2ffb009baee40c55a11",
+    "size": 11468,
+    "start": "0x17000"
+  },
+  "assets": [
+    {
+      "name": "GVK1EH_B002FFv.6.097.bin",
+      "sha256": "789e9fd128e6194448b6096e6ab15f816848352032ff33a84ef1d136ed30b5f9",
+      "size": 118784
+    },
+    {
+      "name": "SF463-6.097-diagnostic-USB.zip",
+      "sha256": "18fdc5cc08c5d184a917ba9e8035ec1b2697d49128a24a515db15ccf25b231d8",
+      "size": 118940
+    }
+  ],
+  "baseline": {
+    "06.07_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+    "factory_sha256": "6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040"
+  },
+  "compiler": "Zig CC0.14.1 / LLVM19.1.7; full command in firmware/build.py",
+  "crc16": "5c1e",
+  "hardware_validated": false,
+  "hook_manifest_sha256": "fbc049e09e4562db69537b27a1c4cd64d506c1f585109e3557671e51c5292c3f",
+  "image_sha256": "789e9fd128e6194448b6096e6ab15f816848352032ff33a84ef1d136ed30b5f9",
+  "integration_hook_sha256": "130e85e25c8c165a759994ea22a801009242ffdcf59fff9a375b1925e9c0ddbc",
+  "patches": [
+    {
+      "after": "15f089fc",
+      "before": "fff755fe",
+      "category": "front",
+      "name": "initialize-once-after-native-app-init",
+      "offset": "0x1736"
+    },
+    {
+      "after": "15f008bf00bf",
+      "before": "feb5dff80c47",
+      "category": "front",
+      "name": "drain-tagged-source-events",
+      "offset": "0x1878"
+    },
+    {
+      "after": "15f0c2bc",
+      "before": "ff280246",
+      "category": "front",
+      "name": "rear-source-callback",
+      "offset": "0x1a90"
+    },
+    {
+      "after": "15f03abd00bf",
+      "before": "38b5dff8f84a",
+      "category": "front",
+      "name": "front-and-orientation-source-callback",
+      "offset": "0x1abc"
+    },
+    {
+      "after": "00bf",
+      "before": "05d1",
+      "category": "front",
+      "name": "retain-verified-06.07-front-hid-gate",
+      "offset": "0x1d28"
+    },
+    {
+      "after": "17f031ba00bf",
+      "before": "a87c052813d1",
+      "category": "front",
+      "name": "queue-ordinary-front-before-ready-preserve-voice",
+      "offset": "0x1d2a"
+    },
+    {
+      "after": "15f0f4bf",
+      "before": "7cb50d46",
+      "category": "hid",
+      "name": "keyboard-full-report-admission",
+      "offset": "0x2170"
+    },
+    {
+      "after": "15f088bf",
+      "before": "dff82c19",
+      "category": "hid",
+      "name": "consumer-commit-after-admission",
+      "offset": "0x21dc"
+    },
+    {
+      "after": "14f038bd",
+      "before": "69071cd5",
+      "category": "hid",
+      "name": "single-native-context-hid-worker",
+      "offset": "0x476c"
+    },
+    {
+      "after": "13f07abb",
+      "before": "f8b51446",
+      "category": "hid",
+      "name": "hid-report-admission-entry",
+      "offset": "0x488e"
+    },
+    {
+      "after": "13f077be",
+      "before": "2de9f843",
+      "category": "hid",
+      "name": "hid-control-parameter-clears-native-queue-only-when-inactive",
+      "offset": "0x48f4"
+    },
+    {
+      "after": "13f0f6be",
+      "before": "2de9fe43",
+      "category": "hid",
+      "name": "cccd-and-protocol-write-notification",
+      "offset": "0x4ab0"
+    },
+    {
+      "after": "13f08cbd",
+      "before": "2de9fc41",
+      "category": "hid",
+      "name": "link-epoch-notification",
+      "offset": "0x4d22"
+    },
+    {
+      "after": "13f037bb",
+      "before": "05480121",
+      "category": "hid",
+      "name": "existing-hid-clock-readiness-callback",
+      "offset": "0x50b8"
+    },
+    {
+      "after": "13f026bd",
+      "before": "2de9ff4d",
+      "category": "diagnostic",
+      "name": "diagnostic-device-info-six-argument-callback",
+      "offset": "0x5250"
+    },
+    {
+      "after": "13f07dbb00bf",
+      "before": "10b5dff87843",
+      "category": "uart",
+      "name": "reset-uart-fragments-on-explicit-close",
+      "offset": "0x53a2"
+    },
+    {
+      "after": "13f0f8b9",
+      "before": "bcb5804c",
+      "category": "uart",
+      "name": "bounded-uart-fragment-accumulator",
+      "offset": "0x551a"
+    },
+    {
+      "after": "13f0a4ba",
+      "before": "f8b5354c",
+      "category": "uart",
+      "name": "reset-uart-fragments-on-worker-session-timeout",
+      "offset": "0x5648"
+    },
+    {
+      "after": "17f0b1fc",
+      "before": "01f0a6f9",
+      "category": "front",
+      "name": "app-lifecycle-admission-at-native-turn-tail",
+      "offset": "0x1796"
+    },
+    {
+      "after": "c00700c0",
+      "before": "c00300c0",
+      "category": "front",
+      "name": "app-lifecycle-event-mask",
+      "offset": "0x22b4"
+    },
+    {
+      "after": "12f0b7bb",
+      "before": "7cb50646",
+      "category": "hid",
+      "name": "schedule-admission-after-native-hid-lifecycle",
+      "offset": "0x4c2a"
+    },
+    {
+      "after": "6b",
+      "before": "6c",
+      "category": "front",
+      "name": "physical-blue-primary-consumer-usage",
+      "offset": "0x13bf0"
+    }
+  ],
+  "schema": 1,
+  "size": 118784,
+  "sources": {
+    "firmware/adapter.S": "b2d0ba466c73f15e95bc87dd809fb667a22ceb17a9d4f3eeda511e712a51a4e0",
+    "firmware/adapter.c": "3779c0f47f2682cf211fdd91a664b3b9f2bcd20d64ba4b678193cd8539d1b1f4",
+    "firmware/build.py": "80e42ced51892418341ce372103f902752ea38df8999e2560c63f07459d40042",
+    "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
+    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
+    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
+  },
+  "status": "offline-candidate-not-flashed",
+  "symbols": {
+    "$d": "0x19228",
+    "$t": "0x19b14",
+    "account_locked": "0x17b45",
+    "adapter.c": "0x0",
+    "compact_tx": "0x19a91",
+    "diagnostic_render_locked": "0x19025",
+    "diagnostic_snapshot": "0x18e59",
+    "expire_pending": "0x19819",
+    "inactive_snapshot": "0x18d8f",
+    "init_snapshot_locked": "0x18f9b",
+    "make_flight": "0x19a29",
+    "native_control": "0x18591",
+    "pending_rear_check_locked": "0x17ac1",
+    "rc_app_init": "0x1704d",
+    "rc_app_turn": "0x17383",
+    "rc_app_turn_bridge": "0x190fd",
+    "rc_attr_write": "0x188a1",
+    "rc_consumer": "0x180f1",
+    "rc_control": "0x185e7",
+    "rc_device_info_read": "0x18ca1",
+    "rc_enabled": "0x17001",
+    "rc_event_drain": "0x1768d",
+    "rc_front_callback": "0x17535",
+    "rc_front_gate": "0x19191",
+    "rc_hid_drain": "0x191e1",
+    "rc_hid_message": "0x1739d",
+    "rc_hid_submit": "0x17f87",
+    "rc_hid_worker": "0x181d1",
+    "rc_keyboard": "0x1815d",
+    "rc_link_event": "0x1883f",
+    "rc_native_event_rest": "0x1909d",
+    "rc_native_uart_frame": "0x19141",
+    "rc_original_attr_write": "0x19105",
+    "rc_original_consumer": "0x190b1",
+    "rc_original_control": "0x190d9",
+    "rc_original_device_info": "0x19185",
+    "rc_original_event_drain": "0x1908d",
+    "rc_original_front": "0x1907d",
+    "rc_original_hid_message": "0x190f1",
+    "rc_original_hid_submit": "0x190cd",
+    "rc_original_keyboard": "0x190c1",
+    "rc_original_link_event": "0x190e5",
+    "rc_original_rear": "0x19071",
+    "rc_original_timer": "0x19175",
+    "rc_original_uart_close": "0x19121",
+    "rc_original_uart_receive": "0x19111",
+    "rc_original_uart_worker": "0x19131",
+    "rc_rear_callback": "0x17419",
+    "rc_timer_callback": "0x1872b",
+    "rc_uart_close": "0x18aa1",
+    "rc_uart_receive": "0x1890f",
+    "rc_uart_worker": "0x18b95",
+    "refresh": "0x17b91",
+    "repair": "0x192c9",
+    "sf_cccd": "0x1957f",
+    "sf_core.c": "0x0",
+    "sf_core_init": "0x1922d",
+    "sf_front_index_valid": "0x193a7",
+    "sf_link": "0x194b5",
+    "sf_protocol": "0x19609",
+    "sf_repair": "0x19655",
+    "sf_source_pop": "0x19345",
+    "sf_source_push": "0x19251",
+    "sf_submit": "0x19679",
+    "sf_tx_complete": "0x19b15",
+    "sf_tx_peek": "0x198ad",
+    "sf_uart_feed": "0x193b5",
+    "sf_wake": "0x19569",
+    "source_push_locked": "0x174cb",
+    "try_admit": "0x17061"
+  },
+  "variant": "diagnostic",
+  "version": "6.097",
+  "source_commit": "f36cbfc1341917e0facb07d58e52037066f5652c",
+  "candidate_id": "06.09-rc3",
+  "validation_evidence": {
+    "proofs": [
+      {
+        "path": "evidence/reliability-rc3-offline.json",
+        "sha256": "f6ed1bcbec9f04fc9ba9b570a6324c066dc08806a22c1aa195e1d23ddac3f75f"
+      },
+      {
+        "path": "evidence/reliability-rc3-offline-llvm18.json",
+        "sha256": "9ec135a0c1e8882fcdd63ef546e70a019e575f9fae18936f4b90755faeeff0d4"
+      }
+    ],
+    "scope": "offline-software-only",
+    "passing_tests": 155
+  }
+}

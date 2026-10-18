@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-18",
+  "sample_size": {
+    "televisions": 1
+  },
+  "tv_model": "Philips 55OLED804/12",
+  "android_version": "12",
+  "companion_version": "0.1.0",
+  "apk": {
+    "sha256": "096b5033ac64dc4efa28b8dc085f8bd35c28dbe98a8d49041dd74f5f077de89e",
+    "bytes": 37405,
+    "installed_apk_sha256_read_on_tv": "096b5033ac64dc4efa28b8dc085f8bd35c28dbe98a8d49041dd74f5f077de89e",
+    "installed_and_local_apk_identical": true,
+    "signature_verified": true,
+    "host_java_tests_passed": 22
+  },
+  "actions": [
+    {
+      "action": "movix",
+      "trigger": "explicit native Test action button",
+      "foreground_activity": "com.movix.tv/.MainActivity",
+      "resumed_activity_confirmed": true,
+      "foreground_window_confirmed": true,
+      "screenshot_valid": true
+    },
+    {
+      "action": "hdmi1",
+      "trigger": "explicit native Test action button",
+      "foreground_activity": "org.droidtv.playtv/.PlayTvActivity",
+      "resumed_activity_confirmed": true,
+      "foreground_window_confirmed": true,
+      "screenshot_valid": false
+    },
+    {
+      "action": "hdmi2",
+      "trigger": "explicit native Test action button",
+      "foreground_activity": "org.droidtv.playtv/.PlayTvActivity",
+      "resumed_activity_confirmed": true,
+      "foreground_window_confirmed": true,
+      "screenshot_valid": false
+    },
+    {
+      "action": "couchy",
+      "trigger": "explicit native Test action button",
+      "foreground_activity": "com.conreo.couchytv/.MainActivity",
+      "resumed_activity_confirmed": true,
+      "foreground_window_confirmed": true,
+      "screenshot_valid": true
+    },
+    {
+      "action": "settings",
+      "trigger": "explicit native Test action button",
+      "foreground_activity": "org.droidtv.settings/.setupmenu.SetupMenuActivity",
+      "resumed_activity_confirmed": true,
+      "foreground_window_confirmed": true,
+      "screenshot_valid": true
+    },
+    {
+      "action": "self",
+      "trigger": "explicit native Test action button",
+      "foreground_activity": "fr.local.tv.sf463/.MainActivity",
+      "resumed_activity_confirmed": true,
+      "foreground_window_confirmed": true,
+      "screenshot_valid": true
+    }
+  ],
+  "hdmi_limitations": {
+    "requested_inputs": {
+      "hdmi1": "HW5",
+      "hdmi2": "HW6"
+    },
+    "screencap_returned_pixels": false,
+    "physical_signal_or_port_visually_confirmed": false,
+    "scope": "PlayTvActivity resumed and held window focus for each requested action; HDMI video and physical port selection are not confirmed."
+  },
+  "json_round_trip": {
+    "explicit_text_export_copy_paste_import_passed": true,
+    "final_export_structurally_equal_to_original_preset": true,
+    "imported_profiles_disabled": true
+  },
+  "accessibility": {
+    "enabled_by_owner": true,
+    "existing_authorization_preserved_after_apk_update": true,
+    "service_bound_at_end": true,
+    "enabled_by_agent": false,
+    "key_filter_capability": 8,
+    "subscribed_accessibility_events": 0,
+    "window_content_retrieval": false
+  },
+  "profile": {
+    "enabled": false,
+    "original_preset_restored": true,
+    "short_actions": {
+      "red": "Movix",
+      "green": "HDMI 1",
+      "yellow": "HDMI 2",
+      "blue": "Companion settings"
+    },
+    "hold_actions": "Off",
+    "double_actions": "Off"
+  },
+  "final_home": "Couchy",
+  "final_dock": [
+    "Movix",
+    "HDMI 1",
+    "HDMI 2"
+  ],
+  "firmware_flashed_during_app_validation": false,
+  "remaining_device_checks": [
+    "Actual learned Android key identity and shortcut gesture delivery with an explicitly enabled profile.",
+    "Physical HDMI video/port confirmation.",
+    "Idle, standby and reboot reliability."
+  ],
+  "evidence_type": "Sanitized first-party device observation summary; no network, account or local machine identifiers."
+}

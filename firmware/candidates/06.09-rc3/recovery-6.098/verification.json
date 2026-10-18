@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "scope": "private offline byte/format/native-callback comparison only",
+  "baseline_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+  "baseline_verifier": {
+    "count": 6,
+    "scope": "Existing published 06.07 Device Information verification; not the 134 reliability suite",
+    "tests": [
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_binary_integrity_hook_target_and_original_control_code",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_hardware_read_exposes_actual_state_and_fresh_key_values",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_missing_invalid_or_other_connection_cccd_is_bounded",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_only_existing_hardware_buffer_output_and_stack_are_written",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_other_device_information_strings_are_unchanged",
+      "recovery_published_diagnostic_verifier.DiagnosticVerification.test_partial_reads_and_invalid_offset_obey_original_callback"
+    ]
+  },
+  "recovery_verifier": {
+    "count": 9,
+    "tests": [
+      "__main__.RecoveryVerification.test_corrupt_baseline_or_wrong_input_is_rejected",
+      "__main__.RecoveryVerification.test_exact_native_java_float_selection_compatibility",
+      "__main__.RecoveryVerification.test_front_key_press_release_reports_match_published_0607",
+      "__main__.RecoveryVerification.test_native_initialization_and_version_setter_only_change_software_revision_in_ram",
+      "__main__.RecoveryVerification.test_not_ready_unbonded_and_voice_paths_match_published_0607",
+      "__main__.RecoveryVerification.test_other_device_information_callbacks_match_published_0607",
+      "__main__.RecoveryVerification.test_revision_crc_only_size_metadata_vectors_and_all_code_preserved",
+      "__main__.RecoveryVerification.test_software_revision_and_partial_reads_use_full_native_callback",
+      "__main__.RecoveryVerification.test_two_independent_package_builds_and_single_file_usb_zip"
+    ]
+  },
+  "exact_native_java_comparators_passed": true,
+  "two_builds_identical": true,
+  "baseline_immutable_after_validation": true,
+  "flashed": false,
+  "deployed": false,
+  "hardware_validated": false,
+  "version": "6.098",
+  "total_checks": 15,
+  "full_reliability_suite_applies": false,
+  "private_full_report_sha256": "a7c62926ab629497e6ae031a0008b453a3ac8bd092d1d5b075dc93241e0efcf6"
+}
