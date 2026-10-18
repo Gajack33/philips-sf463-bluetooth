@@ -54,6 +54,13 @@ are distinguished from pre-allocation samples. The device revision is 6.095,
 strictly between 06.09 and 06.10 under the updater's native float comparison.
 This preserves the original 20-byte revision field and the planned usage 06.10.
 
+The separately authorized [6.096 recovery](../evidence/hardware-recovery-6096.json)
+restored the published 06.07 code; only revision and CRC differ. The native transfer
+completed and an independent six-read ATT sequence confirmed version 6.096. Its
+15 narrow offline checks do not qualify the reliability changes. The owner reports
+both faces and first press after an unmeasured pause work with infrared covered;
+long idle remains unqualified. No new normal-use release is published.
+
 ## TV companion
 
 [SF463 Companion](../app/README.md) is optional and independent of firmware.

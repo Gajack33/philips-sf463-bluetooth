@@ -5,16 +5,21 @@ The published 06.07 remains unchanged. The first 06.09 was installed with the
 owner's explicit approval, but reports inactive fallback on the test remote.
 The 6.095 (06.09 rc2) refusal-diagnostic transfer completed with owner authorization.
 After a separately authorized host forget/re-pair, the TV again has PHLRC input
-and six ATT reads completed with status0. Actual6.095 is confirmed; its frozen
+and six ATT reads completed with status 0. Actual6.095 is confirmed; its frozen
 snapshot is `00000200FFFFFFFF0101`: reason2, bond count0 at initial admission,
 semaphore present, role1, no heap sample or allocation. This does not prove why
 inventory was zero. See `evidence/hardware-6095.json`.
 **Hardware hold:** initial keyboard loss was restored by the host re-pair, but the
 reliability core remains inactive. Do not install the diagnostic candidate while
 admission timing and hardware behavior are investigated.
-A private, separately verified 06.07 behavior recovery package is prepared and
-separately owner-authorized. Its native updater attempt lost the link before
-returning Software Revision, so no recovery firmware write started.
+The separately authorized 06.07 behavior recovery 6.096 is now installed. After
+the first attempt failed before any firmware write, host re-pair restored the link;
+a second native attempt completed 3,712 blocks and an independent six-read ATT
+sequence confirmed version 6.096 with status 0. Its 15 narrow offline checks are
+separate from the 134 reliability tests. Both faces and the first press after an
+unmeasured pause work with infrared covered according to the owner; exact
+60-second and longer-idle checks remain unqualified;
+see `evidence/hardware-recovery-6096.json`.
 06.08 is not a build input. Exact test IDs and hashes are in
 `evidence/reliability-rc2-offline.json`; the complete command is `python firmware/verify.py`.
 

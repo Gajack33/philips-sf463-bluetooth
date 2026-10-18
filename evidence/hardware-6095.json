@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "observed_on": "2026-10-18",
-  "scope": "single-device USB transfer; installed revision and adapter state not yet independently confirmed",
+  "scope": "Single-device 6.095 transfer, installed revision and inactive boot refusal verified; later restored 06.07 code as 6.096.",
   "tv_model": "55OLED804/12",
   "remote_model": "YKF463-001 / SF463",
   "candidate": "6.095 (06.09 rc2)",
@@ -62,14 +62,14 @@
     "usage_0610_qualified": false,
     "battery_life_gain_claimed": false
   },
-  "next_step": "Resume the separately authorized06.07 behavior recovery6.096 with fresh native version/battery checks. Keep reliability hardware qualification on hold: initialization refused count0 before allocation; a valid deferred admission lifecycle is not implemented.",
+  "next_step": "Validate restored 06.07 behavior, then investigate safe deferred admission without weakening memory or queue guards. 06.10 remains withheld.",
   "privacy": "No network addresses, account identifiers or raw system logs included.",
-  "status": "hardware hold: inactive core; host re-pair restored Bluetooth, recovery pending",
+  "status": "hardware hold: inactive 6.095 core; 06.07 code restored as 6.096",
   "recovery_attempts": {
     "owner_battery_reset_and_normal_sources_pairing": "no success reported",
     "tv_native_pairing_scan_explicitly_started": true,
     "normal_pairing_after_native_scan": "failure or no success reported",
-    "manual_bond_forget_performed": false,
+    "manual_bond_forget_performed": true,
     "tv_bluetooth_off_then_on_observed": true,
     "svc_command_output": "Both calls emitted a crash-report write permission error; independent state reads confirmed OFF then ON.",
     "independent_read_after_restart": "connection status133; zero ATT values; client closed",
@@ -99,6 +99,13 @@
       "read_sequence_completed_ms": 389,
       "all_our_gatt_clients_closed_after_read": true,
       "cause_of_old_pairing_failure": "not established; do not claim a proven key mismatch"
+    },
+    "subsequent_authorized_6096_recovery": {
+      "transfer_completed": true,
+      "independent_software_revision": "GVK1EH_B002FFv.6.096",
+      "independent_att_reads": 6,
+      "all_read_statuses_zero": true,
+      "reference": "hardware-recovery-6096.json"
     }
   }
 }

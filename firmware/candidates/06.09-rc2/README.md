@@ -5,6 +5,9 @@ keyboard became unavailable after the transfer. A separately authorized host
 forget/re-pair restored the PHLRC input and ATT reads. Revision 6.095 is confirmed,
 but the reliability core is inactive: its initial bond-count check returned zero,
 before any allocation. The reason that inventory was zero is not established.
+The test remote has since returned to 06.07 code through the separately authorized
+[6.096 recovery](../../../evidence/hardware-recovery-6096.json); version 6.096 was
+read independently. This does not qualify 6.095 or the planned 06.10.
 
 [USB package](SF463-6.095-diagnostic-USB.zip) · [Binary](GVK1EH_B002FFv.6.095.bin) · [SHA-256](SHA256SUMS) · [Build manifest](manifest.json)
 
