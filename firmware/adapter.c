@@ -23,7 +23,7 @@ enum RcInitReason {
     RC_INIT_BOND_RPC=3, RC_INIT_ZERO_IDENTITY=4, RC_INIT_TOTAL_FREE=5,
     RC_INIT_LARGEST_BLOCK=6, RC_INIT_ALLOC_NULL=7, RC_INIT_POST_FREE=8,
     RC_INIT_HID_QUEUE=9, RC_INIT_APP_MAILBOX=10,
-    RC_INIT_NATIVE_TX_ACTIVE=11
+    RC_INIT_NATIVE_TX_ACTIVE=11, RC_INIT_REAR_SOURCE_UNRESOLVED=12
 };
 #if RC_DIAGNOSTIC
 static void init_snapshot(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest,uint8_t deferred);
@@ -51,9 +51,10 @@ typedef struct {
     uint8_t dispatch_expired;
     uint32_t pending_rear_tick;
     uint16_t pending_rear_epoch;
-    uint8_t pending_rear_index;
+    uint8_t pending_rear_index, handoff_mask;
 } RcState;
 _Static_assert(sizeof(RcState)<=640,"one allocation including all adapter state");
+_Static_assert(offsetof(RcState,handoff_mask)==639,"handoff uses existing tail padding");
 
 extern uint64_t rc_original_rear(uint32_t,const uint8_t *);
 extern uint64_t rc_original_front(uint32_t,const uint8_t *,uint32_t);
@@ -114,9 +115,25 @@ static uint32_t now_locked(RcState *s) {
     s->tick_remainder=part%100u;
     return s->milliseconds;
 }
+static uint8_t source_release_mask(const SfSourceEvent *event) {
+    uint8_t kind=event->kind,count=event->count;
+    const uint8_t *p=event->payload;
+    if(kind==SF_SOURCE_UART && count==5u) { kind=SF_SOURCE_FRONT; count=p[1]; p+=2; }
+    if(kind!=SF_SOURCE_FRONT && kind!=SF_SOURCE_KEYBOARD) return 0;
+    if(count && (count!=1u || p[0]!=255u)) return 0;
+    return kind==SF_SOURCE_FRONT?2u:1u;
+}
+static void source_release_after_purge_locked(RcState *s) {
+    if(!s->core.source_barrier) {
+        s->handoff_mask&=(uint8_t)~((s->handoff_mask>>4)&3u);
+        s->handoff_mask&=3u;
+    }
+}
 static void source_push_locked(RcState *s,const SfSourceEvent *event) {
     uint32_t pos=(s->core.source_head+s->core.source_count)&15u;
     if(sf_source_push(&s->core,event)) s->source_ticks[pos]=now_locked(s);
+    else if(s->core.source_barrier)
+        s->handoff_mask|=(uint8_t)(source_release_mask(event)<<4);
 }
 static void account_locked(RcState *s,uint32_t now) {
 #if RC_DIAGNOSTIC
@@ -227,10 +244,10 @@ static void refresh(RcState *s,int useful,int query_bond) {
     }
     unlock(token);
 }
-/* APP is the sole admission owner. A posted lifecycle event may retry a
- * refusal, but neither a key, timer nor HID callback invokes admission.
+/* APP is the sole admission owner. A useful lifecycle event or a proven
+ * physical rear release may retry refusal, never a press, timer or HID callback.
  * Diagnostic telemetry records the latest refusal and its boot/deferred scope. */
-static void try_admit(uint32_t boot) {
+static void try_admit(uint32_t boot,uint32_t released_rear) {
     uint32_t stats[3],i,token;
     uint8_t address[6],bonds;
     RcState *s;
@@ -239,12 +256,16 @@ static void try_admit(uint32_t boot) {
     if(!get32(HID,0x1c)) {
         INIT_SNAPSHOT(RC_INIT_NO_HID_SEMAPHORE,255,65535,65535); return;
     }
-    /* Empty indices alone are insufficient: native4788 advances the last
-     * index before4EF4 has copied its payload, and that send can block in
-     * ICall. Only HID clears readiness0E, after that same task has returned
-     * from its old drain. Never force readiness to manufacture this window. */
-    if(HID[0x0e]) {
-        INIT_SNAPSHOT(RC_INIT_NATIVE_TX_ACTIVE,255,65535,65535); return;
+    /* HID's patched4784 copies the whole next legacy slot to its own stack
+     * before publishing a consumed index. A suspended native send therefore
+     * holds no pointer into the36-byte queue. Persistent readiness0E is not
+     * a busy flag and retains its native meaning. APP alone owns admission
+     * and native producers, so it cannot claim during its own4FAA enqueue. */
+    /* Native1FDA can retain APP1B when UART is unready even on a release.
+     * Do not infer physical release from that stale logical/cache state.
+     * Only the real rear source call188C may supply local release proof. */
+    if(APP[0x1b]!=255u && !released_rear) {
+        INIT_SNAPSHOT(RC_INIT_REAR_SOURCE_UNRESOLVED,255,65535,65535); return;
     }
     bonds=bonded_count();
     if(bonds!=1u) { INIT_SNAPSHOT(RC_INIT_BOND_COUNT,bonds,65535,65535); return; }
@@ -277,11 +298,10 @@ static void try_admit(uint32_t boot) {
     s->bond_valid=1;
     sf_link(&s->core,0,peer_tag(address),0);
     token=lock();
-    /* Recheck after EVERY RPC/heap call: HID may have resumed a native send
-     * while APP was blocked. Keep its referenced36-byte queue untouched. */
-    if(LEGACY_QUEUE[0]==CORE_MAGIC || HID[0x0e]) {
-        if(LEGACY_QUEUE[0]!=CORE_MAGIC)
-            INIT_SNAPSHOT_LOCKED(RC_INIT_NATIVE_TX_ACTIVE,bonds,stats[1],stats[2]);
+    /* Recheck after EVERY RPC/heap call. The native reader snapshots under
+     * this same gate before it can make a queue look empty. If a claim
+     * occurs while it waits in RPC, its return bypasses all legacy postlude. */
+    if(LEGACY_QUEUE[0]==CORE_MAGIC) {
         unlock(token); FN1(0x2cd0)((uint32_t)(uintptr_t)s); return;
     }
     if(HID[0x14]!=HID[0x15] || (get16(APP,0x20)&0x11u)) {
@@ -289,6 +309,17 @@ static void try_admit(uint32_t boot) {
                              bonds,stats[1],stats[2]);
         unlock(token); FN1(0x2cd0)((uint32_t)(uintptr_t)s); return;
     }
+    if(APP[0x1b]!=255u && !released_rear) {
+        INIT_SNAPSHOT_LOCKED(RC_INIT_REAR_SOURCE_UNRESOLVED,bonds,stats[1],stats[2]);
+        unlock(token); FN1(0x2cd0)((uint32_t)(uintptr_t)s); return;
+    }
+    /* A source still held with a matching native attempt/dedupe cache must
+     * not become a fresh action after the native in-flight report returns.
+     * These sentinels and attempted caches are never accepted-report evidence.
+     * F1/index44 is hold-only pairing, not an ordinary Consumer press. */
+    if(APP[0x18]<44u && get16(APP,0x28) &&
+       get16(APP,0x28)==*(volatile const uint16_t *)0x20003044u) s->handoff_mask|=2u;
+    if(released_rear) { APP[0x1b]=255u; APP[0x17]=255u; }
     /* Exclusive claim: all native queue producer/drain accessors are hooked.
      * Low byte of the marker is not a valid native report ID, preventing an
      * accidental match with ordinary legacy queue contents after fallback. */
@@ -307,13 +338,23 @@ static void try_admit(uint32_t boot) {
 }
 void rc_app_init(void) {
     NATIVE_FN(0x13e4,void(*)(void))();
-    try_admit(1);
+    try_admit(1,0);
 }
 /* Called only at nativeAPP1796, with that turn's consumed Event mask (R5).
  * The existing native tail still runs once, including on ordinary wakes. */
 void rc_app_turn(uint32_t events) {
     FN0(0x2ae6)();
-    if(events&0x400u) try_admit(0);
+    if(events&0x400u) try_admit(0,0);
+}
+/* Called only instead of BL1FDA at188C: R5 identifies the consumed source.
+ * The replay/tap calls198E/199C are deliberately not wrapped. The shared
+ * mailbox cannot identify either face when both source bits were pending. */
+void rc_rear_source_decode(uint32_t count,const uint8_t *payload,uint32_t mask) {
+    uint32_t released=((mask&0x91u)==0x10u &&
+        (!count || (count==1u && payload && payload[0]==255u)));
+    uint32_t useful=(APP[0x1b]!=255u || APP[0x17]!=255u);
+    NATIVE_FN(0x1fda,void(*)(uint32_t,const uint8_t *))(count,payload);
+    if(released && useful && !state()) try_admit(0,1);
 }
 uint64_t rc_hid_message(const uint8_t *message,uint32_t b,uint32_t c,uint32_t d) {
     uint32_t useful=0;
@@ -369,6 +410,9 @@ uint64_t rc_front_callback(uint32_t count,const uint8_t *payload,uint32_t specia
     if(token==0x555au || token==0x5568u || token==0x5608u) {
         if(s->dispatch_expired && !special && count && payload && payload[0]!=255u) return 0;
         NATIVE_FN(0x1dac,void(*)(uint32_t,const uint8_t *,uint32_t))(count,payload,special);
+        if(!special && (!count || (count==1u && payload && payload[0]==255u))) {
+            token=lock(); s->handoff_mask&=(uint8_t)~2u; unlock(token);
+        }
         return 0;
     }
     if(special && special!=0xf1u) return 0;
@@ -406,7 +450,12 @@ void rc_event_drain(void) {
             pending_rear_check_locked(s,now);
             source_tick=s->source_ticks[s->core.source_head];
             uint32_t age=now-source_tick;
+            source_release_after_purge_locked(s);
             available=(uint32_t)sf_source_pop(&s->core,&event);
+            /* A real release refused by a source-overflow barrier is still
+             * evidence of physical release, but only after the old FIFO has
+             * been purged. A suspended old dispatch is fenced below. */
+            source_release_after_purge_locked(s);
             s->dispatch_epoch=s->core.epoch; s->dispatch_active=(uint8_t)available;
             s->dispatch_expired=(uint8_t)(available && age>=SF_PRESS_TTL_MS);
             if(s->dispatch_expired) {
@@ -446,7 +495,10 @@ void rc_event_drain(void) {
                (event.count!=1u || sf_front_index_valid(&s->core,event.payload[0])))
                 NATIVE_FN(0x1dac,void(*)(uint32_t,const uint8_t *,uint32_t))(event.count,event.payload,0);
         }
-        token=lock(); s->dispatch_active=0; s->dispatch_expired=0; unlock(token);
+        token=lock();
+        if(s->dispatch_epoch==s->core.epoch)
+            s->handoff_mask&=(uint8_t)~source_release_mask(&event);
+        s->dispatch_active=0; s->dispatch_expired=0; unlock(token);
     } while(++processed<48u);
     token=lock(); pending_rear_check_locked(s,now_locked(s));
     mask=get16(APP,0x20); *(volatile uint16_t *)(APP+0x20)=0;
@@ -476,7 +528,10 @@ uint32_t rc_hid_submit(uint32_t id,uint32_t type,uint32_t length,const uint8_t *
     /* A HID-task connection callback can preempt APP after a source pop.
      * Its already-popped event must not be admitted into the new generation. */
     if(s->dispatch_active && (s->dispatch_epoch!=s->core.epoch ||
-       (s->dispatch_expired && nonzero(data,length)))) result=SF_NO_PEER;
+       ((s->dispatch_expired || s->core.source_barrier) && nonzero(data,length)))) result=SF_NO_PEER;
+    else if((s->handoff_mask & (1u<<(id-1u))) && nonzero(data,length)) {
+        ++s->core.dropped_tx; result=SF_QUARANTINED;
+    }
     else result=sf_submit(&s->core,(uint8_t)id,(uint8_t)length,data,now);
     unlock(token);
     if(result==SF_ADMITTED || result==SF_DUPLICATE) {
@@ -633,18 +688,25 @@ uint64_t rc_attr_write(uint32_t conn,uintptr_t attr,const uint8_t *data,uint32_t
 uint64_t rc_uart_receive(void) {
     RcState *s=state();
     uint8_t bytes[6];
-    uint32_t token,count,wanted,partial,delivered,pos;
+    uint32_t token,count,wanted,partial,delivered,pos,released=0;
     if(!s) return rc_original_uart_receive();
     token=lock(); wanted=6u-s->core.parser_count; unlock(token);
     if(!wanted || wanted>6u) wanted=6u;
     count=FN3(0x756a)(get32(UART,0x10),(uint32_t)(uintptr_t)bytes,wanted);
     token=lock();
     if(count>wanted) { UART[7]=0; unlock(token); return 0; }
+    partial=s->core.parser_count;
+    if(count==wanted && partial<6u && (partial?s->core.parser[0]:bytes[0])==0xfeu) {
+        uint8_t a=partial>2u?s->core.parser[2]:bytes[2u-partial];
+        uint8_t b=partial>3u?s->core.parser[3]:bytes[3u-partial];
+        if(a==0u || (a==1u && b==255u)) released=2u;
+    }
 #if RC_DIAGNOSTIC
     if(count && count<wanted) ++s->partial_reads;
 #endif
     pos=(s->core.source_head+s->core.source_count)&15u;
     delivered=sf_uart_feed(&s->core,bytes,count);
+    if(!delivered && s->core.source_barrier) s->handoff_mask|=(uint8_t)(released<<4);
     if(delivered) s->source_ticks[pos]=now_locked(s); /* At most one six-byte frame per bounded read. */
     partial=s->core.parser_count;
     if(count<wanted || !delivered) UART[7]=0; /* Native IRQ may post again. */

@@ -24,6 +24,42 @@ def inactive(reason, bond=0xFF, free=0xFFFF, largest=0xFFFF, flags=0, role=6):
 
 
 class DiagnosticDecoderTests(unittest.TestCase):
+    def test_rear_source_refusal_distinguishes_prequery_and_final_samples_without_fake_metrics(self):
+        for flags, scope in ((1, "latest_boot_admission_refusal"),
+                             (0x11, "latest_deferred_admission_refusal")):
+            with self.subTest(flags=flags):
+                report = decoder.decode_pages("6.099", [inactive(12, flags=flags, role=0xE6)])
+                fallback = report["fallback"]
+                self.assertEqual(fallback["reason_code"], 12)
+                self.assertEqual(fallback["reason"], "rear_source_unresolved")
+                self.assertIsNone(fallback["bond_count"])
+                self.assertIsNone(fallback["heap"])
+                self.assertEqual(fallback["role_state"], 0xE6)
+                self.assertEqual(fallback["snapshot_scope"], scope)
+                self.assertEqual(fallback["flags"]["deferred_admission"], bool(flags & 0x10))
+                self.assertFalse(report["improvements_active"])
+                self.assertEqual([report[key] for key in ("memory", "activity", "events", "link")], [None] * 4)
+        final = decoder.decode_pages("6.099", [inactive(12, 1, 768, 32, 0x11)])['fallback']
+        self.assertEqual(final["heap"], {"free_bytes": 768, "largest_free_block_bytes": 32,
+                                         "sample_phase": "post_allocation_before_release"})
+        self.assertEqual(final["bond_count"], 1)
+        self.assertEqual(final["snapshot_scope"], "latest_deferred_admission_refusal")
+        self.assertEqual(decoder.decode_pages("6.099", [inactive(12, flags=1)]),
+                         decoder.decode_pages("6.099", [inactive(12, flags=1)] * 3))
+
+    def test_rear_source_refusal_rejects_old_versions_and_inconsistent_phases(self):
+        for version in ("06.09", "6.095", "6.097"):
+            for supplied in (version, decoder.PREFIX + version):
+                with self.subTest(version=supplied), self.assertRaisesRegex(ValueError, "reason 12 requires.*6.099"):
+                    decoder.decode_pages(supplied, [inactive(12, flags=1)])
+        invalid = (inactive(12, 1, flags=1), inactive(12, 1, 767, 32, 1),
+                   inactive(12, 255, 768, 32, 1), inactive(12, 1, 768, 0xFFFF, 1),
+                   inactive(12, 1, 0xFFFF, 32, 1), inactive(12, 1, 768, 769, 1),
+                   inactive(12), inactive(12, flags=0x21), inactive(13, flags=1))
+        for captured in invalid:
+            with self.subTest(captured=captured), self.assertRaises(ValueError):
+                decoder.decode_pages("6.099", [captured])
+
     def test_quiescence_refusal_distinguishes_prequery_and_final_allocation_samples(self):
         prequery = decoder.decode_pages("6.097", [inactive(11, flags=1)])["fallback"]
         self.assertEqual(prequery["reason"], "native_transmission_not_quiescent")
@@ -37,31 +73,32 @@ class DiagnosticDecoderTests(unittest.TestCase):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 decoder.decode_pages("6.097", [invalid])
 
-    def test_rc3_exact_header_native_float_order_and_cli_preserve_explicit_versions(self):
+    def test_handoff_exact_header_native_float_order_and_cli_preserve_explicit_versions(self):
         build_path = PATH.parent / "build.py"
         spec = importlib.util.spec_from_file_location("sf463_decoder_version_builder", build_path)
         build = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(build)
-        self.assertEqual(build.VERSIONS, {"diagnostic": "6.097", "usage": "06.10"})
+        self.assertEqual(build.VERSIONS, {"diagnostic": "6.099", "usage": "06.10"})
         header = (decoder.PREFIX + build.VERSIONS["diagnostic"]).encode("ascii")
-        self.assertEqual(header, b"GVK1EH_B002FFv.6.097")
+        self.assertEqual(header, b"GVK1EH_B002FFv.6.099")
         self.assertEqual(len(header), 20)
         # Match the updater's float32 comparison, not lexicographic strings.
         native_float = lambda value: struct.unpack("<f", struct.pack("<f", float(value)))[0]
-        self.assertLess(native_float("6.096"), native_float(build.VERSIONS["diagnostic"]))
+        self.assertLess(native_float("6.098"), native_float(build.VERSIONS["diagnostic"]))
         self.assertLess(native_float(build.VERSIONS["diagnostic"]), native_float(build.VERSIONS["usage"]))
-        for version in ("6.097", header.decode("ascii")):
-            for captured in (pages(), [inactive(11, flags=1)], ["0" * 20]):
+        for version in ("6.099", header.decode("ascii")):
+            for captured in (pages(), [inactive(12, flags=1)], [inactive(12, 1, 768, 32, 0x11)], ["0" * 20]):
                 with self.subTest(version=version, captured=captured):
                     expected = decoder.decode_pages(version, captured)
-                    self.assertEqual(expected["firmware_version"], "6.097")
+                    self.assertEqual(expected["firmware_version"], "6.099")
                     cli = subprocess.run([sys.executable, str(PATH), "--firmware-version", version, *captured],
                                          capture_output=True, text=True)
                     self.assertEqual(cli.returncode, 0, cli.stderr)
                     self.assertEqual(json.loads(cli.stdout), expected)
 
-    def test_quiescence_reason_cannot_be_relabelled_as_an_older_diagnostic_version(self):
-        for version in ("06.09", "6.095", "GVK1EH_B002FFv.06.09", "GVK1EH_B002FFv.6.095"):
+    def test_historical_quiescence_reason_cannot_be_relabelled_as_another_diagnostic_version(self):
+        for version in ("06.09", "6.095", "6.099", "GVK1EH_B002FFv.06.09", "GVK1EH_B002FFv.6.095",
+                        "GVK1EH_B002FFv.6.099"):
             captured = inactive(11, flags=1)
             with self.subTest(version=version), self.assertRaisesRegex(ValueError, "reason 11 requires.*6.097"):
                 decoder.decode_pages(version, [captured])
@@ -114,7 +151,7 @@ class DiagnosticDecoderTests(unittest.TestCase):
     def test_version_mismatch_and_non_twenty_character_hex_are_rejected(self):
         for version in ("06.07", "06.10", "06.08", "", "GVK1EH_B002FFv.06.10", "07.09",
                         "6.09", "06.095", "6.0950", "GVK1EH_B002FFv.6.0950", "06.097", "6.0970",
-                        "GVK1EH_B002FFv.6.0970", "6.096"):
+                        "GVK1EH_B002FFv.6.0970", "6.096", "6.098", "06.099", "6.0990", "6.100"):
             with self.subTest(version=version), self.assertRaisesRegex(ValueError, "Only diagnostic"):
                 decoder.decode_pages(version, pages())
         for bad in ("", "0" * 19, "0" * 21, "G" * 20, "00 10000000000000000"):

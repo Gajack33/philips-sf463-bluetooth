@@ -340,6 +340,57 @@ class ThumbCoreTests(unittest.TestCase):
         self.call("sf_wake", STATE, 3000)
         self.assertIsNone(self.peek(3000))
 
+    def test_thumb_initial_neutrals_preserve_latest_fresh_fifo_state_for_both_reports(self):
+        self.call("sf_link", STATE, 1, 0x12345678, 0)
+        self.call("sf_cccd", STATE, 3, 0)
+        keyboard, power = b"\0\0\x04\0\0\0\0\0", b"\x30\0\0"
+        for report, data in ((1, keyboard), (2, power)):
+            self.assertEqual(self.submit(report, data, 1), 0)
+        self.neutral(2); self.neutral(2)
+        for report, data in ((1, keyboard), (2, power)):
+            self.assertEqual(self.submit(report, data, 2), 1)
+            view = self.peek(2)
+            self.assertEqual((view["id"], view["data"]), (report, data))
+            self.complete(view, 2)
+            self.assertEqual(self.submit(report, data, 3), 1)
+        self.assertIsNone(self.peek(3))
+        # Preserve the last queued release rather than an older Power: the
+        # following physical press is a new action even before TX catches up.
+        self.assertEqual(self.submit(2, bytes(3), 4), 0)
+        self.assertEqual(self.submit(2, power, 5), 0)
+        self.neutral(5)
+        self.assertEqual(self.peek(5)["data"], power)
+
+    def test_thumb_repair_completion_does_not_restore_expired_or_old_epoch_admission(self):
+        self.call("sf_link", STATE, 1, 0x12345678, 0)
+        self.call("sf_cccd", STATE, 3, 0)
+        self.assertEqual(self.submit(2, b"\x30\0\0", 1), 0)
+        self.neutral(1)
+        repair = self.peek(1)
+        self.assertEqual(repair["data"], bytes(3))
+        self.complete(repair, 2001)
+        self.assertEqual(self.submit(2, b"\x30\0\0", 2001), 0)
+        fresh = self.peek(2001)
+        self.assertEqual((fresh["tick"], fresh["data"]), (2001, b"\x30\0\0"))
+        self.complete(fresh, 2001)
+        self.assertIsNone(self.peek(2001))
+        self.call("sf_link", STATE, 1, 0x11223344, 2002)
+        self.call("sf_cccd", STATE, 3, 2002)
+        self.neutral(2002); self.neutral(2002)
+        self.assertEqual(self.submit(2, b"\x30\0\0", 2003), 0)
+
+    def test_thumb_expiring_old_press_preserves_newer_valid_pending_press_dedupe(self):
+        self.ready()
+        self.assertEqual(self.submit(2, b"\x30\0\0", 0), 0)
+        self.assertEqual(self.submit(2, bytes(3), 1000), 0)
+        self.assertEqual(self.submit(2, b"\x30\0\0", 1900), 0)
+        self.assertEqual(self.submit(2, b"\x30\0\0", 2100), 1)
+        self.neutral(2100)
+        fresh = self.peek(2100)
+        self.assertEqual((fresh["tick"], fresh["data"]), (1900, b"\x30\0\0"))
+        self.complete(fresh, 2100)
+        self.assertIsNone(self.peek(2100))
+
 
 if __name__ == "__main__":
     unittest.main()

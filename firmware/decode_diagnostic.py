@@ -1,10 +1,10 @@
-"""Decode captured 06.09 / 6.095 / 6.097 diagnostic pages; never opens Bluetooth.
+"""Decode captured 06.09 / 6.095 / 6.097 / 6.099 pages; never opens Bluetooth.
 
 Active firmware rotates pages 0/1/2 on offset-zero reads. Each page is 20 hex
 characters. Capture each entire page (including partial ATT reads) before the
 next offset-zero read. The three pages are separate samples, not one snapshot.
-Inactive page 0 is a boot-failure record in06.09/6.095. Version6.097 records
-the latest admission refusal, with flag0x10 distinguishing deferred attempts.
+Inactive page 0 is a boot-failure record in06.09/6.095. Versions6.097/6.099
+record the latest admission refusal, with flag0x10 distinguishing deferred attempts.
 GATT reads do not change this record. Legacy zeroes are not measurements.
 """
 import argparse
@@ -14,7 +14,7 @@ import struct
 
 PREFIX = "GVK1EH_B002FFv."
 VERSION = "06.09"
-VERSIONS = (VERSION, "6.095", "6.097")
+VERSIONS = (VERSION, "6.095", "6.097", "6.099")
 FALLBACK_REASONS = {
     0: "unknown",
     1: "hid_semaphore_missing",
@@ -28,6 +28,7 @@ FALLBACK_REASONS = {
     9: "hid_queue_busy",
     10: "app_mailbox_busy",
     11: "native_transmission_not_quiescent",
+    12: "rear_source_unresolved",
 }
 LIMITS = [
     "Heap minimum is the minimum sampled free value, not a continuous low-water mark.",
@@ -48,11 +49,13 @@ def _decode_inactive(raw: bytes, version: str) -> dict:
     reason, bond_raw = raw[2:4]
     free_raw, largest_raw = struct.unpack_from("<HH", raw, 4)
     flags, role = raw[8:]
-    allowed_flags = 0x1F if version == "6.097" else 0x0F
+    allowed_flags = 0x1F if version in ("6.097", "6.099") else 0x0F
     if reason not in FALLBACK_REASONS or flags & ~allowed_flags:
         raise ValueError("Invalid inactive fallback reason or reserved flags")
     if reason == 11 and version != "6.097":
         raise ValueError("Fallback reason 11 requires diagnostic firmware 6.097")
+    if reason == 12 and version != "6.099":
+        raise ValueError("Fallback reason 12 requires diagnostic firmware 6.099")
     if reason == 0 and flags & 0x10:
         raise ValueError("Unknown fallback provenance cannot claim a deferred admission refusal")
     bond = None if legacy or bond_raw == 0xFF else bond_raw
@@ -71,15 +74,15 @@ def _decode_inactive(raw: bytes, version: str) -> dict:
             raise ValueError("Inactive fallback reason contradicts an absent semaphore")
         if reason == 2 and bond == 1:
             raise ValueError("Bond-count reason contradicts the captured bond count")
-        if reason >= 3 and reason != 11 and bond != 1:
+        if reason >= 3 and reason not in (11, 12) and bond != 1:
             raise ValueError("Inactive fallback reason requires exactly one bond")
-        if reason == 11:
+        if reason in (11, 12):
             if (free is None) != (largest is None):
-                raise ValueError("Quiescence refusal requires both heap samples or neither")
+                raise ValueError("Admission-state refusal requires both heap samples or neither")
             if free is None and bond is not None:
-                raise ValueError("Pre-query quiescence refusal requires an unknown bond count")
+                raise ValueError("Pre-query admission-state refusal requires an unknown bond count")
             if free is not None and (bond != 1 or free < 768):
-                raise ValueError("Final quiescence refusal requires a valid post-allocation sample")
+                raise ValueError("Final admission-state refusal requires a valid post-allocation sample")
         if 5 <= reason <= 10:
             if free is None or largest is None:
                 raise ValueError("Inactive allocation failure requires known heap statistics")
@@ -100,7 +103,7 @@ def _decode_inactive(raw: bytes, version: str) -> dict:
         if reason == 10 and (not flags & 0x0C or flags & 2):
             raise ValueError("APP-mailbox reason contradicts queue/mailbox flags")
     phase = ("pre_allocation" if reason in (5, 6, 7) else
-             "post_allocation_before_release" if reason in (8, 9, 10) or (reason == 11 and free is not None)
+             "post_allocation_before_release" if reason in (8, 9, 10) or (reason in (11, 12) and free is not None)
              else "unknown")
     result = {
         "reason_code": reason,
@@ -116,7 +119,7 @@ def _decode_inactive(raw: bytes, version: str) -> dict:
         "role_state": None if legacy else role,
         "legacy_all_zero": legacy,
     }
-    if version == "6.097":
+    if version in ("6.097", "6.099"):
         result["snapshot_scope"] = ("unknown" if reason == 0 else
                                     "latest_deferred_admission_refusal" if flags & 0x10 else
                                     "latest_boot_admission_refusal")
@@ -130,7 +133,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
     if version.startswith(PREFIX):
         version = version[len(PREFIX):]
     if version not in VERSIONS:
-        raise ValueError("Only diagnostic firmware 06.09, 6.095 and 6.097 use this page schema; 06.07 and usage 06.10 do not")
+        raise ValueError("Only diagnostic firmware 06.09, 6.095, 6.097 and 6.099 use this page schema; 06.07 and usage 06.10 do not")
     if len(pages) not in (1, 3):
         raise ValueError("Provide three active pages, or one/three identical inactive page-0 snapshots")
     decoded = []
@@ -183,7 +186,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--firmware-version", required=True,
-                        help="Explicit embedded firmware version: 06.09, 6.095 or 6.097 (not the USB filename)")
+                        help="Explicit embedded firmware version: 06.09, 6.095, 6.097 or 6.099 (not the USB filename)")
     parser.add_argument("pages", nargs="+", help="Already captured 20-character hexadecimal pages")
     args = parser.parse_args(argv)
     try:

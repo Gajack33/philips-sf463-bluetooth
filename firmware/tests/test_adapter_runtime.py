@@ -44,7 +44,7 @@ class StateView(ctypes.LittleEndianStructure):
             "clock_initialized")] + [("dispatch_epoch",ctypes.c_uint16),("dispatch_active",ctypes.c_uint8),
             ("bond_valid",ctypes.c_uint8),("source_ticks",ctypes.c_uint32*16),("dispatch_expired",ctypes.c_uint8),
             ("pending_rear_tick",ctypes.c_uint32),("pending_rear_epoch",ctypes.c_uint16),
-            ("pending_rear_index",ctypes.c_uint8)]
+            ("pending_rear_index",ctypes.c_uint8),("handoff_mask",ctypes.c_uint8)]
 
 
 class RuntimeMachine(InitMachine):
@@ -131,7 +131,7 @@ class RuntimeMachine(InitMachine):
         self.tick = (self.tick + milliseconds * 100) & 0xFFFFFFFF
 
     def ready(self):
-        # Admission requires the native drain's quiescent readiness window.
+        # Seed the native empty queue before allowing the HID worker to send.
         self.emu.mem_write(HID + 0x0E, b"\x00")
         self.checked_call("rc_app_init")
         self.emu.mem_write(HID + 0x0E, b"\x01")

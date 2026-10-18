@@ -24,7 +24,7 @@ BASELINE_SHA = "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40
 IMAGE_SIZE = 118784
 PATCH_START, PATCH_END = 0x17000, 0x1D000
 VERSION_OFFSET = 0x16E0
-VERSIONS = {"diagnostic": "6.097", "usage": "06.10"}
+VERSIONS = {"diagnostic": "6.099", "usage": "06.10"}
 CATEGORIES = {"front", "hid", "diagnostic", "uart", "audio", "ota"}
 QUALIFICATION_FIELDS = {"integration_qualified", "integration_evidence", "integration_sources",
                         "integration_hook_sha256", "qualification_note"}

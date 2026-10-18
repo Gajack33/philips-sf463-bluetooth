@@ -171,7 +171,7 @@ class ImageBuildTests(unittest.TestCase):
 
     def test_diagnostic_has_distinct_revision_and_explicit_callback_branch(self):
         image, _ = self.make(variant="diagnostic")
-        self.assertEqual(image[0x16E0:0x16F4], b"GVK1EH_B002FFv.6.097")
+        self.assertEqual(image[0x16E0:0x16F4], b"GVK1EH_B002FFv.6.099")
         self.assertNotEqual(image[0x5250:0x5254], STOCK[0x5250:0x5254])
         self.assertEqual(image[0x52B2:0x52B6], STOCK[0x52B2:0x52B6])
         rules = manifest()
@@ -181,7 +181,7 @@ class ImageBuildTests(unittest.TestCase):
 
     def test_intermediate_diagnostic_revision_fits_native_string_and_float_order(self):
         # Philips compares the suffix with Java Float.parseFloat and strict >.
-        previous, intermediate, final = "6.096", build.VERSIONS["diagnostic"], build.VERSIONS["usage"]
+        previous, intermediate, final = "6.098", build.VERSIONS["diagnostic"], build.VERSIONS["usage"]
         binary32 = lambda value: struct.unpack("<f", struct.pack("<f", float(value)))[0]
         self.assertLess(binary32(previous), binary32(intermediate))
         self.assertLess(binary32(intermediate), binary32(final))
@@ -191,10 +191,10 @@ class ImageBuildTests(unittest.TestCase):
         image, _ = self.make(variant="diagnostic")
         with tempfile.TemporaryDirectory() as directory:
             assets = build.write_assets(Path(directory), "diagnostic", image, {"hardware_validated": False})
-            self.assertEqual(assets[0].name, "GVK1EH_B002FFv.6.097.bin")
-            self.assertEqual(assets[1].name, "SF463-6.097-diagnostic-USB.zip")
+            self.assertEqual(assets[0].name, "GVK1EH_B002FFv.6.099.bin")
+            self.assertEqual(assets[1].name, "SF463-6.099-diagnostic-USB.zip")
             with zipfile.ZipFile(assets[1]) as package:
-                self.assertEqual(package.namelist(), ["RCFW/GVK1EH_B002FFv.6.097.bin"])
+                self.assertEqual(package.namelist(), ["RCFW/GVK1EH_B002FFv.6.099.bin"])
                 self.assertEqual(package.read(package.namelist()[0]), image)
 
     def test_unqualified_or_stale_evidence_never_generates_an_image(self):

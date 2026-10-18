@@ -111,6 +111,13 @@ FN rc_app_turn_bridge
     b.w rc_app_turn
 END rc_app_turn_bridge
 
+/* Only the real rear source call188C carries a useful release proof.
+ * R5 is the mailbox mask captured before native1878 clears APP+20. */
+FN rc_rear_source_bridge
+    mov r2,r5
+    b.w rc_rear_source_decode
+END rc_rear_source_bridge
+
 /* Fifth argument remains at entry-SP, then native-SP+40 after the push. */
 FN rc_original_attr_write
     push {r1,r2,r3,r4,r5,r6,r7,r8,r9,lr}
@@ -217,3 +224,70 @@ FN rc_hid_drain
 .Ldrain_native_skip:
     RESUME 0x47aa
 END rc_hid_drain
+
+/* Replaces only the BL5006 at4784. Native488E bounds length to0..9;
+ * each of the three aligned slots is header3+payload9 =12 bytes. Before
+ * publishing the new read index, copy that entire slot onto the HID stack.
+ * The only frame retained by4EF4/RPC is these16 bytes, not a C call frame.
+ * APP owns admission and native producers; a suspended HID send therefore
+ * retains no pointer into the36 bytes which APP may subsequently claim.
+ */
+FN rc_native_legacy_snapshot
+    sub sp,#16
+    ldr r12,=0x2bab
+    blx r12
+    str r0,[sp,#12]          /* native gate token; last word is not payload */
+    ldr r0,[r7]
+    ldr r1,=0x53465243
+    cmp r0,r1
+    beq .Llegacy_no_slot
+    ldrb r0,[r6,#0x14]      /* re-read both indexes inside the gate */
+    ldrb r1,[r6,#0x15]
+    cmp r0,r1
+    beq .Llegacy_no_slot
+    cmp r0,#3
+    bhs .Llegacy_no_slot
+    cmp r1,#3
+    bhs .Llegacy_no_slot
+    adds r0,r0,#1
+    cmp r0,#3
+    it eq
+    moveq r0,#0
+    add.w r1,r0,r0,lsl #1
+    add.w r1,r7,r1,lsl #2
+    ldr r2,[r1]
+    str r2,[sp]
+    ldr r2,[r1,#4]
+    str r2,[sp,#4]
+    ldr r2,[r1,#8]
+    str r2,[sp,#8]
+    strb r0,[r6,#0x14]      /* publish only after all12 bytes are private */
+    ldr r0,[sp,#12]
+    ldr r12,=0x2bc1
+    blx r12
+    ldrb r2,[sp,#2]
+    cmp r2,#9               /* corrupt length may not escape the shadow */
+    bhi .Llegacy_return
+    ldrb r0,[sp]
+    ldrb r1,[sp,#1]
+    add r3,sp,#3
+    ldr r12,=0x4ef5
+    blx r12                 /* native lookup, RPC, send AND last-report copy */
+.Llegacy_return:
+    ldr r0,[r7]
+    ldr r1,=0x53465243
+    cmp r0,r1
+    add sp,#16
+    beq .Llegacy_claimed
+    /* R0/R1/flags are redefined at479E..47A2. No blocking call permits
+     * lower-priority APP to claim before the native postlude reaches47AA. */
+    RESUME 0x479e
+.Llegacy_no_slot:
+    ldr r0,[sp,#12]
+    ldr r12,=0x2bc1
+    blx r12
+    add sp,#16
+.Llegacy_claimed:
+    /* Do not re-read native indexes or repost legacy work after a claim. */
+    RESUME 0x47aa
+END rc_native_legacy_snapshot

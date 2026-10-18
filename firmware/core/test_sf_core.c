@@ -305,6 +305,39 @@ static void test_expired_offline_press_does_not_suppress_fresh_press(void) {
     v=next(&c,2002);
     assert(v.frame.data[0]==0x45 && v.frame.tick==2001);
 }
+static void test_initial_neutral_preserves_fresh_pending_dedupe_without_claiming_acceptance(void) {
+    SfCore c;
+    SfTxView v;
+    uint8_t key[3]={0x30,0,0};
+    sf_core_init(&c,0);
+    sf_link(&c,1,0x12345678,0);
+    sf_cccd(&c,3,0);
+    assert(sf_submit(&c,2,3,key,1)==SF_ADMITTED);
+    neutral(&c,2); neutral(&c,2);
+    assert(memcmp(c.accepted[1],ZERO,8)==0);
+    assert(sf_submit(&c,2,3,key,2)==SF_DUPLICATE);
+    v=next(&c,2);
+    assert(v.frame.id==2 && memcmp(v.frame.data,key,3)==0);
+    accepted(&c,v,2);
+    assert(sf_submit(&c,2,3,key,3)==SF_DUPLICATE);
+    assert(!sf_tx_peek(&c,3,&v));
+}
+static void test_expiring_old_power_keeps_latest_valid_pending_dedupe(void) {
+    SfCore c;
+    SfTxView v;
+    uint8_t key[3]={0x30,0,0};
+    ready(&c);
+    assert(sf_submit(&c,2,3,key,0)==SF_ADMITTED);
+    assert(sf_submit(&c,2,3,ZERO,1000)==SF_ADMITTED);
+    assert(sf_submit(&c,2,3,key,1900)==SF_ADMITTED);
+    assert(sf_submit(&c,2,3,key,2100)==SF_DUPLICATE);
+    assert(c.expired==1);
+    neutral(&c,2100);
+    v=next(&c,2100);
+    assert(v.frame.tick==1900 && memcmp(v.frame.data,key,3)==0);
+    accepted(&c,v,2100);
+    assert(!sf_tx_peek(&c,2100,&v));
+}
 int main(void) {
 #define RUN(name) do { name(); puts(#name " PASS"); } while(0)
     RUN(test_source_fifo_order_and_overflow_repair);
@@ -321,6 +354,8 @@ int main(void) {
     RUN(test_overflow_during_inflight_press_repairs_after_acceptance);
     RUN(test_unavailable_report_does_not_block_other_report);
     RUN(test_expired_offline_press_does_not_suppress_fresh_press);
-    printf("14/14 passed; runtime=%zu bytes\n",sizeof(SfCore));
+    RUN(test_initial_neutral_preserves_fresh_pending_dedupe_without_claiming_acceptance);
+    RUN(test_expiring_old_power_keeps_latest_valid_pending_dedupe);
+    printf("16/16 passed; runtime=%zu bytes\n",sizeof(SfCore));
     return 0;
 }

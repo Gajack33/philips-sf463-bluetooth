@@ -1,18 +1,9 @@
 {
   "schema": 1,
-  "integration_qualified": true,
-  "integration_evidence": [
-    {
-      "path": "evidence/reliability-rc3-offline.json",
-      "sha256": "f6ed1bcbec9f04fc9ba9b570a6324c066dc08806a22c1aa195e1d23ddac3f75f"
-    },
-    {
-      "path": "evidence/reliability-rc3-offline-llvm18.json",
-      "sha256": "9ec135a0c1e8882fcdd63ef546e70a019e575f9fae18936f4b90755faeeff0d4"
-    }
-  ],
+  "integration_qualified": false,
+  "integration_evidence": [],
   "baseline": "GVK1EH_B002FFv.06.05, SHA256 6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
-  "qualification_note": "Offline software qualification only:155 checks pass with LLVM18 and19. Diagnostic6.097 adds guarded event-driven admission, latest-refusal provenance and the confirmed Blue map. Hardware heap/stack, reconnect and long idle remain unqualified. No automatic flash;06.10 withheld.",
+  "qualification_note": "Unqualified offline native-stack handoff experiment; diagnostic6.099 and usage06.10 are check-only. No firmware export or hardware approval.",
   "protected_ranges": [
     {
       "start": "0x0",
@@ -134,6 +125,16 @@
     {
       "start": "0x13bf0",
       "end": "0x13bf1",
+      "category": "front"
+    },
+    {
+      "start": "0x4784",
+      "end": "0x4788",
+      "category": "hid"
+    },
+    {
+      "start": "0x188c",
+      "end": "0x1890",
       "category": "front"
     }
   ],
@@ -339,15 +340,24 @@
       "kind": "bytes",
       "replacement_hex": "6b",
       "category": "front"
+    },
+    {
+      "name": "native-legacy-slot-snapshot-before-index-publication",
+      "offset": "0x4784",
+      "expected_hex": "00f03ffc",
+      "kind": "branch",
+      "symbol": "rc_native_legacy_snapshot",
+      "link": false,
+      "category": "hid"
+    },
+    {
+      "name": "rear-release-admission-after-real-native-source",
+      "offset": "0x188c",
+      "expected_hex": "00f0a5fb",
+      "kind": "branch",
+      "symbol": "rc_rear_source_bridge",
+      "link": true,
+      "category": "front"
     }
-  ],
-  "integration_sources": {
-    "firmware/adapter.S": "b2d0ba466c73f15e95bc87dd809fb667a22ceb17a9d4f3eeda511e712a51a4e0",
-    "firmware/adapter.c": "3779c0f47f2682cf211fdd91a664b3b9f2bcd20d64ba4b678193cd8539d1b1f4",
-    "firmware/build.py": "80e42ced51892418341ce372103f902752ea38df8999e2560c63f07459d40042",
-    "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
-    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
-    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
-  },
-  "integration_hook_sha256": "130e85e25c8c165a759994ea22a801009242ffdcf59fff9a375b1925e9c0ddbc"
+  ]
 }

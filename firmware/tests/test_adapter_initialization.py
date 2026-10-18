@@ -47,6 +47,10 @@ class InitMachine(native.NativeMachine):
         self.emu.mem_write(HID + 0x0D, b"\x06")
         self.emu.mem_write(HID + 0x14, b"\0\0")
         self.emu.mem_write(0x20001790, b"\x01")
+        # Native IAR initialization sets these three source sentinels toFF.
+        # The API fixture does not execute that complete system initializer.
+        self.emu.mem_write(APP + 0x17, b"\xff\xff")
+        self.emu.mem_write(APP + 0x1B, b"\xff")
         self.write_guard = self.emu.hook_add(UC_HOOK_MEM_WRITE, self.check_write)
         self.stub(0x13E4, self.native_init)
         self.stub(0x2BAA, self.enter)

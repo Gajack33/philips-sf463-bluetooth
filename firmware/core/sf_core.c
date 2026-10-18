@@ -38,19 +38,38 @@ static void compact_tx(SfCore *c) {
     }
     c->tx_count=write;
 }
+static void restore_pending_admission(SfCore *c,uint8_t id,uint32_t now);
 static void expire_pending(SfCore *c,uint32_t now) {
-    uint8_t i,pos,bit;
+    uint8_t i,pos,bit,expired_mask=0,id;
     for(i=0;i<c->tx_count;++i) {
         pos=(uint8_t)((c->tx_head+i)&15u);
         if(!c->tx[pos].id || (c->flight_id && !c->flight_repair && pos==c->flight_pos)) continue;
         if(is_zero(c->tx[pos].data,c->tx[pos].len)) continue;
         if((uint32_t)(now-c->tx[pos].tick)<SF_PRESS_TTL_MS) continue;
         bit=bit_for(c->tx[pos].id);
-        c->admitted_mask=(uint8_t)(c->admitted_mask & ~bit);
+        expired_mask=(uint8_t)(expired_mask|bit);
         c->tx[pos].id=0;
         ++c->expired;
     }
     compact_tx(c);
+    for(id=1;id<=2;++id) if(expired_mask & bit_for(id)) restore_pending_admission(c,id,now);
+}
+static void restore_pending_admission(SfCore *c,uint8_t id,uint32_t now) {
+    uint8_t i,pos,bit=bit_for(id);
+    /* A required initial neutral precedes fresh reports already admitted to
+     * this session. Preserve the newest still-valid FIFO state for dedupe;
+     * it is not accepted state and must not be copied into accepted[]. */
+    c->admitted_mask=(uint8_t)(c->admitted_mask & ~bit);
+    bytes_zero(c->admitted[id-1],8);
+    for(i=0;i<c->tx_count;++i) {
+        const SfTx *frame;
+        pos=(uint8_t)((c->tx_head+i)&15u);
+        frame=&c->tx[pos];
+        if(frame->id!=id || frame->epoch!=c->epoch ||
+           (!is_zero(frame->data,frame->len) && (uint32_t)(now-frame->tick)>=SF_PRESS_TTL_MS)) continue;
+        bytes_copy(c->admitted[id-1],frame->data,8);
+        c->admitted_mask=(uint8_t)(c->admitted_mask|bit);
+    }
 }
 static void invalidate_report(SfCore *c,uint8_t id) {
     uint8_t i,pos=c->tx_head;
@@ -288,9 +307,10 @@ uint32_t sf_tx_peek(SfCore *c,uint32_t now,SfTxView *out) {
         bit=bit_for(frame->id);
         if(c->quarantine_mask & bit) { frame->id=0; continue; }
         if(!is_zero(frame->data,frame->len) && (uint32_t)(now-frame->tick)>=SF_PRESS_TTL_MS) {
-            c->admitted_mask=(uint8_t)(c->admitted_mask & ~bit);
+            uint8_t expired_id=frame->id;
             ++c->expired;
             frame->id=0;
+            restore_pending_admission(c,expired_id,now);
             continue;
         }
         if(!(mask & bit)) continue;
@@ -320,7 +340,7 @@ int sf_tx_complete(SfCore *c,uint32_t token,enum SfSendResult result,uint32_t no
         if(repair_frame) {
             c->repair_mask=(uint8_t)(c->repair_mask & ~bit);
             c->quarantine_mask=(uint8_t)(c->quarantine_mask & ~bit);
-            c->admitted_mask=(uint8_t)(c->admitted_mask & ~bit);
+            restore_pending_admission(c,id,now);
         } else c->tx[c->flight_pos].id=0;
         compact_tx(c);
         c->retry_active=0;
