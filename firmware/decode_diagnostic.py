@@ -26,6 +26,7 @@ FALLBACK_REASONS = {
     8: "insufficient_post_allocation_free",
     9: "hid_queue_busy",
     10: "app_mailbox_busy",
+    11: "native_transmission_not_quiescent",
 }
 LIMITS = [
     "Heap minimum is the minimum sampled free value, not a continuous low-water mark.",
@@ -64,9 +65,16 @@ def _decode_inactive(raw: bytes) -> dict:
             raise ValueError("Inactive fallback reason contradicts an absent semaphore")
         if reason == 2 and bond == 1:
             raise ValueError("Bond-count reason contradicts the captured bond count")
-        if reason >= 3 and bond != 1:
+        if reason >= 3 and reason != 11 and bond != 1:
             raise ValueError("Inactive fallback reason requires exactly one bond")
-        if reason >= 5:
+        if reason == 11:
+            if (free is None) != (largest is None):
+                raise ValueError("Quiescence refusal requires both heap samples or neither")
+            if free is None and bond is not None:
+                raise ValueError("Pre-query quiescence refusal requires an unknown bond count")
+            if free is not None and (bond != 1 or free < 768):
+                raise ValueError("Final quiescence refusal requires a valid post-allocation sample")
+        if 5 <= reason <= 10:
             if free is None or largest is None:
                 raise ValueError("Inactive allocation failure requires known heap statistics")
             if reason == 5 and free >= 1416:
@@ -86,7 +94,8 @@ def _decode_inactive(raw: bytes) -> dict:
         if reason == 10 and (not flags & 0x0C or flags & 2):
             raise ValueError("APP-mailbox reason contradicts queue/mailbox flags")
     phase = ("pre_allocation" if reason in (5, 6, 7) else
-             "post_allocation_before_release" if reason in (8, 9, 10) else "unknown")
+             "post_allocation_before_release" if reason in (8, 9, 10) or (reason == 11 and free is not None)
+             else "unknown")
     return {
         "reason_code": reason,
         "reason": FALLBACK_REASONS[reason],

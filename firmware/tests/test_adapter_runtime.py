@@ -131,7 +131,10 @@ class RuntimeMachine(InitMachine):
         self.tick = (self.tick + milliseconds * 100) & 0xFFFFFFFF
 
     def ready(self):
+        # Admission requires the native drain's quiescent readiness window.
+        self.emu.mem_write(HID + 0x0E, b"\x00")
         self.checked_call("rc_app_init")
+        self.emu.mem_write(HID + 0x0E, b"\x01")
         self.case.assertEqual(self.allocations, [ctypes.sizeof(StateView)])
         self.case.assertEqual(ctypes.sizeof(CoreView), 488)
         self.checked_call("rc_hid_worker")

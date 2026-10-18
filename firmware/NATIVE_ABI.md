@@ -10,10 +10,12 @@ instructions and their PC-relative literals rather than relocating raw bytes.
 
 | Entry | Original bytes | Required continuation / contract |
 |---|---|---|
+| `0x1796` APP turn tail | `01f0a6f9` | R5 contains the consumed Event mask. Forward it to C; still call native `0x2AE6` once before optional admission; return at `0x179A`. |
 | `0x1878` APP drain | `feb5dff80c47` | Recreate its 32-byte saved frame and APP pointer; native non-source processing resumes at `0x189E`. |
 | `0x1A90` rear callback | `ff280246` | Recreate `CMP r0,#255` and `MOV r2,r0`, including flags; resume `0x1A94`. |
 | `0x1ABC` front callback | `38b5dff8f84a` | Recreate `push {r3,r4,r5,lr}`, load APP; resume `0x1AC2`. |
 | `0x48F4` control | `2de9f843` | Recreate `push {r3,r4,r5,r6,r7,r8,r9,lr}`; inactive path resumes `0x48F8`. |
+| `0x4C2A` HID message dispatcher | `7cb50646` | Recreate its 24-byte frame and `MOV r6,r0`; resume `0x4C2E`. Message payloads may be freed inside the dispatcher. |
 | `0x5250` Device Information | `2de9ff4d` | Six arguments; original 48-byte saved frame keeps offset/max length at SP+48/SP+52. The output length is `uint16_t *`. |
 | `0x53A2` UART close | `10b5dff87843` | Six-byte hook needs branch + `00bf`; recreate `push {r4,lr}`, load UART; resume `0x53A8`. |
 | `0x551A` UART receive | `bcb5804c` | Recreate its 24-byte saved frame, load UART; resume `0x551E`. A supplied complete frame resumes `0x552C`. |
@@ -67,6 +69,39 @@ neutral branch at `0x4910..0x4950`.
 
 ## RAM, identity and measurement limits
 
+Deferred admission uses APP Event bit `0x400`; the sole Event mask literal at
+`0x22B4`, loaded at `0x179C`, changes from `0xC00003C0` to `0xC00007C0`.
+This is not the native sub-event bitmap at APP+`0x20`. HID only posts this bit
+after a changed role 6 or successful, changed pairing phase 1/2 message; APP
+alone retries admission. Repeated phases do not post. Events coalesce in the
+existing RTOS object; no latch, permanent polling or per-key allocation is added.
+The original `0x13E4` initialization is never rerun by deferred admission.
+At the APP continuation `0x179A..0x17A6`, R0/R2/R3/R1 are rewritten before
+Event_pend. No inherited flags are consumed; `0x17AA` produces the Z flag used
+at `0x17AC`. The bridge adds no saved frame. The C turn wrapper retains 8 bytes
+(LLVM19) or 16 bytes (LLVM18) during native `0x2AE6`, then removes them before
+tail-calling admission.
+
+Empty queue indexes do not establish quiescence. Native `0x4788` advances the
+last index before `0x4796` forms its legacy payload pointer and `0x479A` sends;
+`0x4EF4` can block in RPC before copying it. Readiness HID+`0x0E` has three
+identified writers: set 1 at `0x4D12`, clear 0 at `0x4D48`, and a halfword clear
+at `0x4D70`. All execute in HID through dispatcher `0x4C2A`; IRQ/Clock/BLE
+callbacks do not clear readiness. The drain requires readiness nonzero.
+Therefore admission requires readiness 0 both before querying/allocating and
+again under the final gate after all RPC/heap work. It never forces this flag.
+Failure preserves the native queue. Pairing completion may remain in fallback
+until a later connection transition provides a quiescent window. This proof is
+bounded to visible application code; ROM and hardware scheduling remain limits.
+
+For the new dispatcher wrapper, both LLVM18/19 retain 16 extra bytes only across
+useful events. Other/failed events remove that frame before tail-calling native.
+Observed native/wrapped prefixes, including HID's permanent 32-byte frame, are
+104/120 bytes for role 6, 88/104 for successful phases 1/2, and 88/88 for phase 0
+or a failed phase 1. The deferred APP path observes 184 bytes including its native
+24-byte frame. These stop at explicit API seams; they do not prove the native
+RPC/ROM/preemption worst case. The 400/750-byte task budgets are unchanged.
+
 APP, HID, UART and the 36-byte legacy queue are at `0x20000928`, `0x20000AD8`,
 `0x20000DD0`, `0x200027C8`. The queue becomes an exclusive magic/pointer header
 only after successful initialization and empty-mailbox checks. Inactive hooks
@@ -85,6 +120,10 @@ new RAM. Its ten raw bytes are page0, inactive0, reason, bond count, free16,
 largest16, flags and HID role. Reasons 1–10 identify missing HID semaphore,
 bond count, bond RPC, empty identity, total free, largest block, null allocation,
 post-allocation reserve, busy HID queue or pending APP source mailboxes.
+Reason 11 is native transmission not quiescent: unknown count/heap at the early
+check, or the post-allocation sample at the final check. A deferred refusal
+does not replace the initial boot snapshot; a successful claim enables active
+diagnostic pages. No new version or exported image is qualified by this branch.
 Unknown count is FF; unknown heap values are FFFF. Flags mark semaphore presence,
 HID queue occupancy, APP bit0 and APP bit4. Reasons 8–10 retain the sample before
 the rejected allocation is freed. Reads preserve the original record; successful

@@ -160,6 +160,15 @@ class NativeAdapterAbiTests(unittest.TestCase):
                 at = int(hook["offset"], 0)
                 expected = bytes.fromhex(hook["expected_hex"])
                 self.assertEqual(STOCK[at:at + len(expected)], expected)
+                if hook["name"] == "app-lifecycle-event-mask":
+                    # This one reviewed window is a32-bit literal, not code.
+                    # Check both masks and its unchanged PC-relative reader;
+                    # all instruction hooks still require complete decoding.
+                    self.assertEqual(at, 0x22B4)
+                    self.assertEqual(struct.unpack("<I", expected)[0], 0xC00003C0)
+                    self.assertEqual(struct.unpack_from("<I", self.compiled["image"], at)[0], 0xC00007C0)
+                    self.assertEqual(self.compiled["image"][0x179C:0x17A0], STOCK[0x179C:0x17A0])
+                    continue
                 instructions = list(decoder.disasm(expected, at))
                 self.assertEqual(sum(i.size for i in instructions), len(expected))
                 self.assertTrue(instructions)
@@ -178,7 +187,8 @@ class NativeAdapterAbiTests(unittest.TestCase):
             ("event_drain", 0x1878, 0x187E), ("consumer", 0x21DC, 0x21E0),
             ("keyboard", 0x2170, 0x2174), ("hid_submit", 0x488E, 0x4892),
             ("control", 0x48F4, 0x48F8),
-            ("link_event", 0x4D22, 0x4D26), ("attr_write", 0x4AB0, 0x4AB4),
+            ("link_event", 0x4D22, 0x4D26), ("hid_message", 0x4C2A, 0x4C2E),
+            ("attr_write", 0x4AB0, 0x4AB4),
             ("uart_receive", 0x551A, 0x551E), ("timer", 0x50B8, 0x50BC),
             ("uart_close", 0x53A2, 0x53A8), ("uart_worker", 0x5648, 0x564C),
             ("device_info", 0x5250, 0x5254)]

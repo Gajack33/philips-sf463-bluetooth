@@ -96,6 +96,21 @@ FN rc_original_link_event
     RESUME 0x4d26
 END rc_original_link_event
 
+/* HID main calls4C2A at480A. Its live message is freed by the caller; the
+ * dispatcher frees nested payloads itself. Rebuild its complete4-byte prefix. */
+FN rc_original_hid_message
+    push {r2,r3,r4,r5,r6,lr}
+    mov r6,r0
+    RESUME 0x4c2e
+END rc_original_hid_message
+
+/* APP task's consumed Event mask is live in callee-savedR5 at1796. Native
+ *2AE6 takes no arguments. This bridge adds no retained stack frame. */
+FN rc_app_turn_bridge
+    mov r0,r5
+    b.w rc_app_turn
+END rc_app_turn_bridge
+
 /* Fifth argument remains at entry-SP, then native-SP+40 after the push. */
 FN rc_original_attr_write
     push {r1,r2,r3,r4,r5,r6,r7,r8,r9,lr}

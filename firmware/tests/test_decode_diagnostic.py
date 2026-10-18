@@ -24,6 +24,19 @@ def inactive(reason, bond=0xFF, free=0xFFFF, largest=0xFFFF, flags=0, role=6):
 
 
 class DiagnosticDecoderTests(unittest.TestCase):
+    def test_quiescence_refusal_distinguishes_prequery_and_final_allocation_samples(self):
+        prequery = decoder.decode_pages("6.095", [inactive(11, flags=1)])["fallback"]
+        self.assertEqual(prequery["reason"], "native_transmission_not_quiescent")
+        self.assertIsNone(prequery["bond_count"])
+        self.assertIsNone(prequery["heap"])
+        final = decoder.decode_pages("6.095", [inactive(11, 1, 768, 300, 1)])["fallback"]
+        self.assertEqual(final["heap"], {"free_bytes": 768, "largest_free_block_bytes": 300,
+                                         "sample_phase": "post_allocation_before_release"})
+        for invalid in (inactive(11, 1, flags=1), inactive(11, 1, 767, 300, 1),
+                        inactive(11, 255, 768, 300, 1), inactive(11, 1, 768, 0xFFFF, 1)):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                decoder.decode_pages("6.095", [invalid])
+
     def test_three_pages_decode_little_endian_fields_units_and_cli_without_connections(self):
         values = pages()
         report = decoder.decode_pages("GVK1EH_B002FFv.06.09", [values[2], values[0], values[1]])

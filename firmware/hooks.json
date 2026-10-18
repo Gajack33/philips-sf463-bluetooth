@@ -1,14 +1,9 @@
 {
   "schema": 1,
-  "integration_qualified": true,
-  "integration_evidence": [
-    {
-      "path": "evidence/reliability-rc2-offline.json",
-      "sha256": "991d07929d6013af251283c3d018db243d91de373f143f5568ba8913cc3eaf24"
-    }
-  ],
+  "integration_qualified": false,
+  "integration_evidence": [],
   "baseline": "GVK1EH_B002FFv.06.05, SHA256 6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
-  "qualification_note": "Offline software qualification only: 134 checks pass with LLVM 18 and 19. First 06.09 is installed but inactive; diagnostic 6.095 (06.09 rc2) only records refusal provenance without relaxing guards or retrying allocation. Real heap/stack, keys and long idle remain pending. No automatic flash; 06.10 remains withheld.",
+  "qualification_note": "Unqualified offline deferred-admission worktree. No new flash version assigned; firmware/USB export remains disabled.",
   "protected_ranges": [
     {
       "start": "0x0",
@@ -111,6 +106,21 @@
       "start": "0x5648",
       "end": "0x564c",
       "category": "uart"
+    },
+    {
+      "start": "0x1796",
+      "end": "0x179a",
+      "category": "front"
+    },
+    {
+      "start": "0x22b4",
+      "end": "0x22b8",
+      "category": "front"
+    },
+    {
+      "start": "0x4c2a",
+      "end": "0x4c2e",
+      "category": "hid"
     }
   ],
   "hooks": [
@@ -281,15 +291,32 @@
       "symbol": "rc_uart_worker",
       "link": false,
       "category": "uart"
+    },
+    {
+      "name": "app-lifecycle-admission-at-native-turn-tail",
+      "offset": "0x1796",
+      "expected_hex": "01f0a6f9",
+      "kind": "branch",
+      "symbol": "rc_app_turn_bridge",
+      "link": true,
+      "category": "front"
+    },
+    {
+      "name": "app-lifecycle-event-mask",
+      "offset": "0x22b4",
+      "expected_hex": "c00300c0",
+      "kind": "bytes",
+      "replacement_hex": "c00700c0",
+      "category": "front"
+    },
+    {
+      "name": "schedule-admission-after-native-hid-lifecycle",
+      "offset": "0x4c2a",
+      "expected_hex": "7cb50646",
+      "kind": "branch",
+      "symbol": "rc_hid_message",
+      "link": false,
+      "category": "hid"
     }
-  ],
-  "integration_sources": {
-    "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
-    "firmware/adapter.c": "084400101f6a2db7c6ebe84f81a136065a0d94e9cc2da975face4070753779c2",
-    "firmware/build.py": "5f3dfc9bc64950c38a5707d4c477efa0d26b9bea6be911aaceb7f2ab91aec152",
-    "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
-    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
-    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
-  },
-  "integration_hook_sha256": "9e9514db7a1f5567fc9767cca53fb2c2ad3439d8d054f476776c689d3b2c882a"
+  ]
 }
