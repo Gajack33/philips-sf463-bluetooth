@@ -26,10 +26,10 @@ enum RcInitReason {
     RC_INIT_NATIVE_TX_ACTIVE=11
 };
 #if RC_DIAGNOSTIC
-static void init_snapshot(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest);
-static void init_snapshot_locked(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest);
-#define INIT_SNAPSHOT(reason,bonds,free_bytes,largest) init_snapshot(reason,bonds,free_bytes,largest)
-#define INIT_SNAPSHOT_LOCKED(reason,bonds,free_bytes,largest) init_snapshot_locked(reason,bonds,free_bytes,largest)
+static void init_snapshot(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest,uint8_t deferred);
+static void init_snapshot_locked(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest,uint8_t deferred);
+#define INIT_SNAPSHOT(reason,bonds,free_bytes,largest) init_snapshot(reason,bonds,free_bytes,largest,(uint8_t)!boot)
+#define INIT_SNAPSHOT_LOCKED(reason,bonds,free_bytes,largest) init_snapshot_locked(reason,bonds,free_bytes,largest,(uint8_t)!boot)
 #else
 #define INIT_SNAPSHOT(reason,bonds,free_bytes,largest) ((void)0)
 #define INIT_SNAPSHOT_LOCKED(reason,bonds,free_bytes,largest) ((void)0)
@@ -229,7 +229,7 @@ static void refresh(RcState *s,int useful,int query_bond) {
 }
 /* APP is the sole admission owner. A posted lifecycle event may retry a
  * refusal, but neither a key, timer nor HID callback invokes admission.
- * Initial refusal telemetry stays frozen until an admission succeeds. */
+ * Diagnostic telemetry records the latest refusal and its boot/deferred scope. */
 static void try_admit(uint32_t boot) {
     uint32_t stats[3],i,token;
     uint8_t address[6],bonds;
@@ -237,34 +237,34 @@ static void try_admit(uint32_t boot) {
     /* No native queue byte is changed before allocation and identity checks. */
     if(LEGACY_QUEUE[0]==CORE_MAGIC) return;
     if(!get32(HID,0x1c)) {
-        if(boot) INIT_SNAPSHOT(RC_INIT_NO_HID_SEMAPHORE,255,65535,65535); return;
+        INIT_SNAPSHOT(RC_INIT_NO_HID_SEMAPHORE,255,65535,65535); return;
     }
     /* Empty indices alone are insufficient: native4788 advances the last
      * index before4EF4 has copied its payload, and that send can block in
      * ICall. Only HID clears readiness0E, after that same task has returned
      * from its old drain. Never force readiness to manufacture this window. */
     if(HID[0x0e]) {
-        if(boot) INIT_SNAPSHOT(RC_INIT_NATIVE_TX_ACTIVE,255,65535,65535); return;
+        INIT_SNAPSHOT(RC_INIT_NATIVE_TX_ACTIVE,255,65535,65535); return;
     }
     bonds=bonded_count();
-    if(bonds!=1u) { if(boot) INIT_SNAPSHOT(RC_INIT_BOND_COUNT,bonds,65535,65535); return; }
+    if(bonds!=1u) { INIT_SNAPSHOT(RC_INIT_BOND_COUNT,bonds,65535,65535); return; }
     clear(address,6);
     if(FN4(0x34b8)(0x10,*(const uint32_t *)(uintptr_t)0x2b14u,0x419,(uint32_t)(uintptr_t)address)) {
-        if(boot) INIT_SNAPSHOT(RC_INIT_BOND_RPC,bonds,65535,65535); return;
+        INIT_SNAPSHOT(RC_INIT_BOND_RPC,bonds,65535,65535); return;
     }
-    if(!nonzero(address,6)) { if(boot) INIT_SNAPSHOT(RC_INIT_ZERO_IDENTITY,bonds,65535,65535); return; }
+    if(!nonzero(address,6)) { INIT_SNAPSHOT(RC_INIT_ZERO_IDENTITY,bonds,65535,65535); return; }
     NATIVE_FN(0x2d54,void(*)(uint32_t *))(stats);
     if(stats[1]<sizeof(RcState)+8u+768u) {
-        if(boot) INIT_SNAPSHOT(RC_INIT_TOTAL_FREE,bonds,stats[1],stats[2]); return;
+        INIT_SNAPSHOT(RC_INIT_TOTAL_FREE,bonds,stats[1],stats[2]); return;
     }
     if(stats[2]<sizeof(RcState)) {
-        if(boot) INIT_SNAPSHOT(RC_INIT_LARGEST_BLOCK,bonds,stats[1],stats[2]); return;
+        INIT_SNAPSHOT(RC_INIT_LARGEST_BLOCK,bonds,stats[1],stats[2]); return;
     }
     s=(RcState *)(uintptr_t)FN1(0x2c3e)(sizeof(RcState));
-    if(!s) { if(boot) INIT_SNAPSHOT(RC_INIT_ALLOC_NULL,bonds,stats[1],stats[2]); return; }
+    if(!s) { INIT_SNAPSHOT(RC_INIT_ALLOC_NULL,bonds,stats[1],stats[2]); return; }
     NATIVE_FN(0x2d54,void(*)(uint32_t *))(stats);
     if(stats[1]<768u) {
-        if(boot) INIT_SNAPSHOT(RC_INIT_POST_FREE,bonds,stats[1],stats[2]);
+        INIT_SNAPSHOT(RC_INIT_POST_FREE,bonds,stats[1],stats[2]);
         FN1(0x2cd0)((uint32_t)(uintptr_t)s); return;
     }
     clear((uint8_t *)s,sizeof(*s));
@@ -280,13 +280,13 @@ static void try_admit(uint32_t boot) {
     /* Recheck after EVERY RPC/heap call: HID may have resumed a native send
      * while APP was blocked. Keep its referenced36-byte queue untouched. */
     if(LEGACY_QUEUE[0]==CORE_MAGIC || HID[0x0e]) {
-        if(boot && LEGACY_QUEUE[0]!=CORE_MAGIC)
+        if(LEGACY_QUEUE[0]!=CORE_MAGIC)
             INIT_SNAPSHOT_LOCKED(RC_INIT_NATIVE_TX_ACTIVE,bonds,stats[1],stats[2]);
         unlock(token); FN1(0x2cd0)((uint32_t)(uintptr_t)s); return;
     }
     if(HID[0x14]!=HID[0x15] || (get16(APP,0x20)&0x11u)) {
-        if(boot) INIT_SNAPSHOT_LOCKED(HID[0x14]!=HID[0x15]?RC_INIT_HID_QUEUE:RC_INIT_APP_MAILBOX,
-                                      bonds,stats[1],stats[2]);
+        INIT_SNAPSHOT_LOCKED(HID[0x14]!=HID[0x15]?RC_INIT_HID_QUEUE:RC_INIT_APP_MAILBOX,
+                             bonds,stats[1],stats[2]);
         unlock(token); FN1(0x2cd0)((uint32_t)(uintptr_t)s); return;
     }
     /* Exclusive claim: all native queue producer/drain accessors are hooked.
@@ -297,7 +297,7 @@ static void try_admit(uint32_t boot) {
     LEGACY_QUEUE[1]=(uint32_t)(uintptr_t)s;
     LEGACY_QUEUE[0]=CORE_MAGIC;
 #if RC_DIAGNOSTIC
-    /* A later loss of the claim must not expose an older boot refusal as if
+    /* A later loss of the claim must not expose an older admission refusal as if
      * it were the cause. Active reads render their normal pages on demand. */
     ((volatile uint8_t *)0x20000664u)[0]=0;
 #endif
@@ -692,19 +692,19 @@ static void diagnostic_render_locked(const uint8_t raw[10]) {
 /* Failure telemetry lives only in the existing 21-byte Hardware Revision
  * buffer. No latch or alternate RAM claim is introduced. Heap values
  * are the last existing sample; reasons8/9/10 precede release of the block. */
-static void init_snapshot_locked(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest) {
+static void init_snapshot_locked(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest,uint8_t deferred) {
     uint8_t raw[10];
     uint16_t app=get16(APP,0x20);
     raw[0]=0; raw[1]=0; raw[2]=reason; raw[3]=bonds;
     put16(raw+4,free_bytes); put16(raw+6,largest);
     raw[8]=(uint8_t)((get32(HID,0x1c)?1u:0u)|
-        (HID[0x14]!=HID[0x15]?2u:0u)|(app&1u?4u:0u)|(app&0x10u?8u:0u));
+        (HID[0x14]!=HID[0x15]?2u:0u)|(app&1u?4u:0u)|(app&0x10u?8u:0u)|(deferred?0x10u:0u));
     raw[9]=HID[0xd];
     diagnostic_render_locked(raw);
 }
-static void init_snapshot(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest) {
+static void init_snapshot(uint8_t reason,uint8_t bonds,uint32_t free_bytes,uint32_t largest,uint8_t deferred) {
     uint32_t token=lock();
-    init_snapshot_locked(reason,bonds,free_bytes,largest);
+    init_snapshot_locked(reason,bonds,free_bytes,largest,deferred);
     unlock(token);
 }
 static void inactive_snapshot(void) {
@@ -720,9 +720,9 @@ static void inactive_snapshot(void) {
         for(i=0;i<20;++i) if(hw[i]!='0') legacy=0;
         valid=(uint8_t)(unknown || legacy);
     }
-    /* A valid inactive record is frozen, including its original flags/role.
-     * Invalid or formerly active contents carry no boot-failure provenance. */
-    if(!valid) init_snapshot_locked(RC_INIT_UNKNOWN,255,65535,65535);
+    /* GATT reads preserve the last admission record, including flags/role.
+     * Invalid or formerly active contents carry no admission-failure provenance. */
+    if(!valid) init_snapshot_locked(RC_INIT_UNKNOWN,255,65535,65535,0);
     unlock(token);
 }
 /* Three 20-character pages: page0 heap/drop/retry; page1 connection/UART ms;

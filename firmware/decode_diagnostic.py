@@ -1,10 +1,11 @@
-"""Decode captured 06.09 / 6.095 Hardware Revision pages locally; never opens Bluetooth.
+"""Decode captured 06.09 / 6.095 / 6.097 diagnostic pages; never opens Bluetooth.
 
 Active firmware rotates pages 0/1/2 on offset-zero reads. Each page is 20 hex
 characters. Capture each entire page (including partial ATT reads) before the
 next offset-zero read. The three pages are separate samples, not one snapshot.
-Inactive page 0 is a frozen initialization-failure snapshot; legacy all-zero
-fallback pages remain accepted without presenting their zeroes as measurements.
+Inactive page 0 is a boot-failure record in06.09/6.095. Version6.097 records
+the latest admission refusal, with flag0x10 distinguishing deferred attempts.
+GATT reads do not change this record. Legacy zeroes are not measurements.
 """
 import argparse
 import json
@@ -13,7 +14,7 @@ import struct
 
 PREFIX = "GVK1EH_B002FFv."
 VERSION = "06.09"
-VERSIONS = (VERSION, "6.095")
+VERSIONS = (VERSION, "6.095", "6.097")
 FALLBACK_REASONS = {
     0: "unknown",
     1: "hid_semaphore_missing",
@@ -39,7 +40,7 @@ LIMITS = [
 ]
 
 
-def _decode_inactive(raw: bytes) -> dict:
+def _decode_inactive(raw: bytes, version: str) -> dict:
     """Decode a frozen fallback record, keeping allocation phases distinct."""
     if raw[0] != 0:
         raise ValueError("Inactive diagnostics require page 0")
@@ -47,8 +48,13 @@ def _decode_inactive(raw: bytes) -> dict:
     reason, bond_raw = raw[2:4]
     free_raw, largest_raw = struct.unpack_from("<HH", raw, 4)
     flags, role = raw[8:]
-    if reason not in FALLBACK_REASONS or flags & ~0x0F:
+    allowed_flags = 0x1F if version == "6.097" else 0x0F
+    if reason not in FALLBACK_REASONS or flags & ~allowed_flags:
         raise ValueError("Invalid inactive fallback reason or reserved flags")
+    if reason == 11 and version != "6.097":
+        raise ValueError("Fallback reason 11 requires diagnostic firmware 6.097")
+    if reason == 0 and flags & 0x10:
+        raise ValueError("Unknown fallback provenance cannot claim a deferred admission refusal")
     bond = None if legacy or bond_raw == 0xFF else bond_raw
     free = None if legacy or free_raw == 0xFFFF else free_raw
     largest = None if legacy or largest_raw == 0xFFFF else largest_raw
@@ -96,7 +102,7 @@ def _decode_inactive(raw: bytes) -> dict:
     phase = ("pre_allocation" if reason in (5, 6, 7) else
              "post_allocation_before_release" if reason in (8, 9, 10) or (reason == 11 and free is not None)
              else "unknown")
-    return {
+    result = {
         "reason_code": reason,
         "reason": FALLBACK_REASONS[reason],
         "bond_count": bond,
@@ -110,6 +116,12 @@ def _decode_inactive(raw: bytes) -> dict:
         "role_state": None if legacy else role,
         "legacy_all_zero": legacy,
     }
+    if version == "6.097":
+        result["snapshot_scope"] = ("unknown" if reason == 0 else
+                                    "latest_deferred_admission_refusal" if flags & 0x10 else
+                                    "latest_boot_admission_refusal")
+        result["flags"]["deferred_admission"] = None if reason == 0 else bool(flags & 0x10)
+    return result
 
 
 def decode_pages(firmware_version: str, pages: list[str]) -> dict:
@@ -118,7 +130,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
     if version.startswith(PREFIX):
         version = version[len(PREFIX):]
     if version not in VERSIONS:
-        raise ValueError("Only diagnostic firmware 06.09 and 6.095 use this page schema; 06.07 and usage 06.10 do not")
+        raise ValueError("Only diagnostic firmware 06.09, 6.095 and 6.097 use this page schema; 06.07 and usage 06.10 do not")
     if len(pages) not in (1, 3):
         raise ValueError("Provide three active pages, or one/three identical inactive page-0 snapshots")
     decoded = []
@@ -143,7 +155,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
             raise ValueError("Inactive snapshots differ; provide one snapshot or capture a fresh set")
         report["status"] = "fallback_inactive"
         report["message"] = "Native fallback is active; reliability extensions are not initialized."
-        report["fallback"] = _decode_inactive(decoded[0])
+        report["fallback"] = _decode_inactive(decoded[0], version)
         return report
     if len(decoded) != 3 or {page[0] for page in decoded} != {0, 1, 2}:
         raise ValueError("Active diagnostics require exactly one page each with IDs 0, 1 and 2")
@@ -171,7 +183,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--firmware-version", required=True,
-                        help="Explicit embedded firmware version: 06.09 or 6.095 (not the USB filename)")
+                        help="Explicit embedded firmware version: 06.09, 6.095 or 6.097 (not the USB filename)")
     parser.add_argument("pages", nargs="+", help="Already captured 20-character hexadecimal pages")
     args = parser.parse_args(argv)
     try:

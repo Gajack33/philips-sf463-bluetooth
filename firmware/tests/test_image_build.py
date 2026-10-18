@@ -114,9 +114,64 @@ class ImageBuildTests(unittest.TestCase):
             if before != after:
                 self.assertTrue(any(start <= index < end for start, end in allowed), hex(index))
 
+    def test_declared_blue_fix_is_one_flash_byte_and_preserves_the_other_44_rows(self):
+        actual = json.loads((MODULE_PATH.parent / "hooks.json").read_text(encoding="utf-8"))
+        hook = next(item for item in actual["hooks"]
+                    if item["name"] == "physical-blue-primary-consumer-usage")
+        permitted = next(item for item in actual["allowed_ranges"]
+                         if int(item["start"], 0) == 0x13BF0)
+        self.assertEqual(hook, {"name": "physical-blue-primary-consumer-usage",
+            "offset": "0x13bf0", "expected_hex": "6c", "kind": "bytes",
+            "replacement_hex": "6b", "category": "front"})
+        self.assertEqual(permitted, {"start": "0x13bf0", "end": "0x13bf1", "category": "front"})
+        start, end = 0x13B84, 0x13B84 + 45 * 4
+        table = STOCK[start:end]
+        self.assertEqual(BASELINE[start:end], table)
+        self.assertEqual(len(table), 180)
+        self.assertEqual(STOCK.count(table), 1)
+        self.assertEqual(STOCK.find(table), start)
+        self.assertEqual(STOCK.count(bytes.fromhex("6c006bf0")), 1)
+        self.assertGreater(0x13BF0, 0x10000)  # A first-64KiB capture cannot contain it.
+        self.assertEqual(len(STOCK), 118784)
+        for variant in ("usage", "diagnostic"):
+            with self.subTest(variant=variant):
+                rules = manifest()
+                before, _ = self.make(rules, variant, require_qualified=False)
+                rules["allowed_ranges"].append(copy.deepcopy(permitted))
+                rules["hooks"].append(copy.deepcopy(hook))
+                after, patches = self.make(rules, variant, require_qualified=False)
+                self.assertEqual(after[0x13BF0:0x13BF4], bytes.fromhex("6b006bf0"))
+                self.assertEqual([i for i, (a, b) in enumerate(zip(before, after))
+                                  if a != b and i >= 2], [0x13BF0])
+                self.assertEqual(struct.unpack_from("<H", after)[0], build.crc(after))
+                self.assertEqual(len(after), len(before))
+                for index in range(45):
+                    row = start + index * 4
+                    expected = bytes.fromhex("6b006bf0") if index == 0x1B else STOCK[row:row + 4]
+                    self.assertEqual(after[row:row + 4], expected, f"front row {index:#x}")
+                self.assertEqual(patches[-1], {"name": hook["name"], "offset": "0x13bf0",
+                                               "before": "6c", "after": "6b", "category": "front"})
+
+    def test_blue_patch_rejects_wrong_expected_byte_and_neighboring_table_writes(self):
+        for mutation in ("wrong expected", "neighbor", "extend row"):
+            with self.subTest(mutation=mutation):
+                rules = manifest()
+                rules["allowed_ranges"].append({"start": "0x13bf0", "end": "0x13bf1", "category": "front"})
+                hook = {"name": "blue-negative", "offset": "0x13bf0", "expected_hex": "6c",
+                        "kind": "bytes", "replacement_hex": "6b", "category": "front"}
+                if mutation == "wrong expected":
+                    hook["expected_hex"] = "6b"
+                elif mutation == "neighbor":
+                    hook.update(offset="0x13bf1", expected_hex="00", replacement_hex="01")
+                else:
+                    hook.update(expected_hex="6c00", replacement_hex="6b00")
+                rules["hooks"].append(hook)
+                with self.assertRaises(build.BuildError):
+                    self.make(rules, require_qualified=False)
+
     def test_diagnostic_has_distinct_revision_and_explicit_callback_branch(self):
         image, _ = self.make(variant="diagnostic")
-        self.assertEqual(image[0x16E0:0x16F4], b"GVK1EH_B002FFv.6.095")
+        self.assertEqual(image[0x16E0:0x16F4], b"GVK1EH_B002FFv.6.097")
         self.assertNotEqual(image[0x5250:0x5254], STOCK[0x5250:0x5254])
         self.assertEqual(image[0x52B2:0x52B6], STOCK[0x52B2:0x52B6])
         rules = manifest()
@@ -126,7 +181,7 @@ class ImageBuildTests(unittest.TestCase):
 
     def test_intermediate_diagnostic_revision_fits_native_string_and_float_order(self):
         # Philips compares the suffix with Java Float.parseFloat and strict >.
-        previous, intermediate, final = "06.09", build.VERSIONS["diagnostic"], build.VERSIONS["usage"]
+        previous, intermediate, final = "6.096", build.VERSIONS["diagnostic"], build.VERSIONS["usage"]
         binary32 = lambda value: struct.unpack("<f", struct.pack("<f", float(value)))[0]
         self.assertLess(binary32(previous), binary32(intermediate))
         self.assertLess(binary32(intermediate), binary32(final))
@@ -136,10 +191,10 @@ class ImageBuildTests(unittest.TestCase):
         image, _ = self.make(variant="diagnostic")
         with tempfile.TemporaryDirectory() as directory:
             assets = build.write_assets(Path(directory), "diagnostic", image, {"hardware_validated": False})
-            self.assertEqual(assets[0].name, "GVK1EH_B002FFv.6.095.bin")
-            self.assertEqual(assets[1].name, "SF463-6.095-diagnostic-USB.zip")
+            self.assertEqual(assets[0].name, "GVK1EH_B002FFv.6.097.bin")
+            self.assertEqual(assets[1].name, "SF463-6.097-diagnostic-USB.zip")
             with zipfile.ZipFile(assets[1]) as package:
-                self.assertEqual(package.namelist(), ["RCFW/GVK1EH_B002FFv.6.095.bin"])
+                self.assertEqual(package.namelist(), ["RCFW/GVK1EH_B002FFv.6.097.bin"])
                 self.assertEqual(package.read(package.namelist()[0]), image)
 
     def test_unqualified_or_stale_evidence_never_generates_an_image(self):

@@ -25,17 +25,72 @@ def inactive(reason, bond=0xFF, free=0xFFFF, largest=0xFFFF, flags=0, role=6):
 
 class DiagnosticDecoderTests(unittest.TestCase):
     def test_quiescence_refusal_distinguishes_prequery_and_final_allocation_samples(self):
-        prequery = decoder.decode_pages("6.095", [inactive(11, flags=1)])["fallback"]
+        prequery = decoder.decode_pages("6.097", [inactive(11, flags=1)])["fallback"]
         self.assertEqual(prequery["reason"], "native_transmission_not_quiescent")
         self.assertIsNone(prequery["bond_count"])
         self.assertIsNone(prequery["heap"])
-        final = decoder.decode_pages("6.095", [inactive(11, 1, 768, 300, 1)])["fallback"]
+        final = decoder.decode_pages("6.097", [inactive(11, 1, 768, 300, 1)])["fallback"]
         self.assertEqual(final["heap"], {"free_bytes": 768, "largest_free_block_bytes": 300,
                                          "sample_phase": "post_allocation_before_release"})
         for invalid in (inactive(11, 1, flags=1), inactive(11, 1, 767, 300, 1),
                         inactive(11, 255, 768, 300, 1), inactive(11, 1, 768, 0xFFFF, 1)):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
-                decoder.decode_pages("6.095", [invalid])
+                decoder.decode_pages("6.097", [invalid])
+
+    def test_rc3_exact_header_native_float_order_and_cli_preserve_explicit_versions(self):
+        build_path = PATH.parent / "build.py"
+        spec = importlib.util.spec_from_file_location("sf463_decoder_version_builder", build_path)
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        self.assertEqual(build.VERSIONS, {"diagnostic": "6.097", "usage": "06.10"})
+        header = (decoder.PREFIX + build.VERSIONS["diagnostic"]).encode("ascii")
+        self.assertEqual(header, b"GVK1EH_B002FFv.6.097")
+        self.assertEqual(len(header), 20)
+        # Match the updater's float32 comparison, not lexicographic strings.
+        native_float = lambda value: struct.unpack("<f", struct.pack("<f", float(value)))[0]
+        self.assertLess(native_float("6.096"), native_float(build.VERSIONS["diagnostic"]))
+        self.assertLess(native_float(build.VERSIONS["diagnostic"]), native_float(build.VERSIONS["usage"]))
+        for version in ("6.097", header.decode("ascii")):
+            for captured in (pages(), [inactive(11, flags=1)], ["0" * 20]):
+                with self.subTest(version=version, captured=captured):
+                    expected = decoder.decode_pages(version, captured)
+                    self.assertEqual(expected["firmware_version"], "6.097")
+                    cli = subprocess.run([sys.executable, str(PATH), "--firmware-version", version, *captured],
+                                         capture_output=True, text=True)
+                    self.assertEqual(cli.returncode, 0, cli.stderr)
+                    self.assertEqual(json.loads(cli.stdout), expected)
+
+    def test_quiescence_reason_cannot_be_relabelled_as_an_older_diagnostic_version(self):
+        for version in ("06.09", "6.095", "GVK1EH_B002FFv.06.09", "GVK1EH_B002FFv.6.095"):
+            captured = inactive(11, flags=1)
+            with self.subTest(version=version), self.assertRaisesRegex(ValueError, "reason 11 requires.*6.097"):
+                decoder.decode_pages(version, [captured])
+            cli = subprocess.run([sys.executable, str(PATH), "--firmware-version", version, captured],
+                                 capture_output=True, text=True)
+            self.assertEqual(cli.returncode, 2)
+            self.assertEqual(cli.stdout, "")
+            self.assertIn("reason 11 requires", cli.stderr)
+
+    def test_latest_admission_scope_flag_is_versioned_and_unknown_provenance_stays_unknown(self):
+        for version in ("06.09", "6.095"):
+            with self.subTest(version=version), self.assertRaisesRegex(ValueError, "reserved flags"):
+                decoder.decode_pages(version, [inactive(2, 0, flags=0x11)])
+        for flags, expected in ((1, "latest_boot_admission_refusal"),
+                                (0x11, "latest_deferred_admission_refusal")):
+            result = decoder.decode_pages("6.097", [inactive(2, 0, flags=flags)])["fallback"]
+            self.assertEqual(result["snapshot_scope"], expected)
+            self.assertEqual(result["flags"]["deferred_admission"], bool(flags & 0x10))
+        missing_sem = decoder.decode_pages("6.097", [inactive(1, flags=0x10)])["fallback"]
+        self.assertEqual(missing_sem["snapshot_scope"], "latest_deferred_admission_refusal")
+        self.assertFalse(missing_sem["flags"]["hid_semaphore_present"])
+        unknown = decoder.decode_pages("6.097", [inactive(0, flags=1)])["fallback"]
+        legacy = decoder.decode_pages("6.097", ["0" * 20])["fallback"]
+        for result in (unknown, legacy):
+            self.assertEqual(result["snapshot_scope"], "unknown")
+            self.assertIsNone(result["flags"]["deferred_admission"])
+        for flags in (0x10, 0x20, 0x40):
+            with self.subTest(flags=flags), self.assertRaises(ValueError):
+                decoder.decode_pages("6.097", [inactive(0, flags=flags)])
 
     def test_three_pages_decode_little_endian_fields_units_and_cli_without_connections(self):
         values = pages()
@@ -58,7 +113,8 @@ class DiagnosticDecoderTests(unittest.TestCase):
 
     def test_version_mismatch_and_non_twenty_character_hex_are_rejected(self):
         for version in ("06.07", "06.10", "06.08", "", "GVK1EH_B002FFv.06.10", "07.09",
-                        "6.09", "06.095", "6.0950", "GVK1EH_B002FFv.6.0950"):
+                        "6.09", "06.095", "6.0950", "GVK1EH_B002FFv.6.0950", "06.097", "6.0970",
+                        "GVK1EH_B002FFv.6.0970", "6.096"):
             with self.subTest(version=version), self.assertRaisesRegex(ValueError, "Only diagnostic"):
                 decoder.decode_pages(version, pages())
         for bad in ("", "0" * 19, "0" * 21, "G" * 20, "00 10000000000000000"):

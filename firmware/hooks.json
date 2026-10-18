@@ -121,6 +121,11 @@
       "start": "0x4c2a",
       "end": "0x4c2e",
       "category": "hid"
+    },
+    {
+      "start": "0x13bf0",
+      "end": "0x13bf1",
+      "category": "front"
     }
   ],
   "hooks": [
@@ -317,6 +322,14 @@
       "symbol": "rc_hid_message",
       "link": false,
       "category": "hid"
+    },
+    {
+      "name": "physical-blue-primary-consumer-usage",
+      "offset": "0x13bf0",
+      "expected_hex": "6c",
+      "kind": "bytes",
+      "replacement_hex": "6b",
+      "category": "front"
     }
   ]
 }

@@ -173,7 +173,15 @@ class DeferredAdmissionTests(unittest.TestCase):
         m.turn(); m.turn(0x100); m.turn(0x200); m.turn(0x80)
         self.assertEqual(m.allocations, [])
         self.assertEqual(m.read(QUEUE, 36), queue)
-        self.assertEqual(m.read(HW, 21), snapshot)
+        latest = m.read(HW, 21)
+        self.assertNotEqual(latest, snapshot)
+        fallback = decoder.decode_pages("6.097", [latest[:20].decode()])["fallback"]
+        self.assertEqual(fallback["reason_code"], 11)
+        self.assertEqual(fallback["snapshot_scope"], "latest_deferred_admission_refusal")
+        self.assertTrue(fallback["flags"]["deferred_admission"])
+        self.assertIsNone(fallback["heap"])
+        m.turn(0x100); m.turn(0x200)
+        self.assertEqual(m.read(HW, 21), latest, "Ordinary wakes must not rewrite refusal provenance")
         m.write(HID + 0x0D, b"\x05"); m.message(1, 6); m.turn()
         self.assertEqual(m.allocations, [640])
         self.assertEqual(m.native_init_count, 1)
@@ -260,7 +268,15 @@ class DeferredAdmissionTests(unittest.TestCase):
                     m.turn(0x400)
                     self.assertEqual((m.allocations, m.frees), ([], []))
                 self.assertEqual(m.read(QUEUE, 36), queue)
-                self.assertEqual(m.read(HW, 21), snapshot)
+                latest = m.read(HW, 21)
+                self.assertNotEqual(latest, snapshot)
+                fallback = decoder.decode_pages("6.097", [latest[:20].decode()])["fallback"]
+                self.assertEqual(fallback["reason_code"], 11)
+                self.assertEqual(fallback["snapshot_scope"], "latest_deferred_admission_refusal")
+                if boundary == "before-query":
+                    self.assertIsNone(fallback["heap"])
+                else:
+                    self.assertEqual(fallback["heap"]["sample_phase"], "post_allocation_before_release")
                 self.assertEqual(m.checked_call("rc_enabled"), 0)
                 m.emu.context_restore(hid_context); m.stub(0x35D4, native_parameters)
                 m.run(0x35D4, 0x47AA)
@@ -268,12 +284,15 @@ class DeferredAdmissionTests(unittest.TestCase):
                 self.assertEqual(m.read(QUEUE, 36), queue)
                 self.assertEqual(m.emu.reg_read(UC_ARM_REG_SP), HID_STACK - 32)
 
-    def test_retry_refusals_preserve_initial_snapshot_and_legacy_until_later_useful_event(self):
-        for condition in ("two-bonds", "zero-peer", "rpc", "total", "largest", "null", "reserve", "queue", "mailbox"):
+    def test_retry_refusals_record_latest_reason_and_phase_without_changing_legacy_or_querying_on_reads(self):
+        for condition, reason in (("no-semaphore", 1), ("two-bonds", 2), ("zero-peer", 4), ("rpc", 3),
+                                  ("total", 5), ("largest", 6), ("null", 7), ("reserve", 8),
+                                  ("queue", 9), ("mailbox", 10)):
             with self.subTest(condition=condition):
                 m = self.machine(); self.boot_without_bond(m)
                 snapshot, queue = m.read(HW, 21), m.read(QUEUE, 36)
                 m.bond_count = 1
+                if condition == "no-semaphore": m.write32(HID + 0x1C, 0)
                 if condition == "two-bonds": m.bond_count = 2
                 if condition == "zero-peer": m.saved_peer = bytes(6)
                 if condition == "rpc": m.bond_status = 1
@@ -286,14 +305,35 @@ class DeferredAdmissionTests(unittest.TestCase):
                 m.turn(0x400)
                 self.assertEqual(m.checked_call("rc_enabled"), 0)
                 self.assertEqual(m.read(QUEUE, 36), queue)
-                self.assertEqual(m.read(HW, 21), snapshot)
+                latest = m.read(HW, 21)
+                self.assertNotEqual(latest, snapshot)
+                fallback = decoder.decode_pages("6.097", [latest[:20].decode()])["fallback"]
+                self.assertEqual(fallback["reason_code"], reason)
+                self.assertEqual(fallback["snapshot_scope"], "latest_deferred_admission_refusal")
+                self.assertTrue(fallback["flags"]["deferred_admission"])
+                if reason < 5:
+                    self.assertIsNone(fallback["heap"])
+                else:
+                    self.assertEqual(fallback["heap"]["sample_phase"],
+                                     "pre_allocation" if reason < 8 else "post_allocation_before_release")
+                    self.assertEqual(fallback["heap"]["free_bytes"],
+                                     m.free_before if reason < 8 else m.free_after)
+                queries, allocations = len(m.heap_queries), list(m.allocations)
+                old_count, old_rpc = m.stubs[0x26EE], m.stubs[0x34B8]
+                def no_query(machine): self.fail("GATT fallback reads must not perform bond/RPC queries")
+                m.stub(0x26EE, no_query); m.stub(0x34B8, no_query); m.configure_attribute()
+                self.assertEqual([m.read_info()[2] for _ in range(3)], [latest[:20]] * 3)
+                self.assertEqual((len(m.heap_queries), m.allocations), (queries, allocations))
+                m.stub(0x26EE, old_count); m.stub(0x34B8, old_rpc)
                 queries = len(m.heap_queries)
                 m.turn(0x100); m.turn(0x200)
                 self.assertEqual(len(m.heap_queries), queries)
+                self.assertEqual(m.read(HW, 21), latest)
                 self.assertEqual(m.native_init_count, 1)
                 self.assertEqual(m.outstanding_blocks, 0)
                 m.bond_count, m.bond_status, m.saved_peer = 1, 0, bytes([1,2,3,4,5,6])
                 m.free_before, m.free_after, m.largest, m.allocate_result = 3000, 2400, 2500, ALLOC
+                m.write32(HID + 0x1C, 0x20006200)
                 m.write(HID + 0x14, b"\0\0"); m.write(APP + 0x20, b"\0\0")
                 m.write(HID + 0x0D, b"\x01"); m.message(1, 6); m.turn()
                 self.assertEqual(m.checked_call("rc_enabled"), 1)
@@ -307,14 +347,41 @@ class DeferredAdmissionTests(unittest.TestCase):
             m.write(HID + 0x0E, b"\x01"); m.checked_call("rc_app_init")
             self.assertEqual((m.allocations, m.heap_queries), ([], []))
             if variant == "diagnostic":
-                fallback = decoder.decode_pages("6.095", [m.read(HW, 20).decode()])["fallback"]
+                fallback = decoder.decode_pages("6.097", [m.read(HW, 20).decode()])["fallback"]
                 self.assertEqual(fallback["reason"], "native_transmission_not_quiescent")
+                self.assertEqual(fallback["snapshot_scope"], "latest_boot_admission_refusal")
+                self.assertFalse(fallback["flags"]["deferred_admission"])
                 self.assertIsNone(fallback["bond_count"]); self.assertIsNone(fallback["heap"])
             else:
                 self.assertEqual(m.read(HW, 21), factory)
+            m.turn(0x400)
+            self.assertEqual(m.allocations, [])
+            if variant == "usage": self.assertEqual(m.read(HW, 21), factory)
             m.write(HID + 0x0E, b"\0"); m.turn(0x400)
             self.assertEqual(m.allocations, [640])
             if variant == "usage": self.assertEqual(m.read(HW, 21), factory)
+
+    def test_each_new_useful_transition_updates_last_refusal_and_success_enables_active_pages(self):
+        m = self.machine(); self.boot_without_bond(m)
+        def current():
+            return decoder.decode_pages("6.097", [m.read(HW, 20).decode()])["fallback"]
+        self.assertEqual(current()["snapshot_scope"], "latest_boot_admission_refusal")
+        m.write(HID + 0x0D, b"\x01"); m.message(1, 6); m.turn()
+        self.assertEqual((current()["reason_code"], current()["snapshot_scope"]),
+                         (2, "latest_deferred_admission_refusal"))
+        m.bond_count = 1; m.message(8, 1); m.turn()
+        self.assertEqual(current()["reason_code"], 11)
+        m.free_before = 1415
+        m.write(HID + 0x0D, b"\x05"); m.message(1, 6); m.turn()
+        self.assertEqual((current()["reason_code"], current()["heap"]["sample_phase"]),
+                         (5, "pre_allocation"))
+        m.free_before = 3000
+        m.write(HID + 0x0D, b"\x05"); m.message(1, 6); m.turn()
+        self.assertEqual((m.allocations, m.native_init_count), ([640], 1))
+        self.assertEqual(m.read(HW, 1), b"\0", "A successful claim invalidates previous refusal provenance")
+        m.configure_attribute()
+        captured = [m.read_info()[2].decode() for _ in range(3)]
+        self.assertTrue(decoder.decode_pages("6.097", captured)["improvements_active"])
 
     def test_boot_quiescence_change_after_allocation_records_actual_final_sample(self):
         m = self.machine()
@@ -326,7 +393,7 @@ class DeferredAdmissionTests(unittest.TestCase):
         queue = m.read(QUEUE, 36)
         m.checked_call("rc_app_init"); m.configure_attribute()
         captured = m.read_info()[2].decode()
-        fallback = decoder.decode_pages("6.095", [captured])["fallback"]
+        fallback = decoder.decode_pages("6.097", [captured])["fallback"]
         self.assertEqual(fallback["reason"], "native_transmission_not_quiescent")
         self.assertEqual(fallback["bond_count"], 1)
         self.assertEqual(fallback["heap"], {"free_bytes": 2400, "largest_free_block_bytes": 2400,

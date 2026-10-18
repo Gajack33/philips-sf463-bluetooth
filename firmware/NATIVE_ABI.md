@@ -6,6 +6,33 @@ The published 06.07 is a separate, immutable comparison input. `hooks.json`
 contains the complete expected-byte allowlist; `adapter.S` reconstructs replaced
 instructions and their PC-relative literals rather than relocating raw bytes.
 
+## Physical Blue Consumer usage
+
+The owner-confirmed color sequence on restored `6.096` identifies Red/Green/
+Yellow/Blue as front scan indices `0x19/0x12/0x1A/0x1B` respectively; the last
+two both produced primary Consumer usage `0x006C`. See
+`evidence/hardware-colors-6096.json` for the bounded physical observation.
+
+The native FLASH table starts at `0x13B84` (literal at `0x26E0`) and contains
+45 four-byte rows, ending exclusively at `0x13C38`. The complete table and
+Blue's original row `6C 00 6B F0` each occur once in the pinned factory image;
+the published 06.07 comparison keeps this table unchanged. Index `0x1B` selects
+`0x13B84 + 27*4 = 0x13BF0`, beyond a first-64-KiB dump but within 118,784 bytes.
+Only byte `0x13BF0` changes `6C` to `6B`: primary `0x006B`, secondary `0xF06B`
+unchanged. The allowlist covers exactly that byte. This is data, not Thumb code.
+
+At `0x1DBC`, real decoder `0x1DAC` loads the scan index from its RAM payload;
+`0x1DC0/0x1DD4` passes it to dispatcher `0x1AF4`. The `LDRH` at `0x1B14`
+reads the primary halfword directly from FLASH using a four-byte stride; the
+table is not copied to RAM. `0x1B9E/0x1BA0` caches the index and usage at APP+
+`0x18/0x28`, then `0x1D30/0x1D32` sends it through `0x21DC` (Consumer report2,
+three bytes at native `0x2204`). Real instruction tests cover every index and
+release, the four color scans, repeated color holds, and inactive native fallback.
+The other 44 rows, voice usage `0x0221`, volume/mute usages, secondary values,
+native code and audio paths remain byte-identical under this separate table fix.
+Secondary use through `0x2874` is not evidence of a long-press Consumer report;
+software regression checks do not establish physical audio/radio qualification.
+
 ## Entry and callback boundaries
 
 | Entry | Original bytes | Required continuation / contract |
@@ -98,8 +125,9 @@ For the new dispatcher wrapper, both LLVM18/19 retain 16 extra bytes only across
 useful events. Other/failed events remove that frame before tail-calling native.
 Observed native/wrapped prefixes, including HID's permanent 32-byte frame, are
 104/120 bytes for role 6, 88/104 for successful phases 1/2, and 88/88 for phase 0
-or a failed phase 1. The deferred APP path observes 184 bytes including its native
-24-byte frame. These stop at explicit API seams; they do not prove the native
+or a failed phase 1. The final6.097 deferred APP success path observes192 bytes including its native
+24-byte frame with both LLVM18 and19. Refusal paths peak at128/184 bytes
+respectively; these are admission/lifecycle measurements, not global maxima. These stop at explicit API seams; they do not prove the native
 RPC/ROM/preemption worst case. The 400/750-byte task budgets are unchanged.
 
 APP, HID, UART and the 36-byte legacy queue are at `0x20000928`, `0x20000AD8`,
@@ -114,21 +142,28 @@ are `0x2C3E`/`0x2CD0`; statistics are `0x2D54`. Its largest-block query coalesce
 free blocks, so call it outside the adapter's critical gate. Reuse native gate
 `0x2BAA`/`0x2BC0(token)` only for bounded state operations, never BLE/NVRAM calls.
 
-The diagnostic-only boot refusal record reuses the native Hardware Revision
+The diagnostic-only admission-refusal record reuses the native Hardware Revision
 buffer `0x20000664..0x20000678` (21 bytes including NUL), not the legacy queue or
 new RAM. Its ten raw bytes are page0, inactive0, reason, bond count, free16,
 largest16, flags and HID role. Reasons 1–10 identify missing HID semaphore,
 bond count, bond RPC, empty identity, total free, largest block, null allocation,
 post-allocation reserve, busy HID queue or pending APP source mailboxes.
-Reason 11 is native transmission not quiescent: unknown count/heap at the early
-check, or the post-allocation sample at the final check. A deferred refusal
-does not replace the initial boot snapshot; a successful claim enables active
-diagnostic pages. No new version or exported image is qualified by this branch.
+Reason 11 (6.097 only) is native transmission not quiescent: unknown count/heap
+at the early check, or the post-allocation sample at the final check. Each actual
+refused admission replaces the record; flag0x10 identifies a deferred check. The
+versioned decoder labels boot/deferred/unknown provenance. Older6.095 pages
+retain their frozen-boot contract. A successful claim enables active
+diagnostic pages. Export requires exact offline evidence; this does not qualify
+hardware behavior or the normal-use06.10 release.
 Unknown count is FF; unknown heap values are FFFF. Flags mark semaphore presence,
 HID queue occupancy, APP bit0 and APP bit4. Reasons 8–10 retain the sample before
 the rejected allocation is freed. Reads preserve the original record; successful
 claim invalidates old failure provenance. A later missing claim reports unknown.
-The usage build contains no refusal-record writes and retains stock Hardware Revision.
+A new useful transition can replace an inactive record between separate ATT
+partial-read requests. Prefer one complete20-byte read; a page assembled across
+such a transition is not guaranteed coherent. Reads themselves do not query or
+retry admission. The usage build contains no refusal-record writes and retains
+stock Hardware Revision.
 
 Task constructors are more restrictive than the reset stack: `0x13AE` supplies
 APP priority 1, stack `0x200022F8..0x200025E6`, **750 bytes**, then function

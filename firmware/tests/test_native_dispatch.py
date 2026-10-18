@@ -2,7 +2,8 @@
 
 The pinned 06.07 is the comparison image. 0x1dac and 0x1af4 are NEVER stubbed.
 Unmodified clock, LED, advertising and UART-control services are explicit API
-seams, not physical devices. Physical color-button labels remain unverified.
+seams, not physical devices. The four color scan indices were captured on
+6.096 with owner-confirmed button order; other physical labels are not inferred.
 """
 import struct
 import tempfile
@@ -12,8 +13,8 @@ from test_adapter_runtime import RuntimeMachine, native, APP, HID, UART, INPUT
 from unicorn.arm_const import (UC_ARM_REG_SP,UC_ARM_REG_R5,UC_ARM_REG_R6,UC_ARM_REG_R7)
 
 
-# Independent expected usages for the pinned 45-entry front map. These are
-# usage/index expectations, not claims about unobserved physical button labels.
+# Independent expected usages for the immutable pinned 45-entry front map.
+# The reviewed candidate changes only the primary usage at Blue scan index1B.
 USAGES = (0x30,0x224,0xB0,0x40,0x221,0xEA,0x72,0x9D,0x191,
           0xB4,0xB1,0xB3,0x42,0x21,0x22,0x23,0x222,0xB7,
           0x6A,0xB2,0x41,0x24,0x25,0x26,0x44,0x69,0x6C,
@@ -124,12 +125,55 @@ class NativeDispatchTests(unittest.TestCase):
                     self.assertEqual(m.read(APP+0x18,1),b"\xff")
                 # F1 is a native hold-only pairing action, never a short tap.
                 expected=[] if index==44 else [usage]
+                corrected=0x6B if index==0x1B else usage
+                expected_new=[] if index==44 else [corrected]
                 self.assertEqual([x for x in old.usages() if x],expected)
-                self.assertEqual([x for x in new.usages() if x],expected)
+                self.assertEqual([x for x in new.usages() if x],expected_new)
                 if expected:
                     self.assertEqual(old.usages(),[usage,0])
-                    self.assertEqual(new.usages(),[usage,0])
+                    self.assertEqual(new.usages(),[corrected,0])
                 self.assertEqual(new.native_services,old.native_services)
+
+    def test_confirmed_color_scans_read_flash_into_app_ram_and_release_in_order(self):
+        old,new=self.machine(True),self.machine()
+        colors=((0x19,0x69),(0x12,0x6A),(0x1A,0x6C),(0x1B,0x6B))
+        for m in (old,new):
+            for index,corrected in colors:
+                expected=0x6C if m.baseline and index==0x1B else corrected
+                m.front(index)
+                self.assertEqual(m.read(APP+0x18,1),bytes([index]))
+                self.assertEqual(struct.unpack("<H",m.read(APP+0x28,2))[0],expected)
+                m.flush(); m.front(); m.flush()
+            self.assertNotIn(0x1DAC,m.stubs)
+            self.assertNotIn(0x1AF4,m.stubs)
+        self.assertEqual(old.usages(),[0x69,0,0x6A,0,0x6C,0,0x6C,0])
+        self.assertEqual(new.usages(),[0x69,0,0x6A,0,0x6C,0,0x6B,0])
+        self.assertEqual(new.native_services,old.native_services)
+
+    def test_color_hold_and_release_keep_native_timing_and_secondary_side_effects(self):
+        for index,primary in ((0x1A,0x6C),(0x1B,0x6B)):
+            with self.subTest(index=index):
+                old,new=self.machine(True),self.machine()
+                for m in (old,new):
+                    expected=0x6C if m.baseline else primary
+                    m.front(index)
+                    for _ in range(40):
+                        m.advance(50); m.front(index); m.flush()
+                    self.assertEqual(struct.unpack("<H",m.read(APP+0x22,2))[0],40)
+                    m.front(); m.flush()
+                    self.assertEqual(m.usages(),[expected,0])
+                    self.assertEqual(m.read(APP+0x18,1),b"\xff")
+                # 0x2874's secondary advertising-data argument stays F06B/F06C;
+                # this does not assert that a secondary Consumer report exists.
+                self.assertEqual(new.native_services,old.native_services)
+
+    def test_blue_table_fix_applies_when_adapter_claim_is_inactive(self):
+        m=self.machine()
+        m.write32(0x200027C8,0)  # Native fallback after a missing adapter claim.
+        self.assertEqual(m.checked_call("rc_enabled"),0)
+        m.front(0x1B); m.front()
+        self.assertEqual(m.usages(),[0x6B,0])
+        self.assertEqual(m.read(APP+0x18,1),b"\xff")
 
     def test_native_held_arrow_deduplicates_reports_and_releases_once(self):
         old,new=self.machine(True),self.machine()

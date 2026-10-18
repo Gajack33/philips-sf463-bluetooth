@@ -169,6 +169,19 @@ class NativeAdapterAbiTests(unittest.TestCase):
                     self.assertEqual(struct.unpack_from("<I", self.compiled["image"], at)[0], 0xC00007C0)
                     self.assertEqual(self.compiled["image"][0x179C:0x17A0], STOCK[0x179C:0x17A0])
                     continue
+                if hook["name"] == "physical-blue-primary-consumer-usage":
+                    # Hardware capture on 6.096 identifies Blue as scan 0x1B.
+                    # This is one FLASH table byte, not an instruction window;
+                    # every other hook still requires full Thumb decoding.
+                    self.assertEqual(at, 0x13B84 + 0x1B * 4)
+                    self.assertEqual((hook["kind"], expected,
+                                      bytes.fromhex(hook["replacement_hex"])),
+                                     ("bytes", b"\x6c", b"\x6b"))
+                    self.assertEqual(STOCK[at:at + 4], bytes.fromhex("6c006bf0"))
+                    self.assertEqual(self.compiled["image"][at:at + 4], bytes.fromhex("6b006bf0"))
+                    self.assertEqual(0x13B84 + 45 * 4, 0x13C38)
+                    self.assertLess(0x13C38, len(STOCK))
+                    continue
                 instructions = list(decoder.disasm(expected, at))
                 self.assertEqual(sum(i.size for i in instructions), len(expected))
                 self.assertTrue(instructions)
