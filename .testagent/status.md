@@ -3,7 +3,9 @@
 Scope: software implementation and offline integration; **not hardware qualification**.
 The published 06.07 remains unchanged. The first 06.09 was installed with the
 owner's explicit approval, but reports inactive fallback on the test remote.
-The 6.095 (06.09 rc2) refusal-diagnostic follow-up is not installed.
+The 6.095 (06.09 rc2) refusal-diagnostic transfer completed with owner authorization.
+Its actual installed revision and adapter state remain unconfirmed because bounded
+reads cannot yet return an ATT value. See `evidence/hardware-6095.json`.
 06.08 is not a build input. Exact test IDs and hashes are in
 `evidence/reliability-rc2-offline.json`; the complete command is `python firmware/verify.py`.
 
@@ -87,7 +89,8 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
   three all-zero inactive snapshots. Both faces were reported responsive but
   irregular; those observations do not qualify the inactive reliability core.
   The reason is unknown. The rc2 follow-up records refusal provenance without
-  forcing activation. Its installation and the grouped session remain pending.
+  forcing activation. The 6.095 USB transfer completed, but actual version and
+  diagnostic confirmation remain pending alongside the grouped session.
   06.10 normal-use qualification waits for successful hardware acceptance.
 - Real heap reserve during keyboard/voice/update, full native stack headroom,
   all physical keys/colors, radio delivery and independent short/long/double

@@ -18,7 +18,9 @@ files; the [proof](../../../evidence/reliability-rc2-offline.json) binds exact s
 hook and image hashes. Each refusal is tested through compiled C, GATT reads and
 the decoder.
 
-Hardware validation is pending. Flashing is experimental and can brick the remote;
+The [authorized USB transfer completed](../../../evidence/hardware-6095.json), but
+Bluetooth read failures prevent confirmation of the installed revision and adapter
+state. Hardware validation is pending. Flashing is experimental and can brick the remote;
 recovery is not guaranteed. No automatic flash is included. 06.07 remains the
 published reference, and 06.10 remains withheld from usage qualification.
 
