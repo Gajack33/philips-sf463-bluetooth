@@ -3,6 +3,10 @@
 This qualifies only the portable core and its ARM ABI. It does not emulate the
 native adapter, ROM, BLE, UART electrical interface, interrupts, or TV hardware.
 No installed compiler is silently substituted when SF463_COMPILER is supplied.
+
+Unicorn 2.1.4 fails to leave Clang 18's repair loop after its conditional STRB
+when a MEM_WRITE hook is active; adding a CODE hook does not fix it. Check the
+entire mapped RAM before/after each call instead, retaining ABI and sentinels.
 """
 import hashlib
 import importlib.util
@@ -13,7 +17,8 @@ import subprocess
 import tempfile
 import unittest
 
-from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_MODE_MCLASS, UC_HOOK_MEM_WRITE
+from unicorn import (Uc, UcError, UC_ARCH_ARM, UC_MODE_THUMB, UC_MODE_MCLASS,
+    UC_PROT_READ, UC_PROT_EXEC, UC_ERR_WRITE_PROT)
 from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_R1, UC_ARM_REG_R2,
     UC_ARM_REG_R3, UC_ARM_REG_R4, UC_ARM_REG_R5, UC_ARM_REG_R6, UC_ARM_REG_R7,
     UC_ARM_REG_R8, UC_ARM_REG_R9, UC_ARM_REG_R10, UC_ARM_REG_R11,
@@ -73,16 +78,21 @@ class ThumbCoreTests(unittest.TestCase):
         self.emu.mem_write(build.PATCH_START, self.payload)
         self.emu.mem_map(0x20000000, 0x10000)
         self.emu.mem_map(RETURN, 0x1000)
+        self.emu.mem_protect(0, 0x20000, UC_PROT_READ | UC_PROT_EXEC)
+        self.emu.mem_protect(RETURN, 0x1000, UC_PROT_READ | UC_PROT_EXEC)
         self.emu.mem_write(STATE - 16, b"\xa5" * 16)
         self.emu.mem_write(STATE + 640, b"\x5a" * 16)
-        self.emu.hook_add(UC_HOOK_MEM_WRITE, self.checked_write)
         self.call("sf_core_init", STATE, 0)
 
-    def checked_write(self, emu, access, address, size, value, user_data):
+    def checked_ram(self, before):
+        after = bytes(self.emu.mem_read(0x20000000, 0x10000))
         permitted = [(STATE, STATE + 640), (INPUT, OUTPUT + 0x100),
                      (STACK - 0x1000, STACK + 0x100)]
-        if not any(start <= address and address + size <= end for start, end in permitted):
-            raise AssertionError(f"Core wrote outside reviewed state/arguments/stack: {address:#x}+{size}")
+        for index, (old, new) in enumerate(zip(before, after)):
+            if old != new:
+                address = 0x20000000 + index
+                self.assertTrue(any(start <= address < end for start, end in permitted),
+                    f"Core wrote outside reviewed state/arguments/stack: {address:#x}")
 
     def call(self, name, *arguments):
         self.emu.reg_write(UC_ARM_REG_SP, STACK)
@@ -94,7 +104,9 @@ class ThumbCoreTests(unittest.TestCase):
         expected_saved = [0x41410000 + index * 0x101 for index in range(len(SAVED))]
         for register, value in zip(SAVED, expected_saved):
             self.emu.reg_write(register, value)
+        before = bytes(self.emu.mem_read(0x20000000, 0x10000))
         self.emu.emu_start(self.symbols[name] | 1, RETURN, timeout=1_000_000, count=250_000)
+        self.checked_ram(before)
         self.assertEqual(self.emu.reg_read(UC_ARM_REG_PC), RETURN, name + " must return within budget")
         self.assertEqual(self.emu.reg_read(UC_ARM_REG_SP), STACK, name + " stack ABI")
         self.assertEqual([self.emu.reg_read(register) for register in SAVED], expected_saved,
@@ -146,6 +158,24 @@ class ThumbCoreTests(unittest.TestCase):
     def uart(self, data):
         self.emu.mem_write(INPUT, data)
         return self.call("sf_uart_feed", STATE, INPUT, len(data))
+
+    def test_thumb_ram_guard_rejects_real_store_outside_reviewed_ranges(self):
+        # Real Thumb STRB r1,[r0]; BX lr. Probe after both state sentinels, so
+        # this must be caught by the complete RAM check rather than a sentinel.
+        probe, address = 0x1000, STATE + 640 + 16
+        self.emu.mem_write(probe, bytes.fromhex("01707047"))
+        self.symbols = dict(self.symbols, ram_guard_probe=probe | 1)
+        with self.assertRaisesRegex(AssertionError,
+                f"Core wrote outside reviewed state/arguments/stack: {address:#x}"):
+            self.call("ram_guard_probe", address, 0x5A)
+        self.assertEqual(bytes(self.emu.mem_read(address, 1)), b"\x5a")
+        for protected in (probe, RETURN):
+            with self.subTest(protected=hex(protected)):
+                before = bytes(self.emu.mem_read(protected, 1))
+                with self.assertRaises(UcError) as rejected:
+                    self.call("ram_guard_probe", protected, 0x5A)
+                self.assertEqual(rejected.exception.errno, UC_ERR_WRITE_PROT)
+                self.assertEqual(bytes(self.emu.mem_read(protected, 1)), before)
 
     def test_thumb_state_layout_full_source_fifo_and_overflow_neutralization(self):
         self.ready()

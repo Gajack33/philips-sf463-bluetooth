@@ -36,7 +36,7 @@ the distinction between stack acceptance and delivery to Android.
 
 [06.09 candidate files](../firmware/candidates/06.09/) include the BIN, USB archive,
 SHA-256 and build manifest. Two builds produced identical BIN/ZIP files; all
-120 offline checks pass. [Machine-readable evidence](../evidence/reliability-offline.json)
+122 offline checks pass. [Machine-readable evidence](../evidence/reliability-offline.json)
 binds the tests to exact source, hook and image hashes. 06.10 is compiled and
 checked but no usage binary or archive is distributed before hardware acceptance.
 

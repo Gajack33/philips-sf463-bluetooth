@@ -9,7 +9,7 @@
 - Recover fragmented UART frames and compare full keyboard reports.
 - Expose sampled heap/activity and the last front scan index through three diagnostic pages.
 
-120 offline checks pass; two builds produced identical BIN/USB files. Native audio,
+122 offline checks pass; two builds produced identical BIN/USB files. Native audio,
 OTA, bootloader, radio settings and the 50% update-battery guard are preserved.
 The physical Blue button still emits Yellow: its internal index needs confirmation.
 

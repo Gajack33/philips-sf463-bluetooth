@@ -4,11 +4,11 @@
   "integration_evidence": [
     {
       "path": "evidence/reliability-offline.json",
-      "sha256": "e51721b5a57fabb906092777261c33dbaf0bc1f45dd9d185255eac474c33d515"
+      "sha256": "4b71f56c8e51d174f1c1d5afbf03429f9e688f13345dda79832e024abafeac73"
     }
   ],
   "baseline": "GVK1EH_B002FFv.06.05, SHA256 6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
-  "qualification_note": "Offline software integration only: 120 passing checks bound to exact source, hook and image hashes. Hardware, ROM/context stack headroom, real heap stress, colors and long-idle/wake remain unqualified. No automatic flash; 06.07 stays published.",
+  "qualification_note": "Offline software integration only: 122 passing checks bound to exact source, hook and image hashes; full suites pass with LLVM 18 and 19. Hardware, ROM/context stack headroom, real heap stress, colors and long-idle/wake remain unqualified. Flash requires explicit owner approval; 06.07 stays published.",
   "protected_ranges": [
     {
       "start": "0x0",
@@ -286,7 +286,7 @@
   "integration_sources": {
     "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
     "firmware/adapter.c": "74fec52d698590a86cb815c27476cef7edb5ed69deacfd325a77abb8f15ee20c",
-    "firmware/build.py": "368e1eac538790871b3a51356f6d1f7a3b0067f88a4bc3a4dee698e19be0ce6f",
+    "firmware/build.py": "e099c1d6b274872ccb411ef0d2608a58a4851a79e2d7d24f9dc9cbf5c677f205",
     "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
     "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
     "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"

@@ -32,6 +32,7 @@ test_diagnostic_has_distinct_revision_and_explicit_callback_branch (test_image_b
 test_elf_extraction_rejects_ram_initializers_overflows_and_wrong_architecture (test_image_build.ImageBuildTests) ... ok
 test_instruction_mismatch_category_bounds_and_overlap_are_rejected (test_image_build.ImageBuildTests) ... ok
 test_qualification_rejects_changed_source_missing_input_and_changed_hooks (test_image_build.ImageBuildTests) ... ok
+test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash (test_image_build.ImageBuildTests) ... ok
 test_qualification_rejects_wrong_variant_image_even_with_valid_evidence_hash (test_image_build.ImageBuildTests) ... ok
 test_real_inputs_are_fixed_and_corruptions_fail_closed (test_image_build.ImageBuildTests) ... ok
 test_thumb_encoding_matches_published_branch_and_rejects_truncation (test_image_build.ImageBuildTests) ... ok
@@ -69,10 +70,11 @@ test_thumb_millisecond_wrap_expires_old_press_but_keeps_release (test_thumb_core
 test_thumb_offline_taps_reconnect_ttl_and_epoch_reject_stale_completion (test_thumb_core.ThumbCoreTests) ... ok
 test_thumb_parser_fragments_embedded_fe_resync_and_all_index_bounds (test_thumb_core.ThumbCoreTests) ... ok
 test_thumb_peer_cccd_and_protocol_changes_never_replay_old_key (test_thumb_core.ThumbCoreTests) ... ok
+test_thumb_ram_guard_rejects_real_store_outside_reviewed_ranges (test_thumb_core.ThumbCoreTests) ... ok
 test_thumb_release_retry_keeps_obligation_and_backs_off_until_event (test_thumb_core.ThumbCoreTests) ... ok
 test_thumb_state_layout_full_source_fifo_and_overflow_neutralization (test_thumb_core.ThumbCoreTests) ... ok
 
 ----------------------------------------------------------------------
-Ran 73 tests in 32.758s
+Ran 75 tests in 32.659s
 
 OK

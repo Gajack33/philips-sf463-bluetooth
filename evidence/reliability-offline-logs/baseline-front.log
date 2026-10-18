@@ -5,6 +5,6 @@ test_only_instruction_revision_and_crc_change (__main__.CandidateVerification) .
 test_voice_application_control_path_unchanged (__main__.CandidateVerification) ... ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 0.908s
+Ran 5 tests in 0.929s
 
 OK

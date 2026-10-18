@@ -15,7 +15,7 @@
   "sources": {
     "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
     "firmware/adapter.c": "74fec52d698590a86cb815c27476cef7edb5ed69deacfd325a77abb8f15ee20c",
-    "firmware/build.py": "368e1eac538790871b3a51356f6d1f7a3b0067f88a4bc3a4dee698e19be0ce6f",
+    "firmware/build.py": "e099c1d6b274872ccb411ef0d2608a58a4851a79e2d7d24f9dc9cbf5c677f205",
     "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
     "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
     "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
@@ -33,7 +33,7 @@
     {
       "exit_code": 0,
       "log": "reliability-offline-logs/baseline-front.log",
-      "log_sha256": "2e9d775f36682f53a9bdd9661187960135056b37b3c961a2aae4b81d65bffa11",
+      "log_sha256": "831a73f3513422f3f835c8fd7331cd7b74a06edb85ea4f7fcf8abb2a3eafe9c5",
       "name": "baseline-front",
       "passed": true,
       "test_count": 5,
@@ -48,7 +48,7 @@
     {
       "exit_code": 0,
       "log": "reliability-offline-logs/baseline-diagnostic.log",
-      "log_sha256": "296a19e792a47657e5b61d83a48f050db1c1ac7ceab4e98a4205e7f16f9c66fb",
+      "log_sha256": "a7ecd60fb075f98745412750c87fa1ab50fc60064f2b6fc962a084ad863f1ab7",
       "name": "baseline-diagnostic",
       "passed": true,
       "test_count": 6,
@@ -64,10 +64,10 @@
     {
       "exit_code": 0,
       "log": "reliability-offline-logs/firmware-tests.log",
-      "log_sha256": "f8b0c4c25de30abb1639124e838cb490cbc5bf25b2817cbcc18db01bb5c18687",
+      "log_sha256": "52ff49e4e42915b8935a0f8eb67db41acef8eaaf5a64d3164f2ea5107b247172",
       "name": "firmware-tests",
       "passed": true,
-      "test_count": 73,
+      "test_count": 75,
       "tests": [
         "test_adapter_initialization.AdapterInitializationTests.test_diagnostic_fallback_keeps_all_six_native_arguments_and_usage_runs_factory_callback",
         "test_adapter_initialization.AdapterInitializationTests.test_diagnostic_partial_reads_reuse_one_snapshot_and_write_only_uint16_length",
@@ -103,6 +103,7 @@
         "test_image_build.ImageBuildTests.test_elf_extraction_rejects_ram_initializers_overflows_and_wrong_architecture",
         "test_image_build.ImageBuildTests.test_instruction_mismatch_category_bounds_and_overlap_are_rejected",
         "test_image_build.ImageBuildTests.test_qualification_rejects_changed_source_missing_input_and_changed_hooks",
+        "test_image_build.ImageBuildTests.test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash",
         "test_image_build.ImageBuildTests.test_qualification_rejects_wrong_variant_image_even_with_valid_evidence_hash",
         "test_image_build.ImageBuildTests.test_real_inputs_are_fixed_and_corruptions_fail_closed",
         "test_image_build.ImageBuildTests.test_thumb_encoding_matches_published_branch_and_rejects_truncation",
@@ -140,6 +141,7 @@
         "test_thumb_core.ThumbCoreTests.test_thumb_offline_taps_reconnect_ttl_and_epoch_reject_stale_completion",
         "test_thumb_core.ThumbCoreTests.test_thumb_parser_fragments_embedded_fe_resync_and_all_index_bounds",
         "test_thumb_core.ThumbCoreTests.test_thumb_peer_cccd_and_protocol_changes_never_replay_old_key",
+        "test_thumb_core.ThumbCoreTests.test_thumb_ram_guard_rejects_real_store_outside_reviewed_ranges",
         "test_thumb_core.ThumbCoreTests.test_thumb_release_retry_keeps_obligation_and_backs_off_until_event",
         "test_thumb_core.ThumbCoreTests.test_thumb_state_layout_full_source_fifo_and_overflow_neutralization"
       ]
@@ -228,7 +230,7 @@
       "tests": []
     }
   ],
-  "test_count": 120,
+  "test_count": 122,
   "tests": [
     "baseline-front:__main__.CandidateVerification.test_consumer_descriptor_accepts_front_key_usages",
     "baseline-front:__main__.CandidateVerification.test_front_keys_have_press_release_reports_when_ready",
@@ -275,6 +277,7 @@
     "firmware-tests:test_image_build.ImageBuildTests.test_elf_extraction_rejects_ram_initializers_overflows_and_wrong_architecture",
     "firmware-tests:test_image_build.ImageBuildTests.test_instruction_mismatch_category_bounds_and_overlap_are_rejected",
     "firmware-tests:test_image_build.ImageBuildTests.test_qualification_rejects_changed_source_missing_input_and_changed_hooks",
+    "firmware-tests:test_image_build.ImageBuildTests.test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash",
     "firmware-tests:test_image_build.ImageBuildTests.test_qualification_rejects_wrong_variant_image_even_with_valid_evidence_hash",
     "firmware-tests:test_image_build.ImageBuildTests.test_real_inputs_are_fixed_and_corruptions_fail_closed",
     "firmware-tests:test_image_build.ImageBuildTests.test_thumb_encoding_matches_published_branch_and_rejects_truncation",
@@ -312,6 +315,7 @@
     "firmware-tests:test_thumb_core.ThumbCoreTests.test_thumb_offline_taps_reconnect_ttl_and_epoch_reject_stale_completion",
     "firmware-tests:test_thumb_core.ThumbCoreTests.test_thumb_parser_fragments_embedded_fe_resync_and_all_index_bounds",
     "firmware-tests:test_thumb_core.ThumbCoreTests.test_thumb_peer_cccd_and_protocol_changes_never_replay_old_key",
+    "firmware-tests:test_thumb_core.ThumbCoreTests.test_thumb_ram_guard_rejects_real_store_outside_reviewed_ranges",
     "firmware-tests:test_thumb_core.ThumbCoreTests.test_thumb_release_retry_keeps_obligation_and_backs_off_until_event",
     "firmware-tests:test_thumb_core.ThumbCoreTests.test_thumb_state_layout_full_source_fifo_and_overflow_neutralization",
     "host-core-tests:test_source_fifo_order_and_overflow_repair",
@@ -372,7 +376,7 @@
     "app/tests/fr/local/tv/sf463/core/CoreTests.java": "ab227d6501479fcd4d0ae641294641cd0cfd2fa6e76cc806012244d68cddb002",
     "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
     "firmware/adapter.c": "74fec52d698590a86cb815c27476cef7edb5ed69deacfd325a77abb8f15ee20c",
-    "firmware/build.py": "368e1eac538790871b3a51356f6d1f7a3b0067f88a4bc3a4dee698e19be0ce6f",
+    "firmware/build.py": "e099c1d6b274872ccb411ef0d2608a58a4851a79e2d7d24f9dc9cbf5c677f205",
     "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
     "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
     "firmware/core/test_sf_core.c": "35caa015d011e9f7ea6b17eea261b7276be5e8a19ee7b8f198f2de1ba43cf48d",
@@ -381,10 +385,10 @@
     "firmware/tests/test_adapter_initialization.py": "ddc911a5b63fb0f37c8b9c028b641c39c1b5a940cee653ed9d11b1ef20ed6fca",
     "firmware/tests/test_adapter_runtime.py": "bf5a4c278e781f5f825b8542169cabb470cc06f8b41c4f54e9f8d2c924dd6476",
     "firmware/tests/test_decode_diagnostic.py": "a5969474e4d9db387be16e999c97e65e78e82b1c7f2434d7cd09871d1502149a",
-    "firmware/tests/test_image_build.py": "cbdf17df2eebbf46a0b0e0788027fe9b32355e335219d5990c6671c9cca71888",
+    "firmware/tests/test_image_build.py": "f5db0074e0c8fde7d77e43eacbae4ea6f6037d3b44a97a9e71285eae11fa20f5",
     "firmware/tests/test_native_adapter.py": "d9831c6dabe70fa47644382b87b71290553e6fd4136638cb7a7ff99f92a3a6e0",
     "firmware/tests/test_native_dispatch.py": "800a00b2d58694091b8389cea1c230048414816bc3fe2c6c0dff1079a8c44741",
-    "firmware/tests/test_thumb_core.py": "0f11aa3fda9a0ddb3df9d5ede8a70049ac2855151f8a3abe70ef143a255c6922",
+    "firmware/tests/test_thumb_core.py": "26940805987d0061b51ad0a6f5a687cf15d323e76d52d9c646651d6f63fee694",
     "firmware/verify.py": "6bb52ca21d3368a4fbade68f4dcdedd06fe2368a7b89cf6bfd8a10d4467d70cb",
     "reproduction/build_diagnostic_candidate.py": "e883653c7657c664e5f4eb4a1c36ad9b07932abd2a543abec841b3b5c850e795",
     "reproduction/build_front_hid_candidate.py": "3077b57204df4268a9650698c721f976667a9fa9a79e5b53fa2023b1a16f3c5a",

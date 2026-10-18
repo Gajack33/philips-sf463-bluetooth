@@ -5,8 +5,8 @@ The published 06.07 remains unchanged. No firmware was flashed by this work.
 06.08 is not a build input. Exact test IDs and hashes are in
 `evidence/reliability-offline.json`; the complete command is `python firmware/verify.py`.
 
-Delivery: 120/120 checks pass across nine stages, including the post-qualification
-evidence gate. Exact diagnostic and usage image hashes match the public proof.
+Delivery: 122/122 checks pass across nine stages. Exact diagnostic and usage
+image hashes match the public proof; the evidence gate is checked again after binding.
 The 06.09 BIN/USB archive was reproduced byte-for-byte and is available under
 `firmware/candidates/06.09/`. The manifest is sanitized; checksums include it.
 The compiled 06.10 image remains undistributed pending hardware acceptance.
@@ -71,7 +71,7 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 | “export/import JSON versionné et remise à zéro” / “Aucun contenu d’écran” | JSON round-trip/rejection/reset host tests and APK manifest assertions; real TV lacks a usable document picker, so explicit JSON text/copy/paste is implemented and exercised. No screen-content retrieval, account, server, periodic polling or GATT connection. |
 | “Le firmware reste utilisable sans cette appli” | Firmware contains no app/network protocol dependency. Full HID integration tests execute without Android. Hardware use remains pending for these candidates. |
 | “temps de connexion, d’activité UART et de veille” / “pas comme un gain d’autonomie démontré” | `test_heap_and_uart_activity_samples_track_transitions_without_power_claim`, diagnostic decoder tests. These are sampled heap and logical UART flags, not measured sleep current. No RF power or native power timing is changed. Before/after physical measurements remain pending. |
-| “hash d’origine” / “octets attendus” / “plages modifiées” / “taille, les vecteurs et le CRC” | 11 builder tests, exact manifest instruction checks and deterministic USB test; changed source/hook/image evidence is rejected. |
+| “hash d’origine” / “octets attendus” / “plages modifiées” / “taille, les vecteurs et le CRC” | 12 builder tests, exact manifest instruction checks and deterministic USB test; changed source/hook/image evidence is rejected. `test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash` also rejects 25 cases of failed, unstable or incomplete proof despite a valid JSON hash. |
 | “Aucun flash automatique” / “50 %” | Verify/build/decoder contain no device deployment path. Every non-whitelisted stock byte is preserved, including native battery/update logic. No flash, deliberate interruption, low-battery bypass or programmer-recovery claim. |
 
 ## Limits and remaining acceptance
@@ -94,7 +94,14 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
   `test_rear_release_cancels_native_pending_scan_code_while_uart_is_unready`
   and `test_untracked_native_pending_scan_code_is_cleared_without_replay`
   cover the additional native APP+17 buffer; its valid replay at 1999 ms is preserved.
-- Unicorn 2.1.4 write hooks disturb the factory unaligned `memcpy` IT loop.
-  Relevant tests execute the real instructions without that hook and check the
-  entire RAM diff afterwards; the core and new initialization/diagnostic paths
-  retain direct write guards. This limitation is explicit, not a removed failure.
+- Unicorn 2.1.4 write hooks disturb both the factory unaligned `memcpy` IT loop
+  and Clang 18's conditional `STRB` repair loop. With the same real Clang 18
+  instructions, an empty write callback reproduces both CI stalls; removing it
+  returns correctly. Adding an instruction callback does not fix the engine bug.
+  Native runtime and standalone core checks compare the entire RAM at call
+  boundaries. The core also protects flash and the return page as read/execute;
+  `test_thumb_ram_guard_rejects_real_store_outside_reviewed_ranges` executes real
+  forbidden stores and requires the RAM rejection or `UC_ERR_WRITE_PROT`.
+  ABI, sentinels, instruction/time budgets and behavioral assertions are unchanged.
+  Initialization/diagnostic paths retain their direct write guards. Boundary RAM
+  comparisons do not detect a transient write restored before return.

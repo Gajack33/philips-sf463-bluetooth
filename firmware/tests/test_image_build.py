@@ -42,6 +42,11 @@ def manifest():
     evidence = build.ROOT / "evidence/builder-fixture.json"
     evidence.parent.mkdir(parents=True, exist_ok=True)
     evidence.write_text(json.dumps({"scope": "synthetic builder fixture; not hardware or adapter proof",
+                                    "passed": True, "inputs_unchanged": True,
+                                    "sources": build.source_hashes(),
+                                    "integration_hook_sha256": build.hook_digest(rules),
+                                    "stages": [{"name": "synthetic-builder-fixture",
+                                                "passed": True, "exit_code": 0}],
                                     "variant_images": images}), encoding="utf-8")
     rules["integration_sources"] = build.source_hashes()
     rules["integration_hook_sha256"] = build.hook_digest(rules)
@@ -177,6 +182,57 @@ class ImageBuildTests(unittest.TestCase):
         rules = manifest()
         with self.assertRaisesRegex(build.BuildError, "image binding mismatch"):
             self.make(rules, payload=b"\x01\x20\x70\x47")
+
+    def test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash(self):
+        cases = [
+            ("missing passed", "passed", None),
+            ("failed suite", "passed", False),
+            ("nonboolean passed", "passed", 1),
+            ("missing input stability", "inputs_unchanged", None),
+            ("unstable inputs", "inputs_unchanged", False),
+            ("nonboolean input stability", "inputs_unchanged", "true"),
+            ("missing sources", "sources", None),
+            ("wrong sources", "sources", {"firmware/adapter.c": "0" * 64}),
+            ("missing hook digest", "integration_hook_sha256", None),
+            ("wrong hook digest", "integration_hook_sha256", "0" * 64),
+            ("missing stages", "stages", None),
+            ("empty stages", "stages", []),
+            ("stages not list", "stages", {}),
+            ("stage not object", "stages", [None]),
+            ("stage missing passed", "stages", [{"exit_code": 0}]),
+            ("failed stage", "stages", [{"passed": False, "exit_code": 0}]),
+            ("nonboolean stage passed", "stages", [{"passed": 1, "exit_code": 0}]),
+            ("stage missing exit code", "stages", [{"passed": True}]),
+            ("stage nonzero exit code", "stages", [{"passed": True, "exit_code": 1}]),
+            ("stage noninteger exit code", "stages", [{"passed": True, "exit_code": False}]),
+            ("stage string exit code", "stages", [{"passed": True, "exit_code": "0"}]),
+        ]
+        for label, field, value in cases:
+            with self.subTest(case=label):
+                rules = manifest()
+                evidence = build.ROOT / rules["integration_evidence"][0]["path"]
+                proof = json.loads(evidence.read_text())
+                if value is None:
+                    proof.pop(field)
+                else:
+                    proof[field] = value
+                evidence.write_text(json.dumps(proof), encoding="utf-8")
+                rules["integration_evidence"][0]["sha256"] = build.digest(evidence.read_bytes())
+                with self.assertRaisesRegex(build.BuildError, "Qualification proof"):
+                    self.make(rules)
+        for proof in ([], {}, None):
+            with self.subTest(incomplete_proof=proof):
+                rules = manifest()
+                evidence = build.ROOT / rules["integration_evidence"][0]["path"]
+                evidence.write_text(json.dumps(proof), encoding="utf-8")
+                rules["integration_evidence"][0]["sha256"] = build.digest(evidence.read_bytes())
+                with self.assertRaisesRegex(build.BuildError, "Qualification proof"):
+                    self.make(rules)
+        rules = manifest()
+        evidence = build.ROOT / rules["integration_evidence"][0]["path"]
+        evidence.unlink()
+        with self.assertRaisesRegex(build.BuildError, "JSON file inside this repository"):
+            self.make(rules)
 
     def test_code_window_limits_and_missing_or_external_symbol_fail_closed(self):
         for payload in (b"", b"\xff" * (0x6000 + 1)):

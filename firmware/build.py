@@ -173,6 +173,20 @@ def validate_evidence(manifest: dict, variant: str | None = None, image_sha256: 
         if digest(data) != record["sha256"]:
             raise BuildError(f"Integration evidence hash mismatch: {record['path']}")
         proof = json.loads(data)
+        if not isinstance(proof, dict) or proof.get("passed") is not True:
+            raise BuildError("Qualification proof must report passed=true")
+        if proof.get("inputs_unchanged") is not True:
+            raise BuildError("Qualification proof must report unchanged verification inputs")
+        if proof.get("sources") != manifest["integration_sources"]:
+            raise BuildError("Qualification proof source binding mismatch")
+        if proof.get("integration_hook_sha256") != manifest["integration_hook_sha256"]:
+            raise BuildError("Qualification proof hook binding mismatch")
+        stages = proof.get("stages")
+        if (not isinstance(stages, list) or not stages
+                or any(not isinstance(stage, dict) or stage.get("passed") is not True
+                       or type(stage.get("exit_code")) is not int or stage["exit_code"] != 0
+                       for stage in stages)):
+            raise BuildError("Qualification proof contains failing or incomplete stages")
         if variant is not None and proof.get("variant_images", {}).get(variant) == image_sha256:
             image_matches = True
     if variant is not None and not image_matches:

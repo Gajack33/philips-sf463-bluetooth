@@ -23,7 +23,7 @@
   "compiler": "Zig CC 0.14.1 / LLVM 19.1.7; thumb-freestanding-eabi, Cortex-M3, -Oz; full command defined in firmware/build.py",
   "crc16": "64e9",
   "hardware_validated": false,
-  "hook_manifest_sha256": "5b48ae600a0ed443fd58babce45ce3a1100875fad64158e425f3cbd9e7686885",
+  "hook_manifest_sha256": "4866ff576c5f5719fb4ba5eb80e4932549da3ca7a655c68a8af00be7f6e5ea87",
   "image_sha256": "e6954922e6a499dcdc23a064e976d4baebf350f84011f496831bd6d73ed191f7",
   "integration_hook_sha256": "9e9514db7a1f5567fc9767cca53fb2c2ad3439d8d054f476776c689d3b2c882a",
   "patches": [
@@ -159,7 +159,7 @@
   "sources": {
     "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
     "firmware/adapter.c": "74fec52d698590a86cb815c27476cef7edb5ed69deacfd325a77abb8f15ee20c",
-    "firmware/build.py": "368e1eac538790871b3a51356f6d1f7a3b0067f88a4bc3a4dee698e19be0ce6f",
+    "firmware/build.py": "e099c1d6b274872ccb411ef0d2608a58a4851a79e2d7d24f9dc9cbf5c677f205",
     "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
     "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
     "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
@@ -234,8 +234,8 @@
   "version": "06.09",
   "validation_evidence": {
     "path": "evidence/reliability-offline.json",
-    "sha256": "e51721b5a57fabb906092777261c33dbaf0bc1f45dd9d185255eac474c33d515",
+    "sha256": "4b71f56c8e51d174f1c1d5afbf03429f9e688f13345dda79832e024abafeac73",
     "scope": "offline-software-only",
-    "passing_tests": 120
+    "passing_tests": 122
   }
 }

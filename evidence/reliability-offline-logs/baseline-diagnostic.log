@@ -6,6 +6,6 @@ test_other_device_information_strings_are_unchanged (__main__.DiagnosticVerifica
 test_partial_reads_and_invalid_offset_obey_original_callback (__main__.DiagnosticVerification) ... ok
 
 ----------------------------------------------------------------------
-Ran 6 tests in 0.350s
+Ran 6 tests in 0.356s
 
 OK
