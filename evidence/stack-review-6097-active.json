@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "firmware_version": "6.097",
+  "reference_image_sha256": "789e9fd128e6194448b6096e6ab15f816848352032ff33a84ef1d136ed30b5f9",
+  "adapter_source_sha256": "3779c0f47f2682cf211fdd91a664b3b9f2bcd20d64ba4b678193cd8539d1b1f4",
+  "scope": "Actual linked Thumb code with the reliability core active; native API seams are explicit fixtures. No device execution is represented by these measurements.",
+  "comparison": {
+    "columns": ["original_dispatcher_with_existing_hooks", "with_additional_4C2A_lifecycle_wrapper"],
+    "unit": "observed stack bytes, including the native HID task's 32-byte frame",
+    "baseline_is_not_unmodified_factory_firmware": true,
+    "additional_wrapper_retained_bytes": {"useful_transition": 16, "unrelated_or_repeated_event": 0}
+  },
+  "compilers": [
+    {
+      "compiler": "LLVM 19.1.7, Zig 0.14.1",
+      "image_sha256": "789e9fd128e6194448b6096e6ab15f816848352032ff33a84ef1d136ed30b5f9",
+      "payload_sha256": "a9c8fc9cf1fa16ee4d83d8e082fa88aaee87e096daaff2ffb009baee40c55a11",
+      "role_1_to_6_same_peer": [136, 152],
+      "role_6_repeated": [136, 136],
+      "role_1_to_6_different_peer": [128, 144],
+      "maximum_observed_active_hid_bytes": 152
+    },
+    {
+      "compiler": "Ubuntu LLVM 18.1.8",
+      "image_sha256": "a4d3229671fcf2674db9355d2f6ae23ba9bb8962d6d93724cf5024ba998af5b8",
+      "payload_sha256": "bac41f690a54812dd4e3c7861d72d0d67ffed925ee1bda4412b13d3c4a0b9ceb",
+      "role_1_to_6_same_peer": [144, 160],
+      "role_6_repeated": [144, 144],
+      "role_1_to_6_different_peer": [144, 160],
+      "maximum_observed_active_hid_bytes": 160
+    }
+  ],
+  "phase_8_results_shared_by_both_compilers": {
+    "phase_0": [88, 88],
+    "phase_1_success": [80, 96],
+    "phase_1_failure": [88, 88],
+    "phase_2_success": [88, 104],
+    "bond_rpc_entry_prefix_phase_1_success": [80, 96],
+    "new_admission_allocations_or_event_0x400_posts_while_active": 0
+  },
+  "first_app_iteration": {
+    "path": ["0x1734 task frame", "0x1736 rc_app_init", "0x173A load APP base", "0x173E branch to 0x179A", "0x17A6 first Event_pend", "0x17AA assign returned mask to R5"],
+    "conclusion": "The first iteration bypasses 0x1796; the new bridge never consumes an uninitialized startup R5 mask."
+  },
+  "software_revision_read": "UUID 0x2A28 delegates to the original Device Information callback; the diagnostic snapshot, heap sample and state lookup are restricted to UUID 0x2A27.",
+  "limitations": [
+    "These are observed prefixes at stubbed API seams, not a complete worst-case stack bound. Deeper ROM, ICall, scheduler and IRQ stack usage is unknown.",
+    "The earlier fallback/admission report stack-review-6097.json is preserved separately; its inactive HID figures do not describe the active paths above.",
+    "No cause is established for the observed approximately 5.2-second Bluetooth delay. These measurements do not qualify radio behavior or hardware stack headroom."
+  ]
+}

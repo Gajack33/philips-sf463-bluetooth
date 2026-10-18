@@ -117,18 +117,28 @@ at `0x4D70`. All execute in HID through dispatcher `0x4C2A`; IRQ/Clock/BLE
 callbacks do not clear readiness. The drain requires readiness nonzero.
 Therefore admission requires readiness 0 both before querying/allocating and
 again under the final gate after all RPC/heap work. It never forces this flag.
-Failure preserves the native queue. Pairing completion may remain in fallback
-until a later connection transition provides a quiescent window. This proof is
-bounded to visible application code; ROM and hardware scheduling remain limits.
+Failure preserves the native queue. This is a conservative exclusion, not a
+liveness guarantee: readiness remains 1 after the last report drains. Successful
+pairing phases set it before posting APP's admission event, and higher-priority
+HID can process later messages before APP runs. Thus an ordinary connection can
+leave admission inactive indefinitely. The observed 6.097 snapshot confirms a
+pre-query refusal 11 at role 6, not the full event order or a cause of delayed
+input. See [the admission review](../evidence/admission-review-6097.json).
+A future ownership handoff must also exclude an APP producer already inside
+native `0x4FAA`; moving the claim into HID or relaxing readiness alone is unsafe.
+No such redesign is implemented in these immutable candidate files.
 
 For the new dispatcher wrapper, both LLVM 18/19 retain 16 extra bytes only across
 useful events. Other/failed events remove that frame before tail-calling native.
-Observed native/wrapped prefixes, including HID's permanent 32-byte frame, are
+Observed inactive native/wrapped prefixes, including HID's permanent 32-byte frame, are
 104/120 bytes for role 6, 88/104 for successful phases 1/2, and 88/88 for phase 0
 or a failed phase 1. The final6.097 deferred APP success path observes 192 bytes including its native
 24-byte frame with both LLVM 18 and 19. Refusal paths peak at 128/184 bytes
 respectively; these are admission/lifecycle measurements, not global maxima. These stop at explicit API seams; they do not prove the native
 RPC/ROM/preemption worst case. The 400/750-byte task budgets are unchanged.
+The [additional active-path review](../evidence/stack-review-6097-active.json)
+observes 152/160-byte maxima for LLVM 19/18 at the reviewed lifecycle seams;
+these likewise exclude deeper ROM/RTOS frames.
 
 APP, HID, UART and the 36-byte legacy queue are at `0x20000928`, `0x20000AD8`,
 `0x20000DD0`, `0x200027C8`. The queue becomes an exclusive magic/pointer header

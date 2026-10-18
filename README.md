@@ -52,7 +52,7 @@ python reproduction/verify_diagnostic_candidate.py
 
 ### In development
 
-The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add safer input handling and local button profiles. **06.07 remains the published reference.** The test remote is back on its code through the [6.096 recovery](evidence/hardware-recovery-6096.json). Diagnostic [**6.097**](firmware/candidates/06.09-rc3/) adds deferred initialization and the confirmed Blue-key correction; hardware acceptance is pending. **06.10 is withheld.** No automatic flash.
+The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add safer input handling and local button profiles. **06.07 remains the published reference.** The [6.097 trial](evidence/hardware-6097.json) is on hold; its core stayed inactive. The [6.098 recovery](evidence/hardware-recovery-6098.json) restored 06.07 code and both faces respond again. **06.10 is withheld.** No automatic flash.
 
 ---
 

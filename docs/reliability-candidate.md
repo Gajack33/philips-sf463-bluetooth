@@ -23,8 +23,9 @@ timings remain in place. The native 50% update-battery requirement is unchanged.
 The [bounded color capture](../evidence/hardware-colors-6096.json) confirms Red/
 Green/Yellow/Blue scan indexes `19/12/1A/1B` (hex). Both Yellow and Blue emit `0x006C`.
 The 6.097 source corrects only Blue's primary FLASH byte at `0x13BF0`, to `0x006B`; the
-other 44 rows and secondary behaviors remain unchanged. This correction has not
-yet been installed or physically qualified.
+other 44 rows and secondary behaviors remain unchanged. The owner-authorized
+6.097 transfer and running revision are confirmed; corrected color behavior
+remains unqualified.
 Identity admission currently requires one saved bond and an exact current-address
 match. Multiple bonds and rotating/private peer addresses are not qualified.
 
@@ -32,7 +33,7 @@ match. Multiple bonds and rotating/private peer addresses are not qualified.
 | --- | --- | --- |
 | 06.09 first candidate | Temporary diagnostic pages through Hardware Revision (`0x2A27`) | Installed; adapter inactive, reason unknown |
 | 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | Confirmed after host re-pair; inactive, initial bond count0 before allocation; on hold |
-| 6.097 (06.09 rc3) | Guarded deferred admission, latest-refusal scope and confirmed Blue mapping | 155 checks with LLVM 18/19; not installed |
+| 6.097 (06.09 rc3) | Guarded deferred admission, latest-refusal scope and confirmed Blue mapping | Confirmed; inactive deferred refusal 11; delayed input reported; on hold |
 | 06.10 | Same reliability changes; original Hardware Revision callback restored | Withheld from usage qualification |
 
 Read [native ABI notes](../firmware/NATIVE_ABI.md) for instruction windows and
@@ -76,8 +77,13 @@ Before claiming the legacy queue, a native-readiness guard is checked both befor
 blocking calls and under the final critical section. Empty queue indexes alone
 are insufficient: the final native report can still reference its old slot while
 its send waits in an RPC. If native transmission is ready/in flight, admission
-waits for another useful transition; readiness is never forced. New association
-may therefore need a later reconnection before activation.
+waits for another useful transition; readiness is never forced. The hardware
+follow-up exposed a liveness gap: this readiness flag persists after transmission
+and successful pairing sets it before APP admission. An ordinary reconnect does
+not guarantee activation. The [read-only review](../evidence/admission-review-6097.json)
+documents why simply relaxing the guard or moving the claim into HID is unsafe;
+a future handoff must exclude both native reader and producer. No redesign or
+additional candidate has been implemented or flashed.
 
 Diagnostic 6.097 records the **latest admission refusal** in the same 21-byte native
 buffer. Flag10(hex) identifies a deferred check; the decoder labels boot,
@@ -89,6 +95,20 @@ The historical 6.095 assets and their 134-check proof are immutable. Current sou
 is bound to [155-check LLVM 19](../evidence/reliability-rc3-offline.json) and
 [LLVM 18](../evidence/reliability-rc3-offline-llvm18.json) proofs. Two builds produced
 identical [6.097 files](../firmware/candidates/06.09-rc3/). 06.10 remains withheld.
+A separately authorized [hardware trial](../evidence/hardware-6097.json) passed
+native preflight on 6.096 with 70% reported battery. All 3,712 blocks transferred
+and the remote accepted the image. After initial failed reads, a six-read ATT
+sequence confirmed actual 6.097 in 454 ms. All three full diagnostic pages were
+`00000BFFFFFFFFFF1306`: latest deferred refusal 11, native TX not quiescent,
+role 6, before bond/heap queries. The guard was preserved and the core is inactive.
+The owner repeatedly reports delayed response; passive input confirms Bluetooth
+keyboard and front arrows alongside infrared, but does not establish a cause.
+The conditional [6.098 recovery](../evidence/hardware-recovery-6098.json) completed
+and native plus independent reads confirmed its revision. It restores published
+06.07 code with only revision/CRC changed. The owner reports both faces working
+again; precise latency and long idle remain unqualified.
+An additional [active-path stack review](../evidence/stack-review-6097-active.json)
+measures reviewed prefixes, not full ROM/RTOS stack depth or the cause of the delay.
 A new useful transition can replace an inactive record between separate ATT
 partial reads; prefer a single full 20-byte read. See [native ABI details](../firmware/NATIVE_ABI.md).
 

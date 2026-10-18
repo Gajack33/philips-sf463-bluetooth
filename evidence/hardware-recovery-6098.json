@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "observed_on": "2026-10-18",
+  "scope": "Owner-authorized conditional return to published 06.07 code after the unsuccessful 6.097 trial; not reliability-core qualification",
+  "status": "6.098 confirmed by native and independent reads; owner reports both faces working again",
+  "tv_model": "55OLED804/12",
+  "remote_model": "YKF463-001 / SF463",
+  "target_revision": "6.098",
+  "source_behavior_revision": "06.07",
+  "source_image_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+  "image_sha256": "f5519c9655536b1fe2d616a5aa03224ac3409d9c951a6e57b4fe846bddc76fa9",
+  "usb_archive_sha256": "f96ca53e35696ab236d44f81c6bf84bd767043470452280739747ba8513b1bc1",
+  "image_bytes": 118784,
+  "all_code_and_other_bytes_identical_to_published_0607": true,
+  "only_changes_from_published_0607": [
+    "CRC bytes 0..1",
+    "Software Revision bytes 0x16EF..0x16F3"
+  ],
+  "offline_validation": {
+    "narrow_checks_passed": 15,
+    "baseline_checks": 6,
+    "recovery_checks": 9,
+    "two_builds_identical": true,
+    "report": "firmware/candidates/06.09-rc3/recovery-6.098/verification.json",
+    "full_155_reliability_suite_applies": false
+  },
+  "owner_authorized": true,
+  "authorization_condition": "Install recovery 6.098 only if the 6.097 trial fails and native link/version/product/battery checks permit transfer",
+  "condition_observed": "Actual 6.097 core inactive with refusal 11 and repeated owner-reported delayed response",
+  "prior_usb_image_preserved_and_verified": true,
+  "native_preflight": {
+    "software_revision": "GVK1EH_B002FFv.6.097",
+    "battery_percent": 100,
+    "selected_usb_image": "GVK1EH_B002FFv.6.098.bin",
+    "usb_image_sha256_verified": true,
+    "native_battery_guards_preserved": true
+  },
+  "first_attempt": {
+    "firmware_write_started": false,
+    "outcome": "Bluetooth initially unavailable; after UI restart the standard factory image was selected and native comparison reported no update",
+    "bond_forgotten": false
+  },
+  "transfer": {
+    "usb_mode_and_rear_wake_confirmed_before_start": true,
+    "started_local": "2026-10-18T21:39:25.113+02:00",
+    "finished_local": "2026-10-18T21:40:51.170+02:00",
+    "blocks": 3712,
+    "block_bytes": 32,
+    "programming_finished_confirmed": true,
+    "native_accepted_firmware": true,
+    "accepted_local": "2026-10-18T21:40:54.502+02:00",
+    "native_post_reboot_revision": "GVK1EH_B002FFv.6.098",
+    "native_revision_read_local": "2026-10-18T21:41:01.756+02:00"
+  },
+  "installed_revision_confirmed": true,
+  "independent_verification": {
+    "software_revision": "GVK1EH_B002FFv.6.098",
+    "att_reads_completed": 6,
+    "all_read_statuses_zero": true,
+    "sequence_completed_ms": 622,
+    "diagnostic_gatt_closed": true,
+    "native_reader_closed_after_completed_transfer": true
+  },
+  "owner_check": {
+    "requested": "Infrared covered, three brief rear Z presses then three front Right presses, one second apart",
+    "owner_reports_working_again": true,
+    "precise_response_latency_measured": false,
+    "physical_capture_analysis_pending": false,
+    "passive_bluetooth_keyboard_and_arrows_observed": true,
+    "keyboard_usage": "0x0007001D",
+    "right_usage": "0x000C0045",
+    "infrared_key_events_observed": 0,
+    "both_faces_have_press_and_release_events": true,
+    "diagnostic_gatt_connected_during_check": false,
+    "exact_three_press_sequence_qualified": false,
+    "note": "Capture contains the requested rear/front usages plus additional Bluetooth navigation; no infrared key events observed. It establishes Bluetooth operation, not physical press-to-event latency or long idle."
+  },
+  "qualification": {
+    "recovery_installation_confirmed": true,
+    "long_idle_or_wake_qualified": false,
+    "reliability_core_active": false,
+    "reliability_0610_qualified": false,
+    "battery_life_gain_claimed": false
+  },
+  "provenance_note": "Immutable recovery manifest/verification retain build-time preparation status; this separate record describes the later owner-authorized deployment",
+  "privacy": "No device addresses, account identifiers, local paths or raw system logs"
+}

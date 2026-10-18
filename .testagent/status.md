@@ -12,7 +12,7 @@ inventory was zero. See `evidence/hardware-6095.json`.
 **Historical 6.095 hold:** host re-pair restored its Bluetooth connection, but
 its reliability core stayed inactive. That candidate remains on hold; 6.097 is a
 new separately tested build requiring its own hardware acceptance.
-The separately authorized 06.07 behavior recovery 6.096 is now installed. After
+The separately authorized 06.07 behavior recovery 6.096 was confirmed. After
 the first attempt failed before any firmware write, host re-pair restored the link;
 a second native attempt completed 3,712 blocks and an independent six-read ATT
 sequence confirmed version 6.096 with status 0. Its 15 narrow offline checks are
@@ -28,15 +28,35 @@ Current delivery: **155/155 checks pass with LLVM 18 and 19**, across nine
 stages. The exact two source/hook/image proofs are
 `evidence/reliability-rc3-offline.json` and its `-llvm18` counterpart. The new
 6.097 BIN/USB files reproduce byte-for-byte under `firmware/candidates/06.09-rc3/`.
-It has not been staged or flashed: see `evidence/hardware-6097.json`.
+Its owner-authorized native transfer completed and the remote accepted it.
+The owner repeatedly reports delayed response. Passive input confirms Bluetooth
+front arrows and keyboard alongside infrared. A later six-read ATT sequence
+confirmed actual 6.097 in 454 ms; all full diagnostic pages were
+`00000BFFFFFFFFFF1306`: inactive, latest deferred refusal 11, native TX not
+quiescent at role 6 before bond/heap queries. No guard was forced. See
+`evidence/hardware-6097.json` and the additional active-path prefix measurements
+in `evidence/stack-review-6097-active.json`; no full ROM/RTOS stack claim is made.
 
 Historical 6.095 assets and their 134-check proof are immutable. Current source
 adds event-driven guarded admission and the hardware-confirmed one-byte Blue
 correction. Diagnostic 6.097 records the latest refusal and its boot/deferred
 scope in the existing buffer. Its 6.098 contingency package retains only 06.07
-behavior and has 15 separate narrow checks. Neither package is authorized for a
-new installation at preparation time. The compiled 06.10 image remains withheld.
+behavior and has 15 separate narrow checks. The owner authorized 6.097 and,
+only if the trial fails, recovery 6.098. That recovery completed after the failed
+trial. Native and independent reads confirm actual 6.098, six ATT reads passed
+with status 0 in 622 ms, and the owner reports both faces working again. See
+`evidence/hardware-recovery-6098.json`. Exact response latency and long idle
+remain unqualified.
+The compiled 06.10 image remains withheld.
 Public hashed inputs and logs use LF.
+
+The hardware follow-up and `evidence/admission-review-6097.json` identify an
+unqualified liveness boundary: native readiness persists after drain and may be
+set before APP sees a connection event. The current guard can therefore preserve
+fallback indefinitely. The 155 offline checks do not establish activation under
+this real ordering. A future handoff needs explicit exclusion of both native HID
+reader and an APP producer already inside 0x4FAA. No one-line guard relaxation
+or new candidate is implemented. The cause of reported response delay is unknown.
 
 ## Implemented
 
