@@ -28,17 +28,27 @@ match. Multiple bonds and rotating/private peer addresses are not qualified.
 
 | Build | Purpose | Hardware status |
 | --- | --- | --- |
-| 06.09 | Temporary diagnostic pages through Hardware Revision (`0x2A27`) | Pending |
+| 06.09 first candidate | Temporary diagnostic pages through Hardware Revision (`0x2A27`) | Installed; adapter inactive, reason unknown |
+| 6.095 (06.09 rc2) | Add frozen boot-refusal provenance in the same native buffer | Not installed |
 | 06.10 | Same reliability changes; original Hardware Revision callback restored | Withheld from usage qualification |
 
 Read [native ABI notes](../firmware/NATIVE_ABI.md) for instruction windows and
 the distinction between stack acceptance and delivery to Android.
 
-[06.09 candidate files](../firmware/candidates/06.09/) include the BIN, USB archive,
+[06.09 rc2 candidate files](../firmware/candidates/06.09-rc2/) include the BIN, USB archive,
 SHA-256 and build manifest. Two builds produced identical BIN/ZIP files; all
-122 offline checks pass. [Machine-readable evidence](../evidence/reliability-offline.json)
+134 offline checks pass with LLVM 18 and 19. [Machine-readable evidence](../evidence/reliability-rc2-offline.json)
 binds the tests to exact source, hook and image hashes. 06.10 is compiled and
 checked but no usage binary or archive is distributed before hardware acceptance.
+
+The [first-candidate hardware result](../evidence/hardware-0609-rc1.json) confirms
+06.09 was installed but its reliability adapter remains inactive. The rc2 follow-up
+preserves the exact boot refusal code, bond count, heap sample and native readiness
+flags in the existing 21-byte diagnostic buffer. Reads do not retry initialization
+or query BLE/NVRAM/heap. Unknown heap values are explicit; post-allocation samples
+are distinguished from pre-allocation samples. The device revision is 6.095,
+strictly between 06.09 and 06.10 under the updater's native float comparison.
+This preserves the original 20-byte revision field and the planned usage 06.10.
 
 ## TV companion
 
@@ -96,10 +106,10 @@ for exact checks, evidence and outstanding requirements.
 6. Qualify 06.10 for normal use only after those checks pass. Restore the original
    Hardware Revision value and repeat first-press/wake checks without diagnostics.
 
-The 06.09 decoder accepts complete, explicitly versioned pages:
+The decoder accepts complete pages with the exact installed version (06.09 or 6.095):
 
 ```sh
-python firmware/decode_diagnostic.py --firmware-version 06.09 PAGE0 PAGE1 PAGE2
+python firmware/decode_diagnostic.py --firmware-version 6.095 PAGE0 PAGE1 PAGE2
 ```
 
 Heap values are sampled minima; connection and logical UART active/inactive

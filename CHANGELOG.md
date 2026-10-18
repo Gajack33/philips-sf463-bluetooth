@@ -6,12 +6,19 @@
 - Restore the original Hardware Revision characteristic and remove diagnostic code.
 - Normal-use qualification remains pending the 06.09 hardware and idle checks.
 
-## 06.09 — diagnostic candidate, not installed
+## 6.095 (06.09 rc2) — activation diagnostic follow-up
+
+- Record the boot refusal reason and available memory in the existing diagnostic buffer.
+- Preserve the refusal snapshot across reads; keep allocation and safety guards unchanged.
+- Use intermediate revision 6.095 for the native updater; planned usage 06.10 stays newer. Hardware validation is pending.
+
+## 06.09 — first diagnostic candidate, installed with inactive fallback
 
 - Add copied event/report queues, protected releases and bounded retry/expiry.
 - Purge stale input across pairing/reconnect and preserve native forced erase ordering.
 - Recover fragmented UART input and compare complete keyboard reports.
 - Add sampled heap/activity counters and the last front scan index; preserve native audio, OTA and power settings.
+- Installation confirmed on one remote; the reliability adapter reports inactive and needs refusal diagnostics.
 
 ## Companion 0.1.0 — Android TV
 

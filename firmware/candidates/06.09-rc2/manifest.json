@@ -1,0 +1,244 @@
+{
+  "added_code": {
+    "sha256": "198fd0ab2e91722e530d61f6e7cd213a9329a635b99c8feca563ae628e6857ad",
+    "size": 11148,
+    "start": "0x17000"
+  },
+  "assets": [
+    {
+      "name": "GVK1EH_B002FFv.6.095.bin",
+      "sha256": "f1423a9e12ff0142c7792218494ed22852981edc82fa845f01fbc3a5cd3146a6",
+      "size": 118784
+    },
+    {
+      "name": "SF463-6.095-diagnostic-USB.zip",
+      "sha256": "6865668e113ede41f1b9285d6ac13d721089359e94b6905955bb40f2bbf31d43",
+      "size": 118940
+    }
+  ],
+  "baseline": {
+    "06.07_sha256": "35514fcd675876d4e016e23f389c58aab447db1bda1703adecef50834bda4a40",
+    "factory_sha256": "6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040"
+  },
+  "compiler": "Zig CC 0.14.1 / LLVM 19.1.7; thumb-freestanding-eabi, Cortex-M3, -Oz; full command defined in firmware/build.py",
+  "crc16": "761f",
+  "hardware_validated": false,
+  "hook_manifest_sha256": "839f3c40d0e72c636b9d1298fa8dae588fc96fd87ede1756edd71c2602299842",
+  "image_sha256": "f1423a9e12ff0142c7792218494ed22852981edc82fa845f01fbc3a5cd3146a6",
+  "integration_hook_sha256": "9e9514db7a1f5567fc9767cca53fb2c2ad3439d8d054f476776c689d3b2c882a",
+  "patches": [
+    {
+      "after": "15f089fc",
+      "before": "fff755fe",
+      "category": "front",
+      "name": "initialize-once-after-native-app-init",
+      "offset": "0x1736"
+    },
+    {
+      "after": "16f0bab800bf",
+      "before": "feb5dff80c47",
+      "category": "front",
+      "name": "drain-tagged-source-events",
+      "offset": "0x1878"
+    },
+    {
+      "after": "15f074be",
+      "before": "ff280246",
+      "category": "front",
+      "name": "rear-source-callback",
+      "offset": "0x1a90"
+    },
+    {
+      "after": "15f0ecbe00bf",
+      "before": "38b5dff8f84a",
+      "category": "front",
+      "name": "front-and-orientation-source-callback",
+      "offset": "0x1abc"
+    },
+    {
+      "after": "00bf",
+      "before": "05d1",
+      "category": "front",
+      "name": "retain-verified-06.07-front-hid-gate",
+      "offset": "0x1d28"
+    },
+    {
+      "after": "17f091b900bf",
+      "before": "a87c052813d1",
+      "category": "front",
+      "name": "queue-ordinary-front-before-ready-preserve-voice",
+      "offset": "0x1d2a"
+    },
+    {
+      "after": "15f0aabf",
+      "before": "7cb50d46",
+      "category": "hid",
+      "name": "keyboard-full-report-admission",
+      "offset": "0x2170"
+    },
+    {
+      "after": "15f03ebf",
+      "before": "dff82c19",
+      "category": "hid",
+      "name": "consumer-commit-after-admission",
+      "offset": "0x21dc"
+    },
+    {
+      "after": "14f098bc",
+      "before": "69071cd5",
+      "category": "hid",
+      "name": "single-native-context-hid-worker",
+      "offset": "0x476c"
+    },
+    {
+      "after": "13f030bb",
+      "before": "f8b51446",
+      "category": "hid",
+      "name": "hid-report-admission-entry",
+      "offset": "0x488e"
+    },
+    {
+      "after": "13f02dbe",
+      "before": "2de9f843",
+      "category": "hid",
+      "name": "hid-control-parameter-clears-native-queue-only-when-inactive",
+      "offset": "0x48f4"
+    },
+    {
+      "after": "13f0acbe",
+      "before": "2de9fe43",
+      "category": "hid",
+      "name": "cccd-and-protocol-write-notification",
+      "offset": "0x4ab0"
+    },
+    {
+      "after": "13f042bd",
+      "before": "2de9fc41",
+      "category": "hid",
+      "name": "link-epoch-notification",
+      "offset": "0x4d22"
+    },
+    {
+      "after": "13f0edba",
+      "before": "05480121",
+      "category": "hid",
+      "name": "existing-hid-clock-readiness-callback",
+      "offset": "0x50b8"
+    },
+    {
+      "after": "13f0dcbc",
+      "before": "2de9ff4d",
+      "category": "diagnostic",
+      "name": "diagnostic-device-info-six-argument-callback",
+      "offset": "0x5250"
+    },
+    {
+      "after": "13f033bb00bf",
+      "before": "10b5dff87843",
+      "category": "uart",
+      "name": "reset-uart-fragments-on-explicit-close",
+      "offset": "0x53a2"
+    },
+    {
+      "after": "13f0aeb9",
+      "before": "bcb5804c",
+      "category": "uart",
+      "name": "bounded-uart-fragment-accumulator",
+      "offset": "0x551a"
+    },
+    {
+      "after": "13f05aba",
+      "before": "f8b5354c",
+      "category": "uart",
+      "name": "reset-uart-fragments-on-worker-session-timeout",
+      "offset": "0x5648"
+    }
+  ],
+  "schema": 1,
+  "size": 118784,
+  "sources": {
+    "firmware/adapter.S": "c1d05f594e0f06aa45102330846f959a374965a8ea01d449ac5d5f59bbf9b4ca",
+    "firmware/adapter.c": "084400101f6a2db7c6ebe84f81a136065a0d94e9cc2da975face4070753779c2",
+    "firmware/build.py": "5f3dfc9bc64950c38a5707d4c477efa0d26b9bea6be911aaceb7f2ab91aec152",
+    "firmware/core/sf_core.c": "f7216f4f04f6f401e50151e6fe6ebfe3f422e44b3d95e59849a6c76a9a104e47",
+    "firmware/core/sf_core.h": "48bae9eeff214508b5d115991dd2c73ce0f0fe7b516ea11d1da6cd194c41caf3",
+    "firmware/linker.ld": "6c3097be030a199c836d9436bd9c0c69bb09abd2cb979209e88aa28591eaf9f4"
+  },
+  "status": "offline-candidate-not-flashed",
+  "symbols": {
+    "$d": "0x190e8",
+    "$t": "0x199d4",
+    "account_locked": "0x17ea9",
+    "adapter.c": "0x0",
+    "compact_tx": "0x19951",
+    "diagnostic_render_locked": "0x18ef9",
+    "diagnostic_snapshot": "0x18db5",
+    "expire_pending": "0x196d9",
+    "inactive_snapshot": "0x18cfb",
+    "init_snapshot_locked": "0x17301",
+    "make_flight": "0x198e9",
+    "native_control": "0x184fd",
+    "pending_rear_check_locked": "0x17e25",
+    "rc_app_init": "0x1704d",
+    "rc_attr_write": "0x1880d",
+    "rc_consumer": "0x1805d",
+    "rc_control": "0x18553",
+    "rc_device_info_read": "0x18c0d",
+    "rc_enabled": "0x17001",
+    "rc_event_drain": "0x179f1",
+    "rc_front_callback": "0x17899",
+    "rc_front_gate": "0x19051",
+    "rc_hid_drain": "0x190a1",
+    "rc_hid_submit": "0x17ef3",
+    "rc_hid_worker": "0x1813d",
+    "rc_keyboard": "0x180c9",
+    "rc_link_event": "0x187ab",
+    "rc_native_event_rest": "0x18f71",
+    "rc_native_uart_frame": "0x19001",
+    "rc_original_attr_write": "0x18fc5",
+    "rc_original_consumer": "0x18f85",
+    "rc_original_control": "0x18fad",
+    "rc_original_device_info": "0x19045",
+    "rc_original_event_drain": "0x18f61",
+    "rc_original_front": "0x18f51",
+    "rc_original_hid_submit": "0x18fa1",
+    "rc_original_keyboard": "0x18f95",
+    "rc_original_link_event": "0x18fb9",
+    "rc_original_rear": "0x18f45",
+    "rc_original_timer": "0x19035",
+    "rc_original_uart_close": "0x18fe1",
+    "rc_original_uart_receive": "0x18fd1",
+    "rc_original_uart_worker": "0x18ff1",
+    "rc_rear_callback": "0x1777d",
+    "rc_timer_callback": "0x18697",
+    "rc_uart_close": "0x18a0d",
+    "rc_uart_receive": "0x1887b",
+    "rc_uart_worker": "0x18b01",
+    "refresh": "0x17385",
+    "repair": "0x19189",
+    "sf_cccd": "0x1943f",
+    "sf_core.c": "0x0",
+    "sf_core_init": "0x190ed",
+    "sf_front_index_valid": "0x19267",
+    "sf_link": "0x19375",
+    "sf_protocol": "0x194c9",
+    "sf_repair": "0x19515",
+    "sf_source_pop": "0x19205",
+    "sf_source_push": "0x19111",
+    "sf_submit": "0x19539",
+    "sf_tx_complete": "0x199d5",
+    "sf_tx_peek": "0x1976d",
+    "sf_uart_feed": "0x19275",
+    "sf_wake": "0x19429",
+    "source_push_locked": "0x1782f"
+  },
+  "variant": "diagnostic",
+  "version": "6.095",
+  "candidate_id": "06.09-rc2",
+  "validation_evidence": {
+    "path": "evidence/reliability-rc2-offline.json",
+    "sha256": "991d07929d6013af251283c3d018db243d91de373f143f5568ba8913cc3eaf24",
+    "scope": "offline-software-only",
+    "passing_tests": 134
+  }
+}

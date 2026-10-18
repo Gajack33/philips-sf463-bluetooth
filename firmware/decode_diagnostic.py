@@ -1,8 +1,10 @@
-"""Decode captured 06.09 Hardware Revision pages locally; never opens Bluetooth.
+"""Decode captured 06.09 / 6.095 Hardware Revision pages locally; never opens Bluetooth.
 
 Active firmware rotates pages 0/1/2 on offset-zero reads. Each page is 20 hex
 characters. Capture each entire page (including partial ATT reads) before the
 next offset-zero read. The three pages are separate samples, not one snapshot.
+Inactive page 0 is a frozen initialization-failure snapshot; legacy all-zero
+fallback pages remain accepted without presenting their zeroes as measurements.
 """
 import argparse
 import json
@@ -11,6 +13,20 @@ import struct
 
 PREFIX = "GVK1EH_B002FFv."
 VERSION = "06.09"
+VERSIONS = (VERSION, "6.095")
+FALLBACK_REASONS = {
+    0: "unknown",
+    1: "hid_semaphore_missing",
+    2: "bond_count_not_one",
+    3: "bond_identity_rpc_failed",
+    4: "zero_bond_identity",
+    5: "insufficient_total_free",
+    6: "insufficient_largest_block",
+    7: "allocation_failed",
+    8: "insufficient_post_allocation_free",
+    9: "hid_queue_busy",
+    10: "app_mailbox_busy",
+}
 LIMITS = [
     "Heap minimum is the minimum sampled free value, not a continuous low-water mark.",
     "UART activity uses logical flag 6, not driver-open flag 5 or electrical power.",
@@ -22,15 +38,80 @@ LIMITS = [
 ]
 
 
+def _decode_inactive(raw: bytes) -> dict:
+    """Decode a frozen fallback record, keeping allocation phases distinct."""
+    if raw[0] != 0:
+        raise ValueError("Inactive diagnostics require page 0")
+    legacy = raw == bytes(10)
+    reason, bond_raw = raw[2:4]
+    free_raw, largest_raw = struct.unpack_from("<HH", raw, 4)
+    flags, role = raw[8:]
+    if reason not in FALLBACK_REASONS or flags & ~0x0F:
+        raise ValueError("Invalid inactive fallback reason or reserved flags")
+    bond = None if legacy or bond_raw == 0xFF else bond_raw
+    free = None if legacy or free_raw == 0xFFFF else free_raw
+    largest = None if legacy or largest_raw == 0xFFFF else largest_raw
+    if not legacy:
+        if free is not None and largest is not None and largest > free:
+            raise ValueError("Inactive largest block contradicts total free bytes")
+        if reason <= 4 and (free is not None or largest is not None):
+            raise ValueError("Inactive fallback reason requires unknown heap statistics")
+        if reason in (0, 1) and bond is not None:
+            raise ValueError("Inactive fallback reason requires an unknown bond count")
+        if reason == 1 and flags & 1:
+            raise ValueError("Missing-semaphore reason contradicts the semaphore flag")
+        if reason >= 2 and not flags & 1:
+            raise ValueError("Inactive fallback reason contradicts an absent semaphore")
+        if reason == 2 and bond == 1:
+            raise ValueError("Bond-count reason contradicts the captured bond count")
+        if reason >= 3 and bond != 1:
+            raise ValueError("Inactive fallback reason requires exactly one bond")
+        if reason >= 5:
+            if free is None or largest is None:
+                raise ValueError("Inactive allocation failure requires known heap statistics")
+            if reason == 5 and free >= 1416:
+                raise ValueError("Total-free reason contradicts pre-allocation free bytes")
+            if reason in (6, 7) and free < 1416:
+                raise ValueError("Inactive fallback reason contradicts pre-allocation free bytes")
+            if reason == 6 and largest >= 640:
+                raise ValueError("Largest-block reason contradicts pre-allocation block size")
+            if reason == 7 and largest < 640:
+                raise ValueError("Allocation-failed reason contradicts pre-allocation block size")
+            if reason == 8 and free >= 768:
+                raise ValueError("Post-allocation reason contradicts post-allocation free bytes")
+            if reason in (9, 10) and free < 768:
+                raise ValueError("Queue/mailbox reason contradicts post-allocation free bytes")
+        if reason == 9 and not flags & 2:
+            raise ValueError("HID-queue reason contradicts the queue-busy flag")
+        if reason == 10 and (not flags & 0x0C or flags & 2):
+            raise ValueError("APP-mailbox reason contradicts queue/mailbox flags")
+    phase = ("pre_allocation" if reason in (5, 6, 7) else
+             "post_allocation_before_release" if reason in (8, 9, 10) else "unknown")
+    return {
+        "reason_code": reason,
+        "reason": FALLBACK_REASONS[reason],
+        "bond_count": bond,
+        "heap": None if free is None and largest is None else {
+            "free_bytes": free, "largest_free_block_bytes": largest, "sample_phase": phase},
+        "flags": {"raw": None if legacy else flags,
+                  "hid_semaphore_present": None if legacy else bool(flags & 1),
+                  "hid_queue_busy": None if legacy else bool(flags & 2),
+                  "app_front_pending": None if legacy else bool(flags & 4),
+                  "app_rear_pending": None if legacy else bool(flags & 8)},
+        "role_state": None if legacy else role,
+        "legacy_all_zero": legacy,
+    }
+
+
 def decode_pages(firmware_version: str, pages: list[str]) -> dict:
     """Validate the exact page schema before interpreting any field."""
     version = firmware_version.strip()
     if version.startswith(PREFIX):
         version = version[len(PREFIX):]
-    if version != VERSION:
-        raise ValueError("Only diagnostic firmware 06.09 uses this page schema; 06.07 and usage 06.10 do not")
+    if version not in VERSIONS:
+        raise ValueError("Only diagnostic firmware 06.09 and 6.095 use this page schema; 06.07 and usage 06.10 do not")
     if len(pages) not in (1, 3):
-        raise ValueError("Provide three active pages, or one/three all-zero inactive pages")
+        raise ValueError("Provide three active pages, or one/three identical inactive page-0 snapshots")
     decoded = []
     for page in pages:
         value = page.strip()
@@ -43,14 +124,17 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
     active_values = {page[1] for page in decoded}
     if len(active_values) != 1:
         raise ValueError("Pages disagree about adapter activation; capture a fresh set")
-    report = {"schema": 1, "firmware_version": VERSION, "improvements_active": bool(decoded[0][1]),
+    report = {"schema": 1, "firmware_version": version, "improvements_active": bool(decoded[0][1]),
               "memory": None, "events": None, "activity": None, "link": None,
               "limitations": list(LIMITS)}
     if not decoded[0][1]:
-        if any(page != bytes(10) for page in decoded):
-            raise ValueError("Inactive 06.09 firmware emits only an all-zero page 0")
+        if any(page[0] != 0 for page in decoded):
+            raise ValueError("Inactive diagnostics require page 0")
+        if any(page != decoded[0] for page in decoded):
+            raise ValueError("Inactive snapshots differ; provide one snapshot or capture a fresh set")
         report["status"] = "fallback_inactive"
         report["message"] = "Native fallback is active; reliability extensions are not initialized."
+        report["fallback"] = _decode_inactive(decoded[0])
         return report
     if len(decoded) != 3 or {page[0] for page in decoded} != {0, 1, 2}:
         raise ValueError("Active diagnostics require exactly one page each with IDs 0, 1 and 2")
@@ -61,7 +145,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
     front_index, repair_mask, role, packed = by_id[2][6:]
     pending, verified, index_valid = packed & 0x1F, bool(packed & 0x80), bool(packed & 0x40)
     if pending > 16 or repair_mask & ~3 or packed & 0x20 or (index_valid and front_index > 44):
-        raise ValueError("Invalid queue, repair, reserved bit or front index for the 06.09 schema")
+        raise ValueError("Invalid queue, repair, reserved bit or front index for the diagnostic schema")
     report.update({
         "status": "active",
         "memory": {"minimum_sampled_free_bytes": minimum},
@@ -78,7 +162,7 @@ def decode_pages(firmware_version: str, pages: list[str]) -> dict:
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--firmware-version", required=True,
-                        help="Explicit embedded firmware version, e.g. 06.09 (not the USB filename)")
+                        help="Explicit embedded firmware version: 06.09 or 6.095 (not the USB filename)")
     parser.add_argument("pages", nargs="+", help="Already captured 20-character hexadecimal pages")
     args = parser.parse_args(argv)
     try:

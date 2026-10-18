@@ -1,14 +1,16 @@
 # Reliability and companion verification
 
 Scope: software implementation and offline integration; **not hardware qualification**.
-The published 06.07 remains unchanged. No firmware was flashed by this work.
+The published 06.07 remains unchanged. The first 06.09 was installed with the
+owner's explicit approval, but reports inactive fallback on the test remote.
+The 6.095 (06.09 rc2) refusal-diagnostic follow-up is not installed.
 06.08 is not a build input. Exact test IDs and hashes are in
-`evidence/reliability-offline.json`; the complete command is `python firmware/verify.py`.
+`evidence/reliability-rc2-offline.json`; the complete command is `python firmware/verify.py`.
 
-Delivery: 122/122 checks pass across nine stages. Exact diagnostic and usage
+Delivery: 134/134 checks pass across nine stages with LLVM 18 and 19. Exact diagnostic and usage
 image hashes match the public proof; the evidence gate is checked again after binding.
-The 06.09 BIN/USB archive was reproduced byte-for-byte and is available under
-`firmware/candidates/06.09/`. The manifest is sanitized; checksums include it.
+The 6.095 BIN/USB archive was reproduced byte-for-byte and is available under
+`firmware/candidates/06.09-rc2/`. The manifest is sanitized; checksums include it.
 The compiled 06.10 image remains undistributed pending hardware acceptance.
 Public hashed inputs and logs use LF so Git checkout cannot invalidate the proof.
 
@@ -33,7 +35,11 @@ hardware worst case**. Initialization, adapter and core tests check preserved
 registers, SP and memory boundaries. Real stack headroom still needs observation.
 
 06.09 exposes three brief diagnostic pages, including the last valid front scan index
-for physical button mapping. 06.10 restores the original Device
+for physical button mapping. The rc2 follow-up also records refusal codes 1–10,
+bond count and sampled free/largest-block memory in the existing 21-byte Hardware
+Revision buffer. Inactive reads preserve that boot snapshot without querying BLE,
+NVRAM or the heap. Unknown state after a lost claim reports unknown provenance.
+No extra allocation, retry or relaxed guard is introduced. 06.10 restores the original Device
 Information callback and removes diagnostic heap sampling/activity accounting.
 The versioned decoder opens no connection. Shared functional safety counters stay
 internal. Neither build is represented as a normal-use release.
@@ -63,6 +69,7 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 | “primitives critiques natives” / “Aucun appel Bluetooth, allocation ou attente” | Every runtime fixture checks native gate depth/token and rejects allocation, heap/peer queries, BLE and RTOS posts inside the gate. `test_native_task_stack_sizes_and_hid_inline_prefix_are_explicit` rejects bond/NV queries in HID. These are explicit interleavings, not electrical IRQ/scheduler simulation. |
 | “une allocation native unique plafonnée à 640 octets” / “768 octets” | `test_initialization_claims_only_after_one_bounded_allocation_and_preserves_registers`, `test_heap_prechecks_postfree_reserve_and_allocation_failure_leave_native_queue_intact`, `test_missing_identity_handles_or_active_native_queue_never_claim_storage`. Tests cover null allocation, fragmentation, insufficient total and 767/768 boundary. |
 | “conserver les chemins 06.07” / “améliorations ne sont pas actives” | Native prologue/bridge/fallback tests, initialization failure tests and `test_native_fallback_is_explicit_and_does_not_present_fake_zero_metrics`. Inactive diagnostic page reports fallback; old queue remains untouched on failure. |
+| Diagnose the observed inactive first candidate | `test_inactive_diagnostic_records_each_refusal_and_round_trips_actual_gatt_pages` executes all ten refusal paths through compiled C, three actual callback reads and the decoder. `test_inactive_diagnostic_reads_freeze_boot_reason_without_queries_or_allocation_retry` checks frozen provenance; `test_lost_claim_cannot_reuse_a_boot_refusal_or_active_page_as_failure_provenance` checks unknown provenance. Usage initialization success/failure tests preserve the stock Hardware Revision buffer. |
 | “audio, OTA et bootloader restent ceux d’origine” / “voix” / “appairage” | Builder validates every modified range against stock. `test_native_dispatch.py` compares native voice, holds, pairing and real rear letter/shift/release behavior with published 06.07. Physical voice and update-mode heap margins remain pending. |
 | “écran d’apprentissage” / “profils locaux” / “ouvrir une application” / “HDMI 1/2” | Native app source and 22 host tests; actual installation, focus/editor and JSON fallback observed on TV. See `app/.testagent/status.md` for device evidence and action-specific remaining checks. |
 | “Ce profil reste désactivé” | `testDisabledColorPresetAndReset`, `testProfileCloneIsDisabledAndBindingsIndependent`; disabled profile observed on the TV before and after JSON round-trip. |
@@ -71,14 +78,17 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 | “export/import JSON versionné et remise à zéro” / “Aucun contenu d’écran” | JSON round-trip/rejection/reset host tests and APK manifest assertions; real TV lacks a usable document picker, so explicit JSON text/copy/paste is implemented and exercised. No screen-content retrieval, account, server, periodic polling or GATT connection. |
 | “Le firmware reste utilisable sans cette appli” | Firmware contains no app/network protocol dependency. Full HID integration tests execute without Android. Hardware use remains pending for these candidates. |
 | “temps de connexion, d’activité UART et de veille” / “pas comme un gain d’autonomie démontré” | `test_heap_and_uart_activity_samples_track_transitions_without_power_claim`, diagnostic decoder tests. These are sampled heap and logical UART flags, not measured sleep current. No RF power or native power timing is changed. Before/after physical measurements remain pending. |
-| “hash d’origine” / “octets attendus” / “plages modifiées” / “taille, les vecteurs et le CRC” | 12 builder tests, exact manifest instruction checks and deterministic USB test; changed source/hook/image evidence is rejected. `test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash` also rejects 25 cases of failed, unstable or incomplete proof despite a valid JSON hash. |
+| “hash d’origine” / “octets attendus” / “plages modifiées” / “taille, les vecteurs et le CRC” | 13 builder tests, exact manifest instruction checks and deterministic USB test; changed source/hook/image evidence is rejected. `test_qualification_rejects_failed_unstable_or_incomplete_proof_with_valid_hash` also rejects 25 cases of failed, unstable or incomplete proof despite a valid JSON hash. |
 | “Aucun flash automatique” / “50 %” | Verify/build/decoder contain no device deployment path. Every non-whitelisted stock byte is preserved, including native battery/update logic. No flash, deliberate interruption, low-battery bypass or programmer-recovery claim. |
 
 ## Limits and remaining acceptance
 
-- No diagnostic/usage candidate has been flashed. An experimental 06.09 flash
-  needs separate explicit approval, then the grouped session in
-  `docs/reliability-candidate.md`. 06.10 normal-use qualification waits for it.
+- `evidence/hardware-0609-rc1.json` confirms the first 06.09 installation and
+  three all-zero inactive snapshots. Both faces were reported responsive but
+  irregular; those observations do not qualify the inactive reliability core.
+  The reason is unknown. The rc2 follow-up records refusal provenance without
+  forcing activation. Its installation and the grouped session remain pending.
+  06.10 normal-use qualification waits for successful hardware acceptance.
 - Real heap reserve during keyboard/voice/update, full native stack headroom,
   all physical keys/colors, radio delivery and independent short/long/double
   shortcuts need the physical session. Mocked native APIs cannot replace it.

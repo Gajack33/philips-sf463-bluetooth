@@ -116,13 +116,31 @@ class ImageBuildTests(unittest.TestCase):
 
     def test_diagnostic_has_distinct_revision_and_explicit_callback_branch(self):
         image, _ = self.make(variant="diagnostic")
-        self.assertEqual(image[0x16E0:0x16F4], b"GVK1EH_B002FFv.06.09")
+        self.assertEqual(image[0x16E0:0x16F4], b"GVK1EH_B002FFv.6.095")
         self.assertNotEqual(image[0x5250:0x5254], STOCK[0x5250:0x5254])
         self.assertEqual(image[0x52B2:0x52B6], STOCK[0x52B2:0x52B6])
         rules = manifest()
         rules["hooks"] = rules["hooks"][:2]
         with self.assertRaisesRegex(build.BuildError, "Diagnostic"):
             self.make(rules, variant="diagnostic", require_qualified=False)
+
+    def test_intermediate_diagnostic_revision_fits_native_string_and_float_order(self):
+        # Philips compares the suffix with Java Float.parseFloat and strict >.
+        previous, intermediate, final = "06.09", build.VERSIONS["diagnostic"], build.VERSIONS["usage"]
+        binary32 = lambda value: struct.unpack("<f", struct.pack("<f", float(value)))[0]
+        self.assertLess(binary32(previous), binary32(intermediate))
+        self.assertLess(binary32(intermediate), binary32(final))
+        for version in (previous, intermediate, final):
+            with self.subTest(version=version):
+                self.assertEqual(len(f"GVK1EH_B002FFv.{version}".encode("ascii")), 20)
+        image, _ = self.make(variant="diagnostic")
+        with tempfile.TemporaryDirectory() as directory:
+            assets = build.write_assets(Path(directory), "diagnostic", image, {"hardware_validated": False})
+            self.assertEqual(assets[0].name, "GVK1EH_B002FFv.6.095.bin")
+            self.assertEqual(assets[1].name, "SF463-6.095-diagnostic-USB.zip")
+            with zipfile.ZipFile(assets[1]) as package:
+                self.assertEqual(package.namelist(), ["RCFW/GVK1EH_B002FFv.6.095.bin"])
+                self.assertEqual(package.read(package.namelist()[0]), image)
 
     def test_unqualified_or_stale_evidence_never_generates_an_image(self):
         rules = manifest()

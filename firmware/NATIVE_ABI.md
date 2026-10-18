@@ -79,6 +79,18 @@ are `0x2C3E`/`0x2CD0`; statistics are `0x2D54`. Its largest-block query coalesce
 free blocks, so call it outside the adapter's critical gate. Reuse native gate
 `0x2BAA`/`0x2BC0(token)` only for bounded state operations, never BLE/NVRAM calls.
 
+The diagnostic-only boot refusal record reuses the native Hardware Revision
+buffer `0x20000664..0x20000678` (21 bytes including NUL), not the legacy queue or
+new RAM. Its ten raw bytes are page0, inactive0, reason, bond count, free16,
+largest16, flags and HID role. Reasons 1–10 identify missing HID semaphore,
+bond count, bond RPC, empty identity, total free, largest block, null allocation,
+post-allocation reserve, busy HID queue or pending APP source mailboxes.
+Unknown count is FF; unknown heap values are FFFF. Flags mark semaphore presence,
+HID queue occupancy, APP bit0 and APP bit4. Reasons 8–10 retain the sample before
+the rejected allocation is freed. Reads preserve the original record; successful
+claim invalidates old failure provenance. A later missing claim reports unknown.
+The usage build contains no refusal-record writes and retains stock Hardware Revision.
+
 Task constructors are more restrictive than the reset stack: `0x13AE` supplies
 APP priority 1, stack `0x200022F8..0x200025E6`, **750 bytes**, then function
 `0x1735`; `0x4670` supplies HID priority 2, stack

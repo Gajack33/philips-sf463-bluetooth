@@ -52,7 +52,7 @@ python reproduction/verify_diagnostic_candidate.py
 
 ### In development
 
-The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add bounded queues, release protection, reconnect handling and local button profiles. **06.07 remains the published reference.** The 06.09 diagnostic candidate and 06.10 usage build require further hardware validation; no automatic flash is performed.
+The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add bounded queues, release protection, reconnect handling and local button profiles. **06.07 remains the published reference.** The first 06.09 installed with inactive fallback; diagnostic 6.095 records the refusal cause. Hardware qualification remains pending, 06.10 is withheld, and no automatic flash is performed.
 
 ---
 

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "observed_on": "2026-10-18",
+  "scope": "single-device installation and initial checks; reliability not qualified",
+  "tv_model": "55OLED804/12",
+  "remote_model": "YKF463-001 / SF463",
+  "candidate": "06.09-rc1",
+  "source_commit": "3bc670311a3c93c71f3bf5709a7e414736482182",
+  "image_sha256": "e6954922e6a499dcdc23a064e976d4baebf350f84011f496831bd6d73ed191f7",
+  "experimental_installation_authorized_by_owner": true,
+  "before": {
+    "software_revision": "GVK1EH_B002FFv.06.07",
+    "reported_battery_percent": 83
+  },
+  "transfer": {
+    "native_usb_mode_selected": true,
+    "file_selected": "GVK1EH_B002FFv.06.09.bin",
+    "image_bytes": 118784,
+    "blocks_of_32_bytes": 3712,
+    "usb_image_sha256_verified": true,
+    "programming_finished": true,
+    "remote_accepted_new_firmware": true,
+    "remote_reconnected": true,
+    "native_final_version_read_succeeded": false,
+    "success_screen_alone_used_as_proof": false
+  },
+  "after": {
+    "independent_read_only_probe_completed": true,
+    "software_revision": "GVK1EH_B002FFv.06.09",
+    "software_revision_read_status": 0,
+    "hardware_revision_reads": [
+      "00000000000000000000",
+      "00000000000000000000",
+      "00000000000000000000"
+    ],
+    "reliability_adapter_active": false,
+    "input_path": "06.07 fallback",
+    "reason_for_inactive_state": "unknown in rc1 diagnostic format",
+    "owner_reports_both_faces_respond": true,
+    "owner_reports_operation_irregular": true,
+    "initial_connection_timeouts_observed": true,
+    "all_diagnostic_clients_closed": true
+  },
+  "qualification": {
+    "installation_confirmed": true,
+    "reliability_changes_hardware_qualified": false,
+    "heap_reserve_measured": false,
+    "color_scan_indexes_confirmed": false,
+    "long_idle_or_wake_qualified": false,
+    "usage_0610_qualified": false,
+    "battery_life_gain_claimed": false
+  },
+  "next_step": "Prepare refusal diagnostics without relaxing heap, identity or queue guards; no blind activation or automatic follow-up flash.",
+  "privacy": "No network addresses, account identifiers or raw system logs included."
+}

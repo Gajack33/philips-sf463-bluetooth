@@ -19,6 +19,9 @@ HERE = Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location("sf463_init_native_fixture", HERE / "test_native_adapter.py")
 native = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(native)
+DECODER_SPEC = importlib.util.spec_from_file_location("sf463_init_diagnostic_decoder", HERE.parent / "decode_diagnostic.py")
+decoder = importlib.util.module_from_spec(DECODER_SPEC)
+DECODER_SPEC.loader.exec_module(decoder)
 APP, HID, UART, STACK = native.APP, native.HID, native.UART, native.STACK
 ALLOC, QUEUE, HW = 0x20003200, 0x200027C8, 0x20000664
 ATTR, UUID, OUT, LENGTH = 0x20003E00, 0x20003E40, 0x20006000, 0x20006100
@@ -33,6 +36,7 @@ class InitMachine(native.NativeMachine):
         self.native_init_count, self.heap_queries = 0, []
         self.allocations, self.frees, self.writes = [], [], []
         self.free_before, self.free_after, self.largest = 3000, 2400, 2500
+        self.largest_after = None
         self.allocate_result, self.tick = ALLOC, 1000
         self.bond_count, self.bond_status = 1, 0
         self.saved_peer = bytes([1, 2, 3, 4, 5, 6])
@@ -87,8 +91,10 @@ class InitMachine(native.NativeMachine):
     def stats(self, m):
         self.case.assertEqual(self.depth, 0, "heap statistics may lock internally")
         free = self.free_after if self.allocations else self.free_before
+        largest = self.largest_after if self.allocations and self.largest_after is not None else self.largest
+        largest = min(largest, free)
         self.heap_queries.append((free, self.depth))
-        m.emu.mem_write(m.argument(0), struct.pack("<III", 4096, free, self.largest))
+        m.emu.mem_write(m.argument(0), struct.pack("<III", 4096, free, largest))
         m.ret(clobber=True)
 
     def allocate(self, m):
@@ -158,6 +164,137 @@ class AdapterInitializationTests(unittest.TestCase):
         self.assertEqual(len(m.allocations), 1)
         return m.allocations[0]
 
+    def refusal_case(self, condition, variant="diagnostic"):
+        m = self.machine(variant)
+        if condition == "no-hid-semaphore": m.write32(HID + 0x1C, 0)
+        if condition == "no-bond": m.bond_count = 0
+        if condition == "two-bonds": m.bond_count = 2
+        if condition == "bond-read-failed": m.bond_status = 1
+        if condition == "zero-peer": m.saved_peer = bytes(6)
+        if condition == "insufficient-total": m.free_before, m.largest = 1415, 1000
+        if condition == "fragmented": m.largest = 639
+        if condition == "allocation-failure": m.allocate_result = 0
+        if condition == "postfree-767": m.free_after, m.largest_after = 767, 700
+        if condition in ("pending-native-report", "active-front", "active-rear"): m.largest_after = 1000
+        if condition == "pending-native-report": m.emu.mem_write(HID + 0x14, b"\0\x01")
+        if condition == "active-front": m.emu.mem_write(APP + 0x20, b"\x01\0")
+        if condition == "active-rear": m.emu.mem_write(APP + 0x20, b"\x10\0")
+        return m
+
+    def deny_snapshot_queries(self, m):
+        def unexpected(machine):
+            self.fail("Inactive GATT diagnostic must not query BLE/NV/heap or allocate/free")
+        for address in (0x26EE, 0x34B8, 0x3874, 0x2D54, 0x2C3E, 0x2CD0):
+            m.stub(address, unexpected)
+
+    def test_inactive_diagnostic_records_each_refusal_and_round_trips_actual_gatt_pages(self):
+        cases = [
+            ("no-hid-semaphore", 1, 255, 65535, 65535, 0),
+            ("no-bond", 2, 0, 65535, 65535, 1),
+            ("two-bonds", 2, 2, 65535, 65535, 1),
+            ("bond-read-failed", 3, 1, 65535, 65535, 1),
+            ("zero-peer", 4, 1, 65535, 65535, 1),
+            ("insufficient-total", 5, 1, 1415, 1000, 1),
+            ("fragmented", 6, 1, 3000, 639, 1),
+            ("allocation-failure", 7, 1, 3000, 2500, 1),
+            ("postfree-767", 8, 1, 767, 700, 1),
+            ("pending-native-report", 9, 1, 2400, 1000, 3),
+            ("active-front", 10, 1, 2400, 1000, 5),
+            ("active-rear", 10, 1, 2400, 1000, 9),
+        ]
+        for condition, reason, bonds, free, largest, flags in cases:
+            with self.subTest(condition=condition):
+                m = self.refusal_case(condition)
+                queue = bytes(m.emu.mem_read(QUEUE, 36))
+                m.checked_call("rc_app_init")
+                encoded = bytes(m.emu.mem_read(HW, 21))
+                self.assertEqual(encoded[20], 0)
+                raw = bytes.fromhex(encoded[:20].decode("ascii"))
+                self.assertEqual(raw, bytes([0, 0, reason, bonds]) +
+                    struct.pack("<HHBB", free, largest, flags, 6))
+                self.assertEqual(bytes(m.emu.mem_read(QUEUE, 36)), queue)
+                self.assertEqual(m.checked_call("rc_enabled"), 0)
+                self.assertEqual(m.allocations, [640] if reason >= 7 else [])
+                self.assertEqual(m.frees, [ALLOC] if reason >= 8 else [])
+                m.configure_attribute(); self.deny_snapshot_queries(m)
+                pages = [m.read_info(0, 20)[2].decode("ascii") for _ in range(3)]
+                self.assertEqual(pages, [encoded[:20].decode("ascii")] * 3)
+                report = decoder.decode_pages("06.09", pages)
+                self.assertEqual(report["status"], "fallback_inactive")
+                self.assertFalse(report["improvements_active"])
+                fallback = report["fallback"]
+                self.assertEqual(fallback["reason_code"], reason)
+                self.assertEqual(fallback["bond_count"], None if bonds == 255 else bonds)
+                expected_heap = None if free == 65535 else {
+                    "free_bytes": free, "largest_free_block_bytes": largest,
+                    "sample_phase": "pre_allocation" if reason < 8 else "post_allocation_before_release"}
+                self.assertEqual(fallback["heap"], expected_heap)
+                self.assertEqual(fallback["flags"]["raw"], flags)
+                self.assertEqual(fallback["role_state"], 6)
+
+    def test_inactive_diagnostic_reads_freeze_boot_reason_without_queries_or_allocation_retry(self):
+        m = self.refusal_case("insufficient-total")
+        m.checked_call("rc_app_init"); m.configure_attribute()
+        snapshot = bytes(m.emu.mem_read(HW, 20))
+        m.write32(HID + 0x1C, 0)
+        m.emu.mem_write(HID + 0x0D, b"\x05")
+        m.emu.mem_write(HID + 0x14, b"\0\x01")
+        queries, allocations, frees = list(m.heap_queries), list(m.allocations), list(m.frees)
+        self.deny_snapshot_queries(m)
+        first, second, third = m.read_info(0, 7), m.read_info(7, 7), m.read_info(14, 20)
+        self.assertEqual(first[2] + second[2] + third[2], snapshot)
+        self.assertEqual([m.read_info(0, 20)[2] for _ in range(3)], [snapshot] * 3)
+        self.assertEqual(bytes(m.emu.mem_read(HW, 20)), snapshot)
+        self.assertEqual((m.heap_queries, m.allocations, m.frees), (queries, allocations, frees))
+        self.assertEqual(m.native_init_count, 1)
+
+    def test_lost_claim_cannot_reuse_a_boot_refusal_or_active_page_as_failure_provenance(self):
+        for active_page in (False, True):
+            with self.subTest(active_page=active_page):
+                m = self.machine()
+                # Old refusal deliberately predates this successful claim.
+                m.emu.mem_write(HW, b"000005018705C4090106\0")
+                m.checked_call("rc_app_init"); m.configure_attribute()
+                if active_page:
+                    self.assertEqual(m.read_info(0, 20)[2][:4], b"0001")
+                else:
+                    self.assertEqual(bytes(m.emu.mem_read(HW, 1)), b"\0")
+                m.write32(QUEUE, 0)
+                self.deny_snapshot_queries(m)
+                snapshot = m.read_info(0, 20)[2]
+                raw = bytes.fromhex(snapshot.decode("ascii"))
+                self.assertEqual(raw, bytes([0, 0, 0, 255]) +
+                    struct.pack("<HHBB", 65535, 65535, 1, 6))
+                self.assertEqual([m.read_info(0, 20)[2] for _ in range(3)], [snapshot] * 3)
+                self.assertEqual(m.allocations, [640])
+
+    def test_usage_initialization_failures_leave_stock_hardware_revision_unchanged(self):
+        for condition in ("no-hid-semaphore", "two-bonds", "bond-read-failed", "zero-peer",
+                          "insufficient-total", "fragmented", "allocation-failure", "postfree-767",
+                          "pending-native-report", "active-front"):
+            with self.subTest(condition=condition):
+                m = self.refusal_case(condition, "usage")
+                hardware = b"FACTORY-HARDWARE-REV\0"
+                self.assertEqual(len(hardware), 21)
+                m.emu.mem_write(HW, hardware)
+                m.checked_call("rc_app_init")
+                self.assertEqual(bytes(m.emu.mem_read(HW, 21)), hardware)
+                self.assertFalse(any(HW <= at < HW + 21 for at, size in m.writes))
+                expected_queries = 2 if condition in ("postfree-767", "pending-native-report", "active-front") else (
+                    1 if condition in ("insufficient-total", "fragmented", "allocation-failure") else 0)
+                self.assertEqual(len(m.heap_queries), expected_queries)
+
+    def test_usage_successful_claim_also_preserves_stock_hardware_revision(self):
+        m = self.machine("usage")
+        hardware = b"FACTORY-HARDWARE-REV\0"
+        m.emu.mem_write(HW, hardware)
+        m.checked_call("rc_app_init")
+        self.assertEqual(m.checked_call("rc_enabled"), 1)
+        self.assertEqual(m.allocations, [640])
+        self.assertEqual(len(m.heap_queries), 2)
+        self.assertEqual(bytes(m.emu.mem_read(HW, 21)), hardware)
+        self.assertFalse(any(HW <= at < HW + 21 for at, size in m.writes))
+
     def test_initialization_claims_only_after_one_bounded_allocation_and_preserves_registers(self):
         m = self.machine()
         before = bytes(m.emu.mem_read(0x20000000, 0x5000))
@@ -166,6 +303,7 @@ class AdapterInitializationTests(unittest.TestCase):
         size = m.allocations[0]
         self.assertGreater(size, 488)
         self.assertLessEqual(size, 640)
+        self.assertEqual(size, 640)
         self.assertEqual(m.read32(QUEUE), 0x53465243)
         self.assertEqual(m.read32(QUEUE + 4), ALLOC)
         self.assertEqual(m.read32(QUEUE + 8), 0)
