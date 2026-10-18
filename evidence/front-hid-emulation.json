@@ -1,0 +1,182 @@
+{
+  "scope": "Execute factory/candidate Thumb dispatch and HID serialization in Unicorn.\n\nAll other calls are explicitly stubbed. This is a narrow software comparison,\nnot a simulation of the remote MCU, BLE stack, UART events, boot or TV standby.\n",
+  "passed": true,
+  "test_methods": 5,
+  "failures": 0,
+  "errors": 0,
+  "factory_sha256": "6b97d87fd4923eb64a0e5f5efad1561900ed394ff3a7db97b3081cf5e316f040",
+  "candidate_sha256": "2ae337f863fd83cf951cd4e53c22cfefb94a93fd725db8531ecbb974f0f752d8",
+  "observations": [
+    {
+      "key": "power",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "300000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "home",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "230200"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "up",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "420000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "down",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "430000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "left",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "440000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "right",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "450000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "ok",
+      "factory": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "410000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "410000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "volume_up",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "e90000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "volume_down",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "ea0000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    },
+    {
+      "key": "mute",
+      "factory": [],
+      "candidate": [
+        {
+          "id": 2,
+          "type": 1,
+          "data": "e20000"
+        },
+        {
+          "id": 2,
+          "type": 1,
+          "data": "000000"
+        }
+      ]
+    }
+  ]
+}

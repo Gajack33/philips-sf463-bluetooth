@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+reproduction/python-tools/
+reproduction/candidates/**/*.json
+reproduction/candidates/**/*.asm
+reproduction/ram-init-emulated.json
+.env
+*.key
+*.dpapi
