@@ -106,7 +106,7 @@ The original `0x13E4` initialization is never rerun by deferred admission.
 At the APP continuation `0x179A..0x17A6`, R0/R2/R3/R1 are rewritten before
 Event_pend. No inherited flags are consumed; `0x17AA` produces the Z flag used
 at `0x17AC`. The bridge adds no saved frame. The C turn wrapper retains 8 bytes
-(LLVM19) or 16 bytes (LLVM18) during native `0x2AE6`, then removes them before
+(LLVM 19) or 16 bytes (LLVM 18) during native `0x2AE6`, then removes them before
 tail-calling admission.
 
 Empty queue indexes do not establish quiescence. Native `0x4788` advances the
@@ -121,12 +121,12 @@ Failure preserves the native queue. Pairing completion may remain in fallback
 until a later connection transition provides a quiescent window. This proof is
 bounded to visible application code; ROM and hardware scheduling remain limits.
 
-For the new dispatcher wrapper, both LLVM18/19 retain 16 extra bytes only across
+For the new dispatcher wrapper, both LLVM 18/19 retain 16 extra bytes only across
 useful events. Other/failed events remove that frame before tail-calling native.
 Observed native/wrapped prefixes, including HID's permanent 32-byte frame, are
 104/120 bytes for role 6, 88/104 for successful phases 1/2, and 88/88 for phase 0
-or a failed phase 1. The final6.097 deferred APP success path observes192 bytes including its native
-24-byte frame with both LLVM18 and19. Refusal paths peak at128/184 bytes
+or a failed phase 1. The final6.097 deferred APP success path observes 192 bytes including its native
+24-byte frame with both LLVM 18 and 19. Refusal paths peak at 128/184 bytes
 respectively; these are admission/lifecycle measurements, not global maxima. These stop at explicit API seams; they do not prove the native
 RPC/ROM/preemption worst case. The 400/750-byte task budgets are unchanged.
 
@@ -150,17 +150,17 @@ bond count, bond RPC, empty identity, total free, largest block, null allocation
 post-allocation reserve, busy HID queue or pending APP source mailboxes.
 Reason 11 (6.097 only) is native transmission not quiescent: unknown count/heap
 at the early check, or the post-allocation sample at the final check. Each actual
-refused admission replaces the record; flag0x10 identifies a deferred check. The
-versioned decoder labels boot/deferred/unknown provenance. Older6.095 pages
+refused admission replaces the record; flag 0x10 identifies a deferred check. The
+versioned decoder labels boot/deferred/unknown provenance. Older 6.095 pages
 retain their frozen-boot contract. A successful claim enables active
 diagnostic pages. Export requires exact offline evidence; this does not qualify
-hardware behavior or the normal-use06.10 release.
+hardware behavior or the normal-use 06.10 release.
 Unknown count is FF; unknown heap values are FFFF. Flags mark semaphore presence,
 HID queue occupancy, APP bit0 and APP bit4. Reasons 8–10 retain the sample before
 the rejected allocation is freed. Reads preserve the original record; successful
 claim invalidates old failure provenance. A later missing claim reports unknown.
 A new useful transition can replace an inactive record between separate ATT
-partial-read requests. Prefer one complete20-byte read; a page assembled across
+partial-read requests. Prefer one complete 20-byte read; a page assembled across
 such a transition is not guaranteed coherent. Reads themselves do not query or
 retry admission. The usage build contains no refusal-record writes and retains
 stock Hardware Revision.

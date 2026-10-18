@@ -1,0 +1,10 @@
+test_consumer_descriptor_accepts_front_key_usages (__main__.CandidateVerification) ... ok
+test_front_keys_have_press_release_reports_when_ready (__main__.CandidateVerification) ... ok
+test_not_ready_and_unbonded_guards_remain (__main__.CandidateVerification) ... ok
+test_only_instruction_revision_and_crc_change (__main__.CandidateVerification) ... ok
+test_voice_application_control_path_unchanged (__main__.CandidateVerification) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 1.044s
+
+OK

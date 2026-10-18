@@ -52,7 +52,7 @@ python reproduction/verify_diagnostic_candidate.py
 
 ### In development
 
-The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add bounded queues, release protection, reconnect handling and local button profiles. **06.07 remains the published reference.** Diagnostic 6.095 is on hold: host re-pair restored Bluetooth, but the core refused initialization because its initial bond count was zero. The test remote has returned to 06.07 code through the [6.096 recovery](evidence/hardware-recovery-6096.json). Hardware qualification is incomplete, 06.10 is withheld, and no automatic flash is performed.
+The [reliability firmware and optional TV shortcuts app](docs/reliability-candidate.md) add safer input handling and local button profiles. **06.07 remains the published reference.** The test remote is back on its code through the [6.096 recovery](evidence/hardware-recovery-6096.json). Diagnostic [**6.097**](firmware/candidates/06.09-rc3/) adds deferred initialization and the confirmed Blue-key correction; hardware acceptance is pending. **06.10 is withheld.** No automatic flash.
 
 ---
 

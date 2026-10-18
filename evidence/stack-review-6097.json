@@ -1,0 +1,437 @@
+{
+  "app_native_permanent_frame_added": 24,
+  "compilers": [
+    {
+      "app": [
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "success",
+          "observed_bytes_including_native_frame": 192
+        },
+        {
+          "api_depths_including_native_frame": {},
+          "case": "no-semaphore",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {},
+          "case": "quiescence-pre",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88
+          },
+          "case": "two-bonds",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x34b8": 88
+          },
+          "case": "zero-peer",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x34b8": 88
+          },
+          "case": "rpc",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "total",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "largest",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "null",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "reserve",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "queue",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "mailbox",
+          "observed_bytes_including_native_frame": 128
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "quiescence-final",
+          "observed_bytes_including_native_frame": 128
+        }
+      ],
+      "compiler": "19",
+      "elf_sha256": "701b87291b840dfafbee5bd48f8ff4d74a5ab39fdd604ae8ea29f6e2408d67c2",
+      "hid": [
+        {
+          "message": [
+            1,
+            6,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {
+                "0x35d4": 80
+              },
+              "observed_bytes_including_native_frame": 104
+            },
+            {
+              "api_depths": {
+                "0x35d4": 96
+              },
+              "observed_bytes_including_native_frame": 120
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            0,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            1,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {
+                "0x26ee": 80
+              },
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {
+                "0x26ee": 96
+              },
+              "observed_bytes_including_native_frame": 104
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            1,
+            1
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            2,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 104
+            }
+          ]
+        }
+      ],
+      "payload_sha256": "a9c8fc9cf1fa16ee4d83d8e082fa88aaee87e096daaff2ffb009baee40c55a11",
+      "source_sha256": "3779c0f47f2682cf211fdd91a664b3b9f2bcd20d64ba4b678193cd8539d1b1f4"
+    },
+    {
+      "app": [
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "success",
+          "observed_bytes_including_native_frame": 192
+        },
+        {
+          "api_depths_including_native_frame": {},
+          "case": "no-semaphore",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {},
+          "case": "quiescence-pre",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88
+          },
+          "case": "two-bonds",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x34b8": 88
+          },
+          "case": "zero-peer",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x34b8": 88
+          },
+          "case": "rpc",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "total",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "largest",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "null",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "reserve",
+          "observed_bytes_including_native_frame": 184
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "queue",
+          "observed_bytes_including_native_frame": 144
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "mailbox",
+          "observed_bytes_including_native_frame": 144
+        },
+        {
+          "api_depths_including_native_frame": {
+            "0x26ee": 88,
+            "0x2c3e": 88,
+            "0x2d54": 88,
+            "0x34b8": 88
+          },
+          "case": "quiescence-final",
+          "observed_bytes_including_native_frame": 144
+        }
+      ],
+      "compiler": "18",
+      "elf_sha256": "68731d399571f2c904de0b8d0376d8c6e85ac0111363b7c752eda89f95c814cc",
+      "hid": [
+        {
+          "message": [
+            1,
+            6,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {
+                "0x35d4": 80
+              },
+              "observed_bytes_including_native_frame": 104
+            },
+            {
+              "api_depths": {
+                "0x35d4": 96
+              },
+              "observed_bytes_including_native_frame": 120
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            0,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            1,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {
+                "0x26ee": 80
+              },
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {
+                "0x26ee": 96
+              },
+              "observed_bytes_including_native_frame": 104
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            1,
+            1
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            }
+          ]
+        },
+        {
+          "message": [
+            8,
+            2,
+            0
+          ],
+          "original_dispatcher_then_hooked": [
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 88
+            },
+            {
+              "api_depths": {},
+              "observed_bytes_including_native_frame": 104
+            }
+          ]
+        }
+      ],
+      "payload_sha256": "bac41f690a54812dd4e3c7861d72d0d67ffed925ee1bda4412b13d3c4a0b9ceb",
+      "source_sha256": "3779c0f47f2682cf211fdd91a664b3b9f2bcd20d64ba4b678193cd8539d1b1f4"
+    }
+  ],
+  "hid_native_permanent_frame_included": 32,
+  "scope": "Observed actual linked Thumb adapter at explicit stubbed native API seams. Does not include deeper ROM, allocator, IRQ, ICall/scheduler stack or hardware stack headroom. No compile, firmware export, TV connection or source changes.",
+  "measurement_scope": "Native lifecycle dispatcher and APP admission at explicit emulated API seams only; other firmware paths use more stack. See NATIVE_ABI.md. Not a global maximum or hardware/ROM/IRQ stack qualification.",
+  "original_private_report_sha256": "6f1af9d53441ab457618825cf843d336008bc8e23b1d394cd47132748b8529fe"
+}

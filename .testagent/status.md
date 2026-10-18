@@ -5,30 +5,38 @@ The published 06.07 remains unchanged. The first 06.09 was installed with the
 owner's explicit approval, but reports inactive fallback on the test remote.
 The 6.095 (06.09 rc2) refusal-diagnostic transfer completed with owner authorization.
 After a separately authorized host forget/re-pair, the TV again has PHLRC input
-and six ATT reads completed with status 0. Actual6.095 is confirmed; its frozen
-snapshot is `00000200FFFFFFFF0101`: reason2, bond count0 at initial admission,
-semaphore present, role1, no heap sample or allocation. This does not prove why
+and six ATT reads completed with status 0. Actual 6.095 is confirmed; its frozen
+snapshot is `00000200FFFFFFFF0101`: reason 2, bond count 0 at initial admission,
+semaphore present, role 1, no heap sample or allocation. This does not prove why
 inventory was zero. See `evidence/hardware-6095.json`.
-**Hardware hold:** initial keyboard loss was restored by the host re-pair, but the
-reliability core remains inactive. Do not install the diagnostic candidate while
-admission timing and hardware behavior are investigated.
+**Historical 6.095 hold:** host re-pair restored its Bluetooth connection, but
+its reliability core stayed inactive. That candidate remains on hold; 6.097 is a
+new separately tested build requiring its own hardware acceptance.
 The separately authorized 06.07 behavior recovery 6.096 is now installed. After
 the first attempt failed before any firmware write, host re-pair restored the link;
 a second native attempt completed 3,712 blocks and an independent six-read ATT
 sequence confirmed version 6.096 with status 0. Its 15 narrow offline checks are
 separate from the 134 reliability tests. Both faces and the first press after an
 unmeasured pause work with infrared covered according to the owner; exact
-60-second and longer-idle checks remain unqualified;
+60-second and longer-idle checks remain unqualified; the passive window also
+contains infrared, so Bluetooth-only first press is not independently established;
 see `evidence/hardware-recovery-6096.json`.
 06.08 is not a build input. Exact test IDs and hashes are in
 `evidence/reliability-rc2-offline.json`; the complete command is `python firmware/verify.py`.
 
-Delivery: 134/134 checks pass across nine stages with LLVM 18 and 19. Exact diagnostic and usage
-image hashes match the public proof; the evidence gate is checked again after binding.
-The 6.095 BIN/USB archive was reproduced byte-for-byte and is available under
-`firmware/candidates/06.09-rc2/`. The manifest is sanitized; checksums include it.
-The compiled 06.10 image remains undistributed pending hardware acceptance.
-Public hashed inputs and logs use LF so Git checkout cannot invalidate the proof.
+Current delivery: **155/155 checks pass with LLVM 18 and 19**, across nine
+stages. The exact two source/hook/image proofs are
+`evidence/reliability-rc3-offline.json` and its `-llvm18` counterpart. The new
+6.097 BIN/USB files reproduce byte-for-byte under `firmware/candidates/06.09-rc3/`.
+It has not been staged or flashed: see `evidence/hardware-6097.json`.
+
+Historical 6.095 assets and their 134-check proof are immutable. Current source
+adds event-driven guarded admission and the hardware-confirmed one-byte Blue
+correction. Diagnostic 6.097 records the latest refusal and its boot/deferred
+scope in the existing buffer. Its 6.098 contingency package retains only 06.07
+behavior and has 15 separate narrow checks. Neither package is authorized for a
+new installation at preparation time. The compiled 06.10 image remains withheld.
+Public hashed inputs and logs use LF.
 
 ## Implemented
 
@@ -53,9 +61,11 @@ registers, SP and memory boundaries. Real stack headroom still needs observation
 06.09 exposes three brief diagnostic pages, including the last valid front scan index
 for physical button mapping. The rc2 follow-up also records refusal codes 1–10,
 bond count and sampled free/largest-block memory in the existing 21-byte Hardware
-Revision buffer. Inactive reads preserve that boot snapshot without querying BLE,
-NVRAM or the heap. Unknown state after a lost claim reports unknown provenance.
-No extra allocation, retry or relaxed guard is introduced. 06.10 restores the original Device
+Revision buffer. That historical rc2 snapshot stays frozen; current rc3 records
+the latest actual boot/deferred admission refusal, reason 11 included. Diagnostic
+reads themselves never query BLE/NVRAM/heap or retry admission. Unknown state after a lost claim reports unknown provenance.
+No extra state allocation or relaxed guard is introduced. Admission retries
+are limited to useful lifecycle transitions, outside diagnostic reads. 06.10 restores the original Device
 Information callback and removes diagnostic heap sampling/activity accounting.
 The versioned decoder opens no connection. Shared functional safety counters stay
 internal. Neither build is represented as a normal-use release.
@@ -80,12 +90,15 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 | “génération de connexion” / “état neutre” / “Ne jamais rejouer une commande Alimentation” | `test_disconnect_pair_change_and_unknown_peer_never_replay_power`, `test_peer_change_between_source_pop_and_report_admission_drops_old_event`, `test_new_connection_handle_without_intermediate_callback_still_purges_old_command`, `test_cccd_disable_reenable_purges_old_taps_and_sends_neutral_first`, `test_thumb_accepted_power_press_has_one_flight_and_never_replays`. |
 | “accumulateur borné de six octets” / “retrouver l’en-tête FE” | `test_uart_fragments_resynchronization_and_index_guard`, `test_thumb_parser_fragments_embedded_fe_resync_and_all_index_bounds`, `test_full_bad_uart_frame_rearms_next_irq_and_timeout_discards_fragments`. No invented checksum. Native UART parameters are byte-identical. |
 | “Refuser les index avant 45 à 254” / “0 à 44” / “255” | `test_every_front_index_and_release_execute_real_decoder_and_report_pipeline`, `test_thumb_parser_fragments_embedded_fe_resync_and_all_index_bounds`, native invalid-source tests in `test_native_dispatch.py`. |
-| “Vérifier les quatre touches de couleur sur le matériel” | `evidence/hardware-colors.json`: after rear Space reconnected Bluetooth, Red/Green/Yellow/Blue produced Linux Red/Green/Yellow/Yellow on the Bluetooth input. The duplicate is confirmed; the internal index is still unknown because a temporary GATT read did not connect. **No color mapping patch applied.** 06.09 exposes the last front index for the next physical check. |
+| “Vérifier les quatre touches de couleur sur le matériel” / “corriger le doublon bleu/jaune uniquement après confirmation” | `evidence/hardware-colors-6096.json` confirms physical Red/Green/Yellow/Blue indexes 19/12/1A/1B and the duplicate006C. `test_declared_blue_fix_is_one_flash_byte_and_preserves_the_other_44_rows` and `test_confirmed_color_scans_read_flash_into_app_ram_and_release_in_order` prove the targeted source correction. It is not installed; corrected radio output remains unqualified. |
 | “Comparer le rapport clavier complet” | `test_keyboard_compares_all_eight_bytes_and_validates_lengths`, `test_both_report_paths_use_actual_notify_wrapper_and_full_keyboard_deduplication`; extra key-slot difference yields a second real report. Physical extra-slot impact remains unestablished. |
 | “primitives critiques natives” / “Aucun appel Bluetooth, allocation ou attente” | Every runtime fixture checks native gate depth/token and rejects allocation, heap/peer queries, BLE and RTOS posts inside the gate. `test_native_task_stack_sizes_and_hid_inline_prefix_are_explicit` rejects bond/NV queries in HID. These are explicit interleavings, not electrical IRQ/scheduler simulation. |
 | “une allocation native unique plafonnée à 640 octets” / “768 octets” | `test_initialization_claims_only_after_one_bounded_allocation_and_preserves_registers`, `test_heap_prechecks_postfree_reserve_and_allocation_failure_leave_native_queue_intact`, `test_missing_identity_handles_or_active_native_queue_never_claim_storage`. Tests cover null allocation, fragmentation, insufficient total and 767/768 boundary. |
 | “conserver les chemins 06.07” / “améliorations ne sont pas actives” | Native prologue/bridge/fallback tests, initialization failure tests and `test_native_fallback_is_explicit_and_does_not_present_fake_zero_metrics`. Inactive diagnostic page reports fallback; old queue remains untouched on failure. |
 | Diagnose the observed inactive first candidate | `test_inactive_diagnostic_records_each_refusal_and_round_trips_actual_gatt_pages` executes all ten refusal paths through compiled C, three actual callback reads and the decoder. `test_inactive_diagnostic_reads_freeze_boot_reason_without_queries_or_allocation_retry` checks frozen provenance; `test_lost_claim_cannot_reuse_a_boot_refusal_or_active_page_as_failure_provenance` checks unknown provenance. Usage initialization success/failure tests preserve the stock Hardware Revision buffer. |
+| “Si l’allocation échoue, conserver les chemins 06.07” / “une allocation native unique plafonnée à 640 octets” | `test_retry_refusals_record_latest_reason_and_phase_without_changing_legacy_or_querying_on_reads`, `test_ordinary_wakes_and_active_reentrant_events_never_allocate_again`, `test_final_quiescence_guard_preserves_a_real_last_report_suspended_before_copy`. Refused transitions keep the queue intact; an in-flight native last slot is resumed with its payload preserved. |
+| Observed boot count0: defer admission without repeated key/timer retries | `test_boot_without_bond_admits_after_connection_event_and_neutralizes_both_reports`, `test_only_changed_successful_lifecycle_events_post_the_coalesced_admission_bit`, `test_pairing_success_while_native_tx_ready_waits_for_next_connection_not_a_timer`. Native initialization still executes once. |
+| Versioned refusal provenance; no diagnostic allocation or persistent reader | `test_latest_admission_scope_flag_is_versioned_and_unknown_provenance_stays_unknown`, `test_each_new_useful_transition_updates_last_refusal_and_success_enables_active_pages`, `test_quiescence_reason_cannot_be_relabelled_as_an_older_diagnostic_version`.6.097 alone permits deferred flag 10 and reason 11. |
 | “audio, OTA et bootloader restent ceux d’origine” / “voix” / “appairage” | Builder validates every modified range against stock. `test_native_dispatch.py` compares native voice, holds, pairing and real rear letter/shift/release behavior with published 06.07. Physical voice and update-mode heap margins remain pending. |
 | “écran d’apprentissage” / “profils locaux” / “ouvrir une application” / “HDMI 1/2” | Native app source and 22 host tests; actual installation, focus/editor and JSON fallback observed on TV. See `app/.testagent/status.md` for device evidence and action-specific remaining checks. |
 | “Ce profil reste désactivé” | `testDisabledColorPresetAndReset`, `testProfileCloneIsDisabledAndBindingsIndependent`; disabled profile observed on the TV before and after JSON round-trip. |
@@ -99,6 +112,11 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
 
 ## Limits and remaining acceptance
 
+- 6.097 is an offline-qualified experimental candidate, not a hardware-qualified
+  replacement. Native lifecycle/admission stack observations exclude ROM/IRQ
+  worst cases. Its inactive diagnostic can change across separate partial ATT
+  reads if a new useful transition occurs; prefer complete 20-byte reads.
+
 - `evidence/hardware-0609-rc1.json` confirms the first 06.09 installation and
   three all-zero inactive snapshots. Both faces were reported responsive but
   irregular; those observations do not qualify the inactive reliability core.
@@ -108,7 +126,7 @@ dispatch with an enabled profile and physical HDMI video/port confirmation remai
   remain unqualified. No activation guard was forced or relaxed.
   06.10 normal-use qualification waits for successful hardware acceptance.
 - Real heap reserve during keyboard/voice/update, full native stack headroom,
-  all physical keys/colors, radio delivery and independent short/long/double
+  all physical keys and corrected-color behavior, radio delivery and independent short/long/double
   shortcuts need the physical session. Mocked native APIs cannot replace it.
 - First press/wake after 30 minutes and one night must run without a diagnostic
   client. A failed 06.07 wake after a long pause was reported during this session;

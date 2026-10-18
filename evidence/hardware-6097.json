@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "prepared_on": "2026-10-18",
+  "candidate": "6.097 (06.09rc3)",
+  "image_sha256": "789e9fd128e6194448b6096e6ab15f816848352032ff33a84ef1d136ed30b5f9",
+  "status": "prepared offline; awaiting explicit owner approval; not staged or flashed",
+  "owner_authorized": false,
+  "staged_on_tv": false,
+  "flash_started": false,
+  "transfer_completed": false,
+  "installed_revision_confirmed": false,
+  "offline_checks_per_compiler": 155,
+  "compilers": [
+    "LLVM19.1.7",
+    "LLVM18.1.8"
+  ],
+  "two_builds_identical": true,
+  "hardware_acceptance_complete": false,
+  "prior_installed_revision": "GVK1EH_B002FFv.6.096",
+  "contingency_recovery_version": "6.098",
+  "contingency_authorized": false,
+  "contingency_installed": false,
+  "remaining": [
+    "Read active/inactive diagnostic state after a separately approved install.",
+    "Measure heap reserve during keyboard,voice and native update use.",
+    "Validate keys,gestures,standby and first press after30minutes and one night without diagnostic clients."
+  ],
+  "no_battery_life_gain_claimed": true,
+  "privacy": "No device addresses, account identifiers or raw system logs."
+}

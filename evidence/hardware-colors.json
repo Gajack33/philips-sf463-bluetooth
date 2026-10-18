@@ -177,5 +177,6 @@
     "gatt_closed": true,
     "front_index_confirmed": false,
     "color_table_patch_hardware_qualified": false
-  }
+  },
+  "later_index_confirmation": "hardware-colors-6096.json"
 }

@@ -119,7 +119,19 @@
       "normal_orientation": true,
       "exact_idle_seconds_confirmed": false,
       "owner_note": "First press responded; owner was unsure whether the pause lasted a full60seconds.",
-      "diagnostic_gatt_connected": false
+      "diagnostic_gatt_connected": false,
+      "independently_confirmed_as_bluetooth_only": false
+    },
+    "subsequent_input_window": {
+      "bounded_passive_capture": true,
+      "bluetooth_consumer_arrows_observed": true,
+      "phlrc_consumer_usage_scans_observed": [
+        "0x000C0044",
+        "0x000C0045"
+      ],
+      "infrared_arrows_also_observed": true,
+      "association_with_requested_single_first_press_established": false,
+      "interpretation": "The later input window confirms Bluetooth arrows but also includes infrared and multiple presses. It does not independently qualify the requested first press with infrared fully suppressed."
     }
   },
   "qualification": {
@@ -130,7 +142,7 @@
     "reliability_0610_qualified": false,
     "exact_60_second_idle_qualified": false
   },
-  "next_step": "Continue offline deferred-admission correction; obtain color scan indexes on the restored baseline if available. The6.095 reliability core and long-idle behavior remain unqualified; no new flash is authorized.",
+  "next_step": "Continue offline deferred-admission and blue-mapping corrections; color scan indexes are recorded in hardware-colors-6096.json. Reliability and long-idle behavior remain unqualified; no new flash is authorized.",
   "provenance_note": "Manifest and offline verification describe build-time preparation. This draft records the later owner-authorized native update attempt.",
   "privacy": "Sanitized summary; no network addresses, account identifiers, local machine paths or raw system logs."
 }
